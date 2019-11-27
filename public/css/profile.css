@@ -1,0 +1,68 @@
+body {
+}
+
+.profile_content {
+	width: 100%;
+}
+
+.profile_pic {
+	width: 320px;
+	height: 320px;
+	display: block;
+}
+
+.user_rating {
+	width: 30%;
+	font-size: 90%;
+	margin-left: 15%;
+}
+
+.user_rating img {
+	width: 60px;
+	height: 60px;
+	vertical-align: text-bottom;
+}
+
+.thumbnails img {
+	width: 130px;
+	height: 130px;
+	margin-left: 3px;
+	border: 1px solid #000;
+}
+
+.views_container {
+	font-size: 140%;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.edit {
+	padding-bottom: 10px;
+}
+
+.ib {
+	display: inline-block;
+}
+
+
+.fullname .txt {
+	width: 8%;
+	display: inline-block;
+}
+
+p.bio {
+	width: 60%;
+}
+
+div.map {
+	width: 250px !important;
+	height: 250px !important;
+	display: inline-block;
+	/*background: #000;*/
+	background: orange;
+	vertical-align: middle;
+}
+
+.geo {
+	vertical-align: middle;
+}

@@ -1,0 +1,6 @@
+*.out
+*.exe
+*.swp
+*.ghc
+*.stackdump
+DS_STORE

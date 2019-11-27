@@ -1,0 +1,20 @@
+{
+  "name": "matcha2.0",
+  "version": "1.0.0",
+  "description": "Cupid's Arrow",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "mchocho 'The King'",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "bootstrap": "^4.3.1",
+    "express": "^4.17.1",
+    "nodemon": "^1.19.4",
+    "npx": "^10.2.0",
+    "pug": "^2.0.4"
+  }
+}

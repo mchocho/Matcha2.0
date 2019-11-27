@@ -1,0 +1,99 @@
+body {
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+h2 {
+	font-size: 280%;
+}
+
+form {
+	margin: auto;
+}
+
+header div {
+	display: inline-block;
+}
+
+header a, header a:hover {
+	color: unset;
+	text-decoration: unset !important;
+}
+
+header img {
+	padding: 30px 0px 0px 30px;
+	width: 60%;
+	height: 60%;
+	transform: rotateY(180deg);
+}
+
+header .heading {
+	text-align: left;
+	display: inline-block;
+	margin-left: -160px;
+}
+
+header h1 {
+	font-size: 380%;
+}
+
+.profile_container {
+	float: right;
+	margin: 60px 100px 0px 0px;
+}
+
+.wrapper {
+	margin: auto;
+}
+
+form {
+	width: 60%;
+	background: rgb(238, 238, 238, 0.4);
+	border-radius: 13px;
+	padding: 13px;
+}
+
+label {
+	margin-top: 5px;
+}
+
+label, input {
+	display: block;
+}
+
+.txt {
+	font-size: 120%;
+	background: unset !important;
+	border: none;
+	border-bottom: 1px solid #000;
+	width: 30%;
+	padding: 10px;
+	text-align: center;
+}
+
+.btn-group button.option {
+	background: #000;
+}
+
+label span {
+	display: block;
+	color: red;
+	padding: 15px;
+}
+
+input[type="submit"], .custom_btn {
+	width: 10%;
+	background: #000;
+	color: #eee;
+	padding: 8px;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	text-align: center;
+}
+
+
+input[type="submit"]:hover, .custom_btn:hover {
+	background: #eee;
+	color: #000;
+	border: 1px solid #000;
+}
