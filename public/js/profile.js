@@ -11,10 +11,11 @@ function ready() {
 		document.getElementById('gmap')		
 	];
 
+
 	//fetch('https://jsonplaceholder.typicode.com/users/1')
-	fetch('https://postman-echo.com/get?foo1=bar1&foo2=bar2', {/*mode: 'cors', */headers: new Headers({"Access-Control-Allow-Origin": '*'})})
+	/*fetch('https://postman-echo.com/get?foo1=bar1&foo2=bar2', {mode: 'cors', headers: new Headers({"Access-Control-Allow-Origin": '*'})})
 	.then(response => response.json())
-    .then(json => console.log(json))
+    .then(json => console.log(json))*/
 }
 
 document.addEventListener("DOMContentLoaded", ready);

@@ -18,47 +18,79 @@ const middleware = [
 
 //Home Route
 app.get('/', (req, res) => {
-	res.sendfile('./views/signup.html');
-});
-
-app.get('/signup', (req, res) => {
-	res.sendfile('./views/signup.html');
+	//res.sendfile('./views/signup.html');
+	res.render('signup.pug', { errors: ft_util.init_errors() });
 });
 
 app.post('/signup/registration', (req, res) => {
 	const n_user = req.body;
-	let errors = new URL(__dirname + '/views/signup.html?')
+	let errors = ft_util.init_errors(),
+		result = true;
 	console.log(n_user);
-	if (n_user.cupid === 'Submit')
-	{
-		if (n_user.username.length === 0)
-			errors.searchParams.append('error_0', 'true');
-		if (n_user.f_name.length === 0)
-			errors.searchParams.append('error_1', 'true');
-		if (n_user.l_name.length === 0)
-			errors.searchParams.append('error_2', 'true');
-		if (n_user.gender !== 'Female' && n_user.gender !== 'Male')
-			errors += 'error_3="1"&';
+	if (n_user.cupid === 'Submit') {
+		if (n_user.username.length === 0) {
+			result = false;
+			errors['error_0'] = 'Enter a username';
+		}
+		if (n_user.f_name.length === 0) {
+			result = false;
+			errors['error_1'] = 'Enter your first name';
+		}
+		if (n_user.l_name.length === 0) {
+			result = false;
+			errors['error_2'] = 'Enter your last name';
+		}
+		if (n_user.gender !== 'Female' && n_user.gender !== 'Male') {
+			result = false;
+			errors['error_3'] = 'Specify your gender';
+		}
+		if (!ft_util.isemail(n_user.email) ) {
+			result = false;
+			errors['error_4'] = 'Enter your email';
+		}
+		if (n_user.password.length < 5) {//ft_isvalidpassword(n_user.password)) {
+			result = false;
+			errors['error_5'] = 'Provide a valid password of 5 characters or more';
+		} else if (n_user.password !== n_user.password_confirm) {
+			result = false;
+			errors['error_6'] = 'The passwords you provided don\'t match.'
+		}
 		if (n_user.preference !== 'Female' || n_user.preference !== 'Male')
 			n_user.preference = 'Both';
-		if (!ft_util.isemail(n_user.email) )
-			errors.searchParams.append('error_4', 'true');
-		//if (ft_isvalidpassword(n_user.password))
-		//	errors.searchParams.append('error_5', 'true');
-		console.log('errorURL = ' + errors);
-		if (errors.indexOf('error') == -1)
-			console.log('Great your good to go!');
+
+		if (result === true)
+			console.log('Great you\'re good to go!');
 		else
-			console.log('errors.href');
-			//res.sendfile(errors);
+			res.redirect('/');
 	} else {
 		console.log("Something went wrong, please try again");
+		res.redirect('/');
 	}
 });
 
-
 app.get('/signin', (req, res) => {
-	res.sendfile('./views/signin.html');
+	res.render('signin.pug');
+});
+
+app.post('/signin/login', (req, res) => {
+	const user = req.body;
+	let errors = ft_util.init_errors(),
+		result = true;
+	console.log(user);
+	if (user.cupid === 'Submit') {
+		if (user.username.length === 0) {
+			result = false;
+			errors['error_0'] = 'Enter a username';
+		}
+		if (user.password.length === 0) {
+			result = false;
+			errors['error_1'] = 'Enter your password';
+		}
+		if (res === true)
+			console.log('Great you\'re good to go');
+		else
+			res.redirect('/signin');
+	}
 });
 
 app.get('/profile', (req, res) => {
