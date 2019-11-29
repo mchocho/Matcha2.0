@@ -3,17 +3,26 @@ html
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title Awesome Title
+    title Your profile
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='css/styles.css', media='all')
-    link(rel='stylesheet', href='css/profile.css', media='all')
+    link(rel='stylesheet', href='/css/style.css', media='all')  
+    link(rel='stylesheet', href='/css/profile.css', media='all')       
   body
+    header
+      a(href='index.php')
+        div
+          img(src='images/logo.png')
+        .heading
+          h1 Cupid's Arrow
+      .profile_container
+        a(href='/') Sign up | 
+        a(href='/signin') Sign in
     .profile_content(align='center')
       .profile_pic_content
-        img.profile_pic(src='https://www.biography.com/.image/t_share/MTE4MDAzNDEwNzQzMTY2NDc4/will-smith-9542165-1-402.jpg', alt="User's profile pic")
+        img.profile_pic(src=user.picture, alt="User's profile pic")
         span.user_rating
-          | 5 
+          | #{user.rating} 
           img(src='images/icons/star.png')
         .thumbnails
           img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png', alt='pics')
@@ -22,28 +31,31 @@ html
           img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
           img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
       .views_container
-        a(href='view_list.php') 42 views this week
-      form(action='includes/handle_settings.php')
+        a(href='view_list.php') #{user.viewcount} views this week
+      form
         .edit
-          span#username.value IamLegend
+          span#username.value #{user.username}
+          br
           span.btns
-            input#e_username.custom_btn.ib(type='button', name='e_username', value='Edit')
-            input#c_username.custom_btn.ib(type='button', name='c_username', value='Cancel')
+            input#s_username.custom_btn.ib(type='button', value='Edit')
           #username_edit.username_edit
             input#n_username.txt.ib(type='text', placeholder='New username')
-            input#s_username.custom_btn.ib(type='button', value='Save')
+            br
+            input#e_username.custom_btn.ib(type='button', name='e_username', value='Confirm')
+            input#c_username.custom_btn.ib(type='button', name='c_username', value='Cancel')
         .edit
-          span#fullname.value Will Smith
+          span#fullname.value #{user.fullname}
           span#fullname.value
           #fullname_edit.fullname_edit
             input#n_fname.txt.ib(type='text', placeholder='First name')
             input#n_lname.txt.ib(type='text', placeholder='Last name')
+            br
             input#s_username.custom_btn.ib(type='button', value='Save')
         .edit
           p Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
-            button.btn.btn-secondary(type='button') Female
-            button.btn.btn-secondary.option(type='button') Male
+            button.btn.btn-secondary(type='button', class=(user.sex == 'f' ? 'btn btn-secondary option' : 'btn btn-secondary')) Female
+            button(type='button', class=(user.sex == 'm' ? 'btn btn-secondary option' : 'btn btn-secondary')) Male
         .edit
           p Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
@@ -52,8 +64,8 @@ html
             button.btn.btn-secondary.option(type='button') Both
         .edit
           p Biography
-          p.value.bio
-            | Amet venenatis urna cursus eget nunc scelerisque viverra mauris in. Nulla pharetra diam sit amet. Elementum curabitur vitae nunc sed velit dignissim sodales. Porttitor lacus luctus accumsan tortor posuere. Non quam lacus suspendisse faucibus interdum posuere lorem ipsum. Nullam non nisi est sit amet facilisis magna etiam. Et pharetra pharetra massa massa ultricies mi. Maecenas sed enim ut sem viverra aliquet. Phasellus faucibus scelerisque eleifend donec. Vulputate eu scelerisque felis imperdiet. Malesuada nunc vel risus commodo viverra. Urna nunc id cursus metus aliquam eleifend mi. Nisi scelerisque eu ultrices vitae. Dignissim enim sit amet venenatis urna cursus eget nunc scelerisque. Nec tincidunt praesent semper feugiat nibh. Magna sit amet purus gravida quis. Morbi tristique senectus et netus et malesuada fames ac turpis. Facilisi cras fermentum odio eu feugiat.
+          p.value.bio #{user.biography}
         .edit
           #gmap.map
           input.custom_btn.ib.geo(type='button', value='Find Me')
+    script(type='text/javascript', src='js/button_groups.js')

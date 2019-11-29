@@ -44,6 +44,9 @@ body {
 	display: inline-block;
 }
 
+.txt {
+	margin-bottom: 15px;
+}
 
 .fullname .txt {
 	width: 8%;
@@ -55,8 +58,8 @@ p.bio {
 }
 
 div.map {
-	width: 250px !important;
-	height: 250px !important;
+	width: 400px !important;
+	height: 300px !important;
 	display: inline-block;
 	/*background: #000;*/
 	background: orange;

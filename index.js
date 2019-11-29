@@ -11,8 +11,7 @@ app.set('view engine', 'pug');
 //app.use('/images', express.static(__dirname + '/images'));
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-	app.use(express.urlencoded())
-
+		app.use(express.urlencoded())
 ];
 
 
@@ -62,7 +61,17 @@ app.get('/signin', (req, res) => {
 });
 
 app.get('/profile', (req, res) => {
-	res.sendfile('./views/profile.html');
+	res.render('profile.pug', {
+		user: {
+			username: 'The Fresh Prince',
+			sex: 'M',
+			fullname: 'Will Smith',
+			biography: "Today is a new day!",
+			rating: 8,
+			viewcount: 3889,
+			picture: 'https://www.biography.com/.image/t_share/MTE4MDAzNDEwNzQzMTY2NDc4/will-smith-9542165-1-402.jpg'
+		}
+	});
 });
 
 
