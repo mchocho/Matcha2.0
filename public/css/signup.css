@@ -1,15 +1,29 @@
 body {
-	background: url('images/wallpaper_1.jpg');
+	background: url('../images/wallpaper_1.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 h2 {
-	margin-top: -5%;
+	/*margin-top: -5%;*/
 }
-			
+
+.wrapper {
+	margin-bottom: 50px;
+}
+
+form {
+	margin-top: 1%;
+}
+
 .btn-group {
 	margin-left: 40px;
 }
-			
+
 #gender_group {
 	margin-left: 60px;
+}
+
+input[type="submit"] {
+	margin-top: 20px;
 }

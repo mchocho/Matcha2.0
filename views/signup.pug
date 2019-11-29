@@ -7,46 +7,62 @@ head
   link(rel='manifest' href='manifest.webmanifest')
   link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
   link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
-  link(rel='stylesheet' href='css/style.css' media='all')
-  link(rel='stylesheet' href='css/signup.css' media='all')
-.wrapper(align='center')
-  h2 Register to find your true love!
-  form(method='POST' action='includes/signup.inc.php')
-    label
-      | Username
-      input.txt(type='text' name='username' required='')
-    label
-      | First name
-      input.txt(type='text' name='f_name' required='')
-    label
-      | Last name
-      input.txt(type='text' name='l_name' required='')
-    label
-      | Gender
-      #gender_group.btn-group(role='group' aria-label='Gender')
-        button.btn.btn-secondary(type='button') Female
-        button.btn.btn-secondary(type='button') Male
-      input#gender(type='hidden' name='gender' value='')
-    label
-      | Sexual preference
-      #preference_group.btn-group(role='group' aria-label='preferences')
-        button.btn.btn-secondary(type='button') Female
-        button.btn.btn-secondary(type='button') Male
-        button.btn.btn-secondary(type='button') Both
-      input#preference(type='hidden' name='preference' value='')
-    label
-      | Date of birth
-      input#dob.txt(type='text' name='dob' placeholder='Select a date...' required='')
+  link(rel='stylesheet' href='/css/style.css' media='all')
+  link(rel='stylesheet' href='/css/signup.css' media='all')
+body
+  header
+    a(href='index.php')
+      div
+        img(src='images/logo.png')
+      .heading
+        h1 Cupid's Arrow
+    .profile_container
+      a(href='/') Sign up | 
+      a(href='/signin') Sign in
+  .wrapper(align='center')
+    h2 Register to find your true love!
+    form(method='POST' action='signup/registration')
+      span#error_0.error #{errors.error_0}
       label
+        | Username
+        input.txt(type='text' name='username' required='')
+      span#error_1.error #{errors.error_1}
+      label
+        | First name
+        input.txt(type='text' name='f_name' required='')
+      span#error_2.error #{errors.error_2}
+      label
+        | Last name
+        input.txt(type='text' name='l_name' required='')
+      span#error_3.error #{errors.error_3}
+      label
+        | Gender
+        #gender_group.btn-group(role='group' aria-label='Gender')
+          button.btn.btn-secondary(type='button') Female
+          button.btn.btn-secondary(type='button') Male
+        input#gender(type='hidden' name='gender' value='')
+      label
+        | Sexual preference
+        #preference_group.btn-group(role='group' aria-label='preferences')
+          button.btn.btn-secondary(type='button') Female
+          button.btn.btn-secondary(type='button') Male
+          button.btn.btn-secondary(type='button') Both
+        input#preference(type='hidden' name='preference' value='')
+      span#error_4.error #{errors.error_4}
+      label
+        | Date of birth
+        input#dob.txt(type='text' name='dob' placeholder='Select a date...' required='')
         label
-          | Email
-          input.txt(type='email' name='email' required='')
-        label
-          | Password
-          input.txt(type='password' name='password' required='')
-        label
-          | Password confirmation
-          input.txt(type='password' name='password_confirm' required='')
-        input(type='submit' name='cupid' value='Submit')
-script(src='https://cdn.jsdelivr.net/npm/flatpickr')
-
+          span#error_5.error #{errors.error_5} #{errors.error_6}
+          label
+            | Email
+            input.txt(type='email' name='email' required='')
+          label
+            | Password
+            input.txt(type='password' name='password' required='')
+          label
+            | Password confirmation
+            input.txt(type='password' name='password_confirm' required='')
+          input(type='submit' name='cupid' value='Submit')
+  script(src='https://cdn.jsdelivr.net/npm/flatpickr')
+  script(src='/js/signup.js')
