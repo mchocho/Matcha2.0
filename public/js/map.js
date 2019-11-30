@@ -10,9 +10,9 @@ function script() {
 	  		panControl: true,
 	  		mapTypeControl: false,
 	  		scaleControl: false,
-	  		gestureHandling: "greedy",
 	  		zoomControl: false
 		  }),
+		  geocoder = new google.maps.Geocoder(),
 		  marker = new google.maps.Marker({map: map}),
 		  infoWindow = new google.maps.InfoWindow;
 
@@ -22,13 +22,20 @@ function script() {
 	}, 1000);
 
 
-	function find_user(pos) {
-		// body...
+	function findUser(pos) {
 		if (!pos.lat || !pos.lng)
 			return;
-		const geocoder = new google.maps.Geocoder({
+		geocoder.geocode({
 			location: pos
-		}, function());
+		}, function(results, status) {
+			if (status === google.maps.GeocoderStatus.OK) {
+				let user = '<h3>Your location</h3>';
+				user += 'Address: ' + results[0].formatted_address;
+				infoWindow.setContent(user);
+				infoWindow.setMap(map);
+				infoWindow.setPosition(pos);
+			}
+		});
 	}
 
 
@@ -42,7 +49,7 @@ function script() {
 			map.setZoom(19);
 			marker.setPosition(pos);
 			map.setCenter(pos);
-			console.log("lat: " + pos.lat + '\nlng: ' + pos.lng);
+			findUser(pos);
 		}, function() {
 			alert('No position avaiable');
 		}, {

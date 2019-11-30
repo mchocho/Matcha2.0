@@ -46,9 +46,8 @@ html
         .edit
           span#fullname.value #{user.fullname}
           br
+          input#full_username.custom_btn.ib(type='button', value='Edit')
           #fullname_edit.fullname_edit
-            input#full_username.custom_btn.ib(type='button', value='Edit')
-            br
             input#f_fname.txt.ib(type='text', placeholder='First name')
             | &nbsp; &nbsp; &nbsp; &nbsp;
             input#f_lname.txt.ib(type='text', placeholder='Last name')
@@ -65,13 +64,39 @@ html
         .edit
           p Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
-            button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
-            button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
-            button.btn.btn-secondary(type='button', class=(user.sex == ''  ? 'option' : '')) Both
+            button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+            button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+            button.btn.btn-secondary(type='button', class=(user.preference == ''  ? 'option' : '')) Both
         .edit
           p Interests
-          input#interests.custom_btn.ib(type='button', value='Edit')
-
+          input#interests.custom_btn.ib(type='button', value='Add')
+          #interest_edit.interest_edit
+            input#n_interest.txt.ib(type='text', placeholder='Add interest')
+            br
+            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='e_username') Confirm
+              button.btn.btn-secondary(type='button', name='c_username') Cancel
+          ul.interests_list.list.multi-column
+            li Xenon
+            li Coding
+            li hello
+            li Acting
+            li Sports cars
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
         .edit
           p Biography
           p.value.bio #{user.biography}

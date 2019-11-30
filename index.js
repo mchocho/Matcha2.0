@@ -97,7 +97,7 @@ app.get('/profile', (req, res) => {
 		user: {
 			username: 'The Fresh Prince',
 			sex: 'M',
-			preference: 'F'
+			preference: 'F',
 			fullname: 'Will Smith',
 			biography: "Today is a new day!",
 			rating: 8,
