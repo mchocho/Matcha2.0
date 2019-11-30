@@ -36,36 +36,49 @@ html
         .edit
           span#username.value #{user.username}
           br
-          span.btns
-            input#s_username.custom_btn.ib(type='button', value='Edit')
+          input#s_username.custom_btn.ib(type='button', value='Edit')
           #username_edit.username_edit
             input#n_username.txt.ib(type='text', placeholder='New username')
             br
-            input#e_username.custom_btn.ib(type='button', name='e_username', value='Confirm')
-            input#c_username.custom_btn.ib(type='button', name='c_username', value='Cancel')
+            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='e_username') Confirm
+              button.btn.btn-secondary(type='button', name='c_username') Cancel
         .edit
           span#fullname.value #{user.fullname}
-          span#fullname.value
+          br
           #fullname_edit.fullname_edit
-            input#n_fname.txt.ib(type='text', placeholder='First name')
-            input#n_lname.txt.ib(type='text', placeholder='Last name')
+            input#full_username.custom_btn.ib(type='button', value='Edit')
             br
-            input#s_username.custom_btn.ib(type='button', value='Save')
+            input#f_fname.txt.ib(type='text', placeholder='First name')
+            | &nbsp; &nbsp; &nbsp; &nbsp;
+            input#f_lname.txt.ib(type='text', placeholder='Last name')
+            br
+            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='e_username') Confirm
+              button.btn.btn-secondary(type='button', name='c_username') Cancel
+            //#input#s_username.custom_btn.ib(type='button', value='Save')
         .edit
           p Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
-            button.btn.btn-secondary(type='button', class=(user.sex == 'f' ? 'btn btn-secondary option' : 'btn btn-secondary')) Female
-            button(type='button', class=(user.sex == 'm' ? 'btn btn-secondary option' : 'btn btn-secondary')) Male
+            button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+            button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
         .edit
           p Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
-            button.btn.btn-secondary(type='button') Female
-            button.btn.btn-secondary(type='button') Male
-            button.btn.btn-secondary.option(type='button') Both
+            button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+            button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
+            button.btn.btn-secondary(type='button', class=(user.sex == ''  ? 'option' : '')) Both
+        .edit
+          p Interests
+          input#interests.custom_btn.ib(type='button', value='Edit')
+
         .edit
           p Biography
           p.value.bio #{user.biography}
         .edit
-          #gmap.map
-          input.custom_btn.ib.geo(type='button', value='Find Me')
+          input#find_me.custom_btn.ib.geo.hide(type='button', value='Find Me')
+          #map
+    script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
     script(type='text/javascript', src='js/button_groups.js')
+    script(type='text/javascript', src='js/map.js')
+

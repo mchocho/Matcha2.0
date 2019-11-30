@@ -91,6 +91,12 @@ input[type="submit"], .custom_btn {
 	text-align: center;
 }
 
+input[type="submit"], input[type="button"], button, .custom_btn {
+	-webkit-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+}
+
 
 input[type="submit"]:hover, .custom_btn:hover {
 	background: #eee;
