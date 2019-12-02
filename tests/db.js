@@ -29,4 +29,3 @@ dbc.connect((err) => {
 });
 
 module.exports = this.dbc;
-
