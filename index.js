@@ -1,11 +1,15 @@
-const express 	= require('express'),
-	  path		= require('path'),
-	  mysql		= require('mysql'),
+const express 		= require('express'),
+	  path			= require('path'),
+	  mysql			= require('mysql'),
+	  expressip 	= require('express-ip'),
+	  UIDGenerator 	= require('uid-generator'),
+	  uidgen 		= new UIDGenerator(),
 	  // bcrypt 	= require('bcrypt'),
-	  dbconfig	= require('./config/database.js'),
-	  ft_util	= require('./includes/ft_util.js'),
-	  app 		= express(),
-	  dbc 		= mysql.createConnection({
+	  dbconfig		= require('./config/database.js'),
+	  ft_util		= require('./includes/ft_util.js'),
+	  app 			= express(),
+	  PORT 			= process.env.PORT || 5000,
+	  dbc 			= mysql.createConnection({
 										  host		: 'localhost',
 										  user 		: 'root',
 										  port		: '8080',
@@ -28,20 +32,33 @@ const util = require('util');
 //Load view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set("PORT", PORT);
+//app.set('trust proxy', true);
 // app.set('trust proxy', true);
 
 
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-	app.use(express.urlencoded())
+	app.use(express.urlencoded()),
+	app.use(expressip().getIpInfoMiddleware),
+	
 ];
 
 
 //Home Route
 app.get('/', (req, res) => {
 	//res.sendfile('./views/signup.html');
-	res.render('signup.pug', { errors: ft_util.init_errors() });
+	res.render('signup.pug', {errors: ft_util.init_errors()});
+	
+
+	/*
+	console.log('Express started on http://localhost:' +
+        app.get('PORT') + '; press Ctrl-C to terminate.');
+	const ipInfo = req.ipInfo;
+	const message = `Hey, you are browsing from ${ipInfo.city}, ${ipInfo.country}`;
+	console.log(message);
 	console.log("IP address: " + req.ip);
+	*/
 });
 
 app.post('/signup/registration', (req, res) => {
@@ -145,6 +162,12 @@ app.get('/profile', (req, res) => {
 	});
 });
 
+
+app.get('/profile/edit_profile', (req, res) => {
+	const user = req.body;
+	if (user.)
+
+});
 
 
 app.listen(3000, () => {
