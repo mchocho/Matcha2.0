@@ -22,23 +22,6 @@ const util = require('util');
 
 // console.log('Connection object --> ' + util.inspect(dbc));
 
-dbc.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
-
-  console.log('connected as id ' + dbc.threadId);
-
-  var sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ('Motherfucker Jones', 'Jones', 'Android', 'M', 'B', '1970-12-17', 'theright1@gmail.com', '123456', 'F', 'T', 'Today was a good day!')";
-  dbc.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("1 record inserted");
-  });
- 
-  
-});
-
 
 ///TESTS
 
@@ -98,8 +81,21 @@ app.post('/signup/registration', (req, res) => {
 			user.preference = 'Both';
 
 		if (result === true) {
-			console.log('Great you\'re good to go!');
-
+			dbc.connect(function(err) {
+				if (err) {
+				//
+					console.error('error connecting: ' + err.stack);
+					return;
+				}
+				//
+					console.log('connected as id ' + dbc.threadId);
+				console.log('Great you\'re good to go!');
+				var sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				dbc.query(sql, function (err, result) {
+					if (err) throw err;
+					console.log("1 record inserted");
+				});
+			});
 		}
 		else
 			res.redirect('/');
