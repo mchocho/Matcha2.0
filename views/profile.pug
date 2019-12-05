@@ -3,7 +3,7 @@ html
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title Your profile
+    title #{title}
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.css', media='all')  
@@ -16,8 +16,7 @@ html
         .heading
           h1 Cupid's Arrow
       .profile_container
-        a(href='/') Sign up | 
-        a(href='/signin') Sign in
+        
     .profile_content(align='center')
       .profile_pic_content
         img.profile_pic(src=user.picture, alt="User's profile pic")
@@ -44,18 +43,19 @@ html
             input#e_username.custom_btn.ib(type='button', name='e_username', value='Confirm')
             input#c_username.custom_btn.ib(type='button', name='c_username', value='Cancel')
         .edit
-          span#fullname.value #{user.fullname}
+          span#fullname.value #{user.first_name} #{user.last_name}
           span#fullname.value
           #fullname_edit.fullname_edit
-            input#n_fname.txt.ib(type='text', placeholder='First name')
-            input#n_lname.txt.ib(type='text', placeholder='Last name')
+            input#n_fname.txt.ib(type='text', placeholder='First name', value={user.first_name})
+            br
+            input#n_lname.txt.ib(type='text', placeholder='Last name', value={user.last_name})
             br
             input#s_username.custom_btn.ib(type='button', value='Save')
         .edit
           p Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
-            button.btn.btn-secondary(type='button', class=(user.sex == 'f' ? 'btn btn-secondary option' : 'btn btn-secondary')) Female
-            button(type='button', class=(user.sex == 'm' ? 'btn btn-secondary option' : 'btn btn-secondary')) Male
+            button.btn.btn-secondary(type='button', class=(user.sex === 'F' ? 'btn btn-secondary option' : 'btn btn-secondary')) Female
+            button(type='button', class=(user.sex === 'M' ? 'btn btn-secondary option' : 'btn btn-secondary')) Male
         .edit
           p Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
@@ -68,4 +68,13 @@ html
         .edit
           #gmap.map
           input.custom_btn.ib.geo(type='button', value='Find Me')
+      footer
+        | Icons made by 
+        a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
+        |  from 
+        a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+        | |
+        a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
+        |  from 
+        a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
     script(type='text/javascript', src='js/button_groups.js')

@@ -94,10 +94,12 @@ app.post('/signin/login', (req, res) => {
 
 app.get('/profile', (req, res) => {
 	res.render('profile.pug', {
+		title: 'The Fresh Prince\'s profile!',
 		user: {
 			username: 'The Fresh Prince',
 			sex: 'M',
-			fullname: 'Will Smith',
+			first_name: 'Will',
+			last_name: 'Smith',
 			biography: "Today is a new day!",
 			rating: 8,
 			viewcount: 3889,
