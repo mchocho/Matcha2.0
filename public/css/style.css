@@ -3,6 +3,11 @@ body {
 	background-size: cover;
 }
 
+.profile_container img {
+	width: 95px;
+	height: 95px;
+}
+
 h2 {
 	font-size: 280%;
 }
@@ -89,6 +94,12 @@ input[type="submit"], .custom_btn {
 	border-radius: 8px;
 	border: 1px solid transparent;
 	text-align: center;
+}
+
+input[type="submit"], input[type="button"], button, .custom_btn {
+	-webkit-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
 }
 
 

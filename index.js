@@ -1,64 +1,119 @@
-const express = require('express'),
-	  path = require('path'),
-	  ft_util = require('./includes/ft_util.js'),
-	  app = express(); //Install App
+const express 		= require('express'),
+	  path			= require('path'),
+	  mysql			= require('mysql'),
+	  expressip 	= require('express-ip'),
+	  UIDGenerator 	= require('uid-generator'),
+	  uidgen 		= new UIDGenerator(),
+	  // bcrypt 	= require('bcrypt'),
+	 // dbconfig		= require('./config/database.js'),
+	  ft_util		= require('./includes/ft_util.js'),
+	  app 			= express(),
+	  PORT 			= process.env.PORT || 5000
+	 /* dbc 			= mysql.createConnection({
+										  host		: 'localhost',
+										  user 		: 'root',
+										  port		: '8080',
+										  password	: '654321',
+										  database  : 'matcha',
+										  socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
+										});*/
+
+//TESTS
+
+const util = require('util');
+
+// dbc.connection();
+
+// console.log('Connection object --> ' + util.inspect(dbc));
+
+
+///TESTS
 
 //Load view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set("PORT", PORT);
+//app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
-//app.use('/css', express.static(__dirname + 'css'));
-//app.use('/images', express.static(__dirname + '/images'));
+
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-		app.use(express.urlencoded())
+	app.use(express.urlencoded()),
+	app.use(expressip().getIpInfoMiddleware),
+	
 ];
 
 
 //Home Route
 app.get('/', (req, res) => {
 	//res.sendfile('./views/signup.html');
-	res.render('signup.pug', { errors: ft_util.init_errors() });
+	res.render('signup.pug', {errors: ft_util.init_errors()});
+	
+
+	/*
+	console.log('Express started on http://localhost:' +
+        app.get('PORT') + '; press Ctrl-C to terminate.');
+	const ipInfo = req.ipInfo;
+	const message = `Hey, you are browsing from ${ipInfo.city}, ${ipInfo.country}`;
+	console.log(message);
+	console.log("IP address: " + req.ip);
+	*/
 });
 
 app.post('/signup/registration', (req, res) => {
-	const n_user = req.body;
+	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
-	console.log(n_user);
-	if (n_user.cupid === 'Submit') {
-		if (n_user.username.length === 0) {
+
+	if (user.cupid === 'Submit') {
+		if (user.username.length === 0) {
 			result = false;
 			errors['error_0'] = 'Enter a username';
 		}
-		if (n_user.f_name.length === 0) {
+		if (user.f_name.length === 0) {
 			result = false;
 			errors['error_1'] = 'Enter your first name';
 		}
-		if (n_user.l_name.length === 0) {
+		if (user.l_name.length === 0) {
 			result = false;
 			errors['error_2'] = 'Enter your last name';
 		}
-		if (n_user.gender !== 'Female' && n_user.gender !== 'Male') {
+		if (user.gender !== 'Female' && user.gender !== 'Male') {
 			result = false;
 			errors['error_3'] = 'Specify your gender';
 		}
-		if (!ft_util.isemail(n_user.email) ) {
+		if (!ft_util.isemail(user.email) ) {
 			result = false;
 			errors['error_4'] = 'Enter your email';
 		}
-		if (n_user.password.length < 5) {//ft_isvalidpassword(n_user.password)) {
+		if (user.password.length < 5) {//ft_isvalidpassword(user.password)) {
 			result = false;
 			errors['error_5'] = 'Provide a valid password of 5 characters or more';
-		} else if (n_user.password !== n_user.password_confirm) {
+		} else if (user.password !== user.password_confirm) {
 			result = false;
 			errors['error_6'] = 'The passwords you provided don\'t match.'
 		}
-		if (n_user.preference !== 'Female' || n_user.preference !== 'Male')
-			n_user.preference = 'Both';
+		if (user.preference !== 'Female' || user.preference !== 'Male')
+			user.preference = 'Both';
 
-		if (result === true)
-			console.log('Great you\'re good to go!');
+		if (result === true) {
+			dbc.connect(function(err) {
+				if (err) {
+				//
+					console.error('error connecting: ' + err.stack);
+					return;
+				}
+				//
+					console.log('connected as id ' + dbc.threadId);
+				console.log('Great you\'re good to go!');
+				var sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				dbc.query(sql, function (err, result) {
+					if (err) throw err;
+					console.log("1 record inserted");
+				});
+			});
+		}
 		else
 			res.redirect('/');
 	} else {
@@ -100,6 +155,7 @@ app.get('/profile', (req, res) => {
 			sex: 'M',
 			first_name: 'Will',
 			last_name: 'Smith',
+			preference: 'F',
 			biography: "Today is a new day!",
 			rating: 8,
 			viewcount: 3889,
@@ -108,6 +164,12 @@ app.get('/profile', (req, res) => {
 	});
 });
 
+
+/*app.get('/profile/edit_profile', (req, res) => {
+	const user = req.body;
+	if (user.)
+
+});*/
 
 
 app.listen(3000, () => {

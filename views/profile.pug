@@ -10,16 +10,19 @@ html
     link(rel='stylesheet', href='/css/profile.css', media='all')       
   body
     header
-      a(href='index.php')
+      a(href='/')
         div
           img(src='images/logo.png')
         .heading
           h1 Cupid's Arrow
       .profile_container
-        
+        a(href='/notifications')
+          img.notifications.icons(src='images/icons/bell_0.png')
+        a(href='/messages')
+          img.messages.icons(src='images/icons/envelope.png')
     .profile_content(align='center')
       .profile_pic_content
-        img.profile_pic(src=user.picture, alt="User's profile pic")
+        img.profile_pic(src=user.picture, alt='User\'s profile pic')
         span.user_rating
           | #{user.rating} 
           img(src='images/icons/star.png')
@@ -35,39 +38,76 @@ html
         .edit
           span#username.value #{user.username}
           br
-          span.btns
-            input#s_username.custom_btn.ib(type='button', value='Edit')
+          input#s_username.custom_btn.ib(type='button', value='Edit')
           #username_edit.username_edit
             input#n_username.txt.ib(type='text', placeholder='New username')
             br
-            input#e_username.custom_btn.ib(type='button', name='e_username', value='Confirm')
-            input#c_username.custom_btn.ib(type='button', name='c_username', value='Cancel')
+            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='e_username') Confirm
+              button.btn.btn-secondary(type='button', name='c_username') Cancel
         .edit
           span#fullname.value #{user.first_name} #{user.last_name}
           span#fullname.value
           #fullname_edit.fullname_edit
-            input#n_fname.txt.ib(type='text', placeholder='First name', value={user.first_name})
+            input#full_username.custom_btn.ib(type='button', value='Edit')
             br
-            input#n_lname.txt.ib(type='text', placeholder='Last name', value={user.last_name})
+            input#n_fname.txt.ib(type='text', placeholder='First name', value=user.first_name)
             br
-            input#s_username.custom_btn.ib(type='button', value='Save')
+            input#n_lname.txt.ib(type='text', placeholder='Last name', value=user.last_name)
+          span#fullname.value #{user.fullname}
+          br
+          #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+            button.btn.btn-secondary(type='button', name='e_username') Confirm
+            button.btn.btn-secondary(type='button', name='c_username') Cancel
         .edit
           p Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
-            button.btn.btn-secondary(type='button', class=(user.sex === 'F' ? 'btn btn-secondary option' : 'btn btn-secondary')) Female
-            button(type='button', class=(user.sex === 'M' ? 'btn btn-secondary option' : 'btn btn-secondary')) Male
+            button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+            button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
         .edit
           p Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
-            button.btn.btn-secondary(type='button') Female
-            button.btn.btn-secondary(type='button') Male
-            button.btn.btn-secondary.option(type='button') Both
+            button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+            button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+            button.btn.btn-secondary(type='button', class=(user.preference == ''  ? 'option' : '')) Both
+        .edit
+          p Interests
+          input#interests.custom_btn.ib(type='button', value='Add')
+          #interest_edit.interest_edit
+            input#n_interest.txt.ib(type='text', placeholder='Add interest')
+            br
+            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='e_username') Confirm
+              button.btn.btn-secondary(type='button', name='c_username') Cancel
+          ul.interests_list.list.multi-column
+            li Xenon
+            li Coding
+            li hello
+            li Acting
+            li Sports cars
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
+            li Sky diving
         .edit
           p Biography
-          p.value.bio #{user.biography}
+          p#biography.value.bio #{user.biography}
+          input#biography_edit.custom_btn.ib(type='button', value='Edit')
         .edit
           #gmap.map
-          input.custom_btn.ib.geo(type='button', value='Find Me')
+          input#find_me.custom_btn.ib.geo.hide(type='button', value='Find Me')
+          #map
       footer
         | Icons made by 
         a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
@@ -77,4 +117,8 @@ html
         a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
         |  from 
         a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+          
+    script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
     script(type='text/javascript', src='js/button_groups.js')
+    script(type='text/javascript', src='js/map.js')
+
