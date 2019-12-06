@@ -1,0 +1,28 @@
+.profile, .profile:hover  {
+	text-decoration: none;
+	color: #111111;
+}
+
+.profile img {
+	width: 350px;
+	height: 300px;
+}
+
+.info_container {
+	width: 350px;
+	background: #DDDDDD;
+	text-align: right;
+	padding: 12px;
+}
+
+.info_container span {
+	padding-right: 6px;
+}
+
+.info_container span.name {
+	padding-bottom: 7px;
+}
+
+.match_container {
+	padding-bottom: 30px;
+}

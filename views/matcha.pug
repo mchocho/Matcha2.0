@@ -1,0 +1,55 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title #{title}
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='/css/style.css', media='all')  
+    link(rel='stylesheet', href='/css/profile.css', media='all')       
+    link(rel='stylesheet', href='/css/matcha.css', media='all')       
+  body
+    header
+      a(href='/')
+        div
+          img(src='images/logo.png')
+        .heading
+          h1 Cupid's Arrow
+      .profile_container
+        a(href='/notifications')
+          img.notifications.icons(src='images/icons/bell_0.png')
+        a(href='/messages')
+          img.messages.icons(src='images/icons/envelope.png')
+    h2(align='center') Your matches
+    br
+    .filter_container(align='center')
+
+    .match_container.container
+      .row
+        a.col-sm.profile(href='/user/')
+          img(src='images/placeholder.png')
+          .info_container
+            span.name Jane Doe
+            br
+            span.distane 3 km away
+        a.col-sm.profile(href='/user/')
+          img(src='images/placeholder.png')
+          .info_container
+            span.name John Doe
+            br
+            span.distane 3 km away
+      br
+      .row
+        a.col-sm.profile(href='/user/')
+          img(src='images/placeholder.png')
+          .info_container
+            span.name Mary Jane
+            br
+            span.distane 3 km away
+  footer
+    div(align='center')
+      | Icons made by 
+      a(href='https://www.flaticon.com/authors/freepik' title='Freepik') Freepik
+      |  from 
+      a(href='https://www.flaticon.com/' title='Flaticon') www.flaticon.com

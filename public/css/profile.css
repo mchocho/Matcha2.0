@@ -28,6 +28,7 @@ body {
 	height: 130px;
 	margin-left: 3px;
 	border: 1px solid #000;
+	cursor: pointer;
 }
 
 .views_container {

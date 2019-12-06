@@ -165,6 +165,24 @@ app.get('/profile', (req, res) => {
 });
 
 
+app.get('/matcha', (req, res) => {
+	res.render('matcha.pug', {
+		title: 'The Fresh Prince\'s profile!',
+		user: {
+			username: 'The Fresh Prince',
+			sex: 'M',
+			first_name: 'Will',
+			last_name: 'Smith',
+			preference: 'F',
+			biography: "Today is a new day!",
+			rating: 8,
+			viewcount: 3889,
+			picture: 'https://www.biography.com/.image/t_share/MTE4MDAzNDEwNzQzMTY2NDc4/will-smith-9542165-1-402.jpg'
+		}
+	});
+});
+
+
 /*app.get('/profile/edit_profile', (req, res) => {
 	const user = req.body;
 	if (user.)

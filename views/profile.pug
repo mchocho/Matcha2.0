@@ -27,11 +27,13 @@ html
           | #{user.rating} 
           img(src='images/icons/star.png')
         .thumbnails
-          img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png', alt='pics')
-          img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
-          img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
-          img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
-          img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png')
+          label
+            img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png', alt='pics')
+            img(src='images/placeholder.png')
+            img(src='images/placeholder.png')
+            img(src='images/placeholder.png')
+            img(src='images/placeholder.png')
+            input.hide(type='file')
       .views_container
         a(href='view_list.php') #{user.viewcount} views this week
       form
@@ -93,13 +95,6 @@ html
             li Sky diving
             li Sky diving
             li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
         .edit
           p Biography
           p#biography.value.bio #{user.biography}
@@ -117,7 +112,6 @@ html
         a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
         |  from 
         a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-          
     script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
     script(type='text/javascript', src='js/button_groups.js')
     script(type='text/javascript', src='js/map.js')
