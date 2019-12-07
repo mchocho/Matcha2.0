@@ -1,6 +1,6 @@
 const express 		= require('express'),
 	  path			= require('path'),
-	  mysql			= require('mysql'),
+	  mysql			= require('mysql2'),
 	  expressip 	= require('express-ip'),
 	  UIDGenerator 	= require('uid-generator'),
 	  uidgen 		= new UIDGenerator(),
@@ -32,15 +32,15 @@ const util = require('util');
 //Load view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.set("PORT", PORT);
+// app.set("PORT", PORT);
 //app.set('trust proxy', true);
 // app.set('trust proxy', true);
 
 
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-	app.use(express.urlencoded()),
-	app.use(expressip().getIpInfoMiddleware),
+	app.use(express.urlencoded())
+	// app.use(expressip().getIpInfoMiddleware),
 	
 ];
 
@@ -62,6 +62,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signup/registration', (req, res) => {
+	const dbc 			= mysql.createConnection({
+			  host		: 'localhost',
+			  user 		: 'root',
+			  port		: '8080',
+			  password	: '654321',
+			  database  : 'matcha',
+			  socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
+			});
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
@@ -108,7 +116,9 @@ app.post('/signup/registration', (req, res) => {
 					console.log('connected as id ' + dbc.threadId);
 				console.log('Great you\'re good to go!');
 				var sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-				dbc.query(sql, function (err, result) {
+				dbc.query(sql,
+					[],
+					function (err, result) {
 					if (err) throw err;
 					console.log("1 record inserted");
 				});
@@ -151,7 +161,7 @@ app.get('/profile', (req, res) => {
 	res.render('profile.pug', {
 		title: 'The Fresh Prince\'s profile!',
 		user: {
-			username: 'The Fresh Prince',
+			username: 'Your matches',
 			sex: 'M',
 			first_name: 'Will',
 			last_name: 'Smith',
@@ -188,6 +198,10 @@ app.get('/matcha', (req, res) => {
 	if (user.)
 
 });*/
+
+app.use((req, res) => {
+	res.render('404', {title: '404'});
+});
 
 
 app.listen(3000, () => {

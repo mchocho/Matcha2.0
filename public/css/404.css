@@ -1,0 +1,14 @@
+body {
+	/*background: #FFC3B1;*/
+}
+
+.error_container {
+	width: 100%;
+	margin: auto;
+}
+
+.error_container img {
+	width: 500px;
+	height: 450px;
+}
+

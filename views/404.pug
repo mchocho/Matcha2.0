@@ -1,0 +1,28 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title #{title}
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='/css/style.css', media='all')  
+    link(rel='stylesheet', href='/css/profile.css', media='all')       
+    link(rel='stylesheet', href='/css/404.css', media='all')       
+  body.no_file
+    header
+      a(href='/')
+        div
+          img(src='images/logo.png')
+        .heading
+          h1 Cupid's Arrow
+      .profile_container
+        a(href='/notifications')
+          img.notifications.icons(src='images/icons/bell_0.png')
+        a(href='/messages')
+          img.messages.icons(src='images/icons/envelope.png')
+    .error_container(align='center')
+      img(src='images/error.JPG')
+      h2 404
+      br
+      p Page Not Found
