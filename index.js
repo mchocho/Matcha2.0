@@ -1,8 +1,9 @@
 const express 		= require('express'),
 	  path			= require('path'),
-	  mysql			= require('mysql2'),
+	  mysql			= require('mysql'),
 	  expressip 	= require('express-ip'),
 	  UIDGenerator 	= require('uid-generator'),
+	  moment		= require('moment'),
 	  uidgen 		= new UIDGenerator(),
 	  // bcrypt 	= require('bcrypt'),
 	 // dbconfig		= require('./config/database.js'),
@@ -44,21 +45,13 @@ const middleware = [
 	
 ];
 
-
+app.get('/signup', (req, res, next) => {
+	next();
+});
 //Home Route
 app.get('/', (req, res) => {
 	//res.sendfile('./views/signup.html');
 	res.render('signup.pug', {errors: ft_util.init_errors()});
-	
-
-	/*
-	console.log('Express started on http://localhost:' +
-        app.get('PORT') + '; press Ctrl-C to terminate.');
-	const ipInfo = req.ipInfo;
-	const message = `Hey, you are browsing from ${ipInfo.city}, ${ipInfo.country}`;
-	console.log(message);
-	console.log("IP address: " + req.ip);
-	*/
 });
 
 app.post('/signup/registration', (req, res) => {
@@ -73,17 +66,20 @@ app.post('/signup/registration', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
+	//Test
+	console.log('User object --> ' + util.inspect(user));
+			
 
 	if (user.cupid === 'Submit') {
-		if (user.username.length === 0) {
+		if (user.username === undefined || user.username.length === 0) {
 			result = false;
 			errors['error_0'] = 'Enter a username';
 		}
-		if (user.f_name.length === 0) {
+		if (user.f_name === undefined || user.f_name.length === 0) {
 			result = false;
 			errors['error_1'] = 'Enter your first name';
 		}
-		if (user.l_name.length === 0) {
+		if (user.l_name === undefined || user.l_name.length === 0) {
 			result = false;
 			errors['error_2'] = 'Enter your last name';
 		}
@@ -91,41 +87,87 @@ app.post('/signup/registration', (req, res) => {
 			result = false;
 			errors['error_3'] = 'Specify your gender';
 		}
+		if (user.preference !== 'Female' || user.preference !== 'Male')
+			user.preference = 'Both';
+		if (!moment(user.dob, "YYYY-MM-DD").isValid()) {
+			result = false;
+			errors['error_5'] = 'Enter your date of birth';
+		}
 		if (!ft_util.isemail(user.email) ) {
 			result = false;
 			errors['error_4'] = 'Enter your email';
 		}
-		if (user.password.length < 5) {//ft_isvalidpassword(user.password)) {
+		if (user.password === undefined || user.password.length < 5) {//ft_isvalidpassword(user.password)) {
 			result = false;
-			errors['error_5'] = 'Provide a valid password of 5 characters or more';
+			errors['error_6'] = 'Provide a valid password of 5 characters or more';
 		} else if (user.password !== user.password_confirm) {
 			result = false;
-			errors['error_6'] = 'The passwords you provided don\'t match.'
+			errors['error_7'] = 'The passwords you provided don\'t match.'
 		}
-		if (user.preference !== 'Female' || user.preference !== 'Male')
-			user.preference = 'Both';
 
 		if (result === true) {
-			dbc.connect(function(err) {
+			dbc.connect((err) => {
+				let sql;
 				if (err) {
 				//
 					console.error('error connecting: ' + err.stack);
 					return;
 				}
-				//
 					console.log('connected as id ' + dbc.threadId);
 				console.log('Great you\'re good to go!');
-				var sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-				dbc.query(sql,
-					[],
-					function (err, result) {
+				//
+
+
+				//Check if username exits
+				sql = "SELECT id FROM users WHERE (username = ?)";
+				dbc.query(sql, [user.username], (err, result) => {
 					if (err) throw err;
-					console.log("1 record inserted");
+					if (result.length !== 0) {
+						result = false;
+						errors['error_0'] = 'Username already exists';
+					}
+
+					sql = "SELECT id FROM users WHERE (email = ?)";
+					dbc.query(sql, [user.email], (err, result) => {
+						if (err) throw err;
+						if (result.length !== 0) {
+							result = false;
+							errors['error_1'] = 'Email already exists';
+						}
+
+						if (result === false) {
+							console.log(errors);
+							return;
+							//We should redirect user back to registration page instead
+						}
+		
+						sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?;",
+						values = [
+							  [
+								user.username, 
+								user.f_name, 
+								user.l_name, 
+								user.gender.charAt(0), 
+								user.preference.charAt(0), 
+								user.dob, 
+								user.email, 
+								user.password, 
+								'F', 'F', ''
+							  ]
+						];
+						dbc.query(sql,
+							[values],
+							function (err, result) {
+							if (err) throw err;
+							console.log("Number of records inserted: " + result.affectedRows);
+						});
+					});
 				});
 			});
 		}
 		else
-			res.redirect('/');
+			// res.redirect('/');
+			console.log('Error object --> ' + util.inspect(errors));
 	} else {
 		console.log("Something went wrong, please try again");
 		res.redirect('/');

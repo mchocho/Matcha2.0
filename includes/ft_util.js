@@ -29,6 +29,14 @@ function ft_isobject(value) {
 	return (Object.prototype.toString.call(value) = '[object Object]');
 }
 
+function ft_isEmptyObj(value) {
+    for(var key in value) {
+        if(value.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
 function init_errorlist() {
 	return {
 		error_0: '',
@@ -49,4 +57,5 @@ module.exports.isfunction = ft_isfunction;
 module.exports.isdate = ft_isdate;
 module.exports.isemail = ft_isemail;
 module.exports.init_errors = init_errorlist;
+module.exports.emptyObj = ft_isEmptyObj;
 module.exports.isobject = ft_isobject;
