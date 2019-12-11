@@ -219,18 +219,45 @@ app.get('/profile', (req, res) => {
 
 app.get('/matcha', (req, res) => {
 	res.render('matcha.pug', {
-		title: 'The Fresh Prince\'s profile!',
-		user: {
-			username: 'The Fresh Prince',
-			sex: 'M',
-			first_name: 'Will',
-			last_name: 'Smith',
-			preference: 'F',
-			biography: "Today is a new day!",
-			rating: 8,
-			viewcount: 3889,
-			picture: 'https://www.biography.com/.image/t_share/MTE4MDAzNDEwNzQzMTY2NDc4/will-smith-9542165-1-402.jpg'
-		}
+		title: 'Find your match',
+		users: [
+			{
+				id: 1,
+				username: 'Queen B',
+				sex: 'F',
+				first_name: 'Jane',
+				last_name: 'Doe',
+				preference: 'M',
+				biography: "Today is a new day!",
+				distance: '19 km away',
+				rating: 9,
+				picture: 'https://i0.wp.com/pmchollywoodlife.files.wordpress.com/2014/07/beyonce-no-makeup-selfie-boston-july-1-ftr.jpg?crop=0px,0px,600px,460px&resize=1000,750'
+			},
+			{
+				id: 2,
+				username: 'Pixel Girl',
+				sex: 'F',
+				first_name: 'Mary',
+				last_name: 'Jane',
+				preference: 'M',
+				biography: "Today is a new day!",
+				distance: '65 km away',
+				rating: 9,
+				picture: 'https://www.pixelstalk.net/wp-content/uploads/2016/08/Cute-Girl-Wallpaper-HD.jpg'
+			},
+			{
+				id: 3,
+				username: 'Habji',
+				sex: 'F',
+				first_name: 'Dorothy',
+				last_name: 'Jane',
+				preference: 'M',
+				biography: "Today is a new day!",
+				distance: '32 km away',
+				rating: 9,
+				picture: 'https://www.pixelstalk.net/wp-content/uploads/2016/08/Cute-Girl-Photography.jpg'
+			}
+		]
 	});
 });
 

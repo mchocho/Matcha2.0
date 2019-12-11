@@ -26,3 +26,10 @@
 .match_container {
 	padding-bottom: 30px;
 }
+
+.no_results {
+	text-align: center;
+	margin-top: 5%;
+	margin-bottom: 13%;
+	width: 100%;
+}

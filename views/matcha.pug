@@ -26,27 +26,17 @@ html
     .filter_container(align='center')
 
     .match_container.container
-      .row
-        a.col-sm.profile(href='/user/')
-          img(src='images/placeholder.png')
-          .info_container
-            span.name Jane Doe
-            br
-            span.distane 3 km away
-        a.col-sm.profile(href='/user/')
-          img(src='images/placeholder.png')
-          .info_container
-            span.name John Doe
-            br
-            span.distane 3 km away
-      br
-      .row
-        a.col-sm.profile(href='/user/')
-          img(src='images/placeholder.png')
-          .info_container
-            span.name Mary Jane
-            br
-            span.distane 3 km away
+      if (users.length === 0)
+        h3.no_results It seems there are no results.
+      else
+        .row
+          each val, index in users
+            a.col-sm.profile(class='', href='/user/')
+              img(src=val.picture)
+              .info_container
+                span.name #{val.username}
+                br
+                span.distane #{val.distance}
   footer
     div(align='center')
       | Icons made by 
