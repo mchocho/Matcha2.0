@@ -1,43 +1,31 @@
 const express 		= require('express'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
-	  expressip 	= require('express-ip'),
-	  UIDGenerator 	= require('uid-generator'),
+	  body_p		= require('body-parser'),
 	  moment		= require('moment'),
-	  uidgen 		= new UIDGenerator(),
-	  // bcrypt 	= require('bcrypt'),
-	 // dbconfig		= require('./config/database.js'),
+	  URL			= require('url'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  app 			= express(),
-	  PORT 			= process.env.PORT || 5000
-	 /* dbc 			= mysql.createConnection({
-										  host		: 'localhost',
-										  user 		: 'root',
-										  port		: '8080',
-										  password	: '654321',
-										  database  : 'matcha',
-										  socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-										});*/
+	  PORT 			= process.env.PORT || 5000,
+	  nodemailer 	= require('nodemailer'),
+	  os			= require('os'),
+	  email			= require('./includes/mail_client.js');
 
 //TESTS
-
-const util = require('util');
-
+// const util = require('util');
+// const token = os.hostname + "/signup/verify_email/:Some unique key";
+// console.log(token);
 ///TESTS
 
-//Load view engine
+
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-// app.set("PORT", PORT);
-//app.set('trust proxy', true);
-// app.set('trust proxy', true);
 
-app.use(express.urlencoded());
+app.use(body_p.urlencoded({extended: true}));
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-	
 	// app.use(expressip().getIpInfoMiddleware),
-	
 ];
 
 app.get('/signup', (req, res, next) => {
@@ -60,11 +48,19 @@ app.post('/signup/registration', (req, res) => {
 			  //socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
 			});
 	const user = req.body;
+	const token = os.hostname + "/signup/verify_email/:" + 'Some Unique Key';
 	let errors = ft_util.init_errors(),
 		result = true;
-	//Test
-	console.log('User object --> ' + util.inspect(user));
-			
+	const msg = `<h1>Verify Your Email</h1>
+		<p>Please confirm that you want to use this email address for your Cupid's Arrow account. Once it's done you will be able to start using this service.</p>
+		<button>
+			<a href="${token}" target="_blank">Verify my email</a>
+		</button>
+		<br />
+		Or copy and paste the link below into the address bar
+		<br />
+		<br />
+		<p align="center">&copy Cupid's Arrow | 2019</p>`;
 
 	if (user.cupid === 'Submit') {
 		if (user.username === undefined || user.username.length === 0) {
@@ -93,7 +89,7 @@ app.post('/signup/registration', (req, res) => {
 			result = false;
 			errors['error_4'] = 'Enter your email';
 		}
-		if (user.password === undefined || user.password.length < 5) {//ft_isvalidpassword(user.password)) {
+		if (user.password === undefined || user.password.length < 5) {
 			result = false;
 			errors['error_6'] = 'Provide a valid password of 5 characters or more';
 		} else if (user.password !== user.password_confirm) {
@@ -105,13 +101,13 @@ app.post('/signup/registration', (req, res) => {
 			dbc.connect((err) => {
 				let sql;
 				if (err) {
-				//
+				//TESTS
 					console.error('error connecting: ' + err.stack);
 					return;
 				}
 					console.log('connected as id ' + dbc.threadId);
 				console.log('Great you\'re good to go!');
-				//
+				//ENDOF TESTS
 
 
 				sql = "SELECT id FROM users WHERE (username = ?)";
@@ -155,6 +151,7 @@ app.post('/signup/registration', (req, res) => {
 							function (err, result) {
 							if (err) throw err;
 							console.log("Number of records inserted: " + result.affectedRows);
+							email.main(user.email, "Email verification | Cupid's Arrow", msg);
 						});
 					});
 				});
@@ -199,13 +196,13 @@ app.post('/signin/login', (req, res) => {
 			dbc.connect((err) => {
 				let sql;
 				if (err) {
-				//
+				//TESTS
 					console.error('error connecting: ' + err.stack);
 					return;
 				}
 					console.log('connected as id ' + dbc.threadId);
 					console.log('Great you\'re good to go!');
-				//
+				//ENDOF TESTS
 
 				sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
 
@@ -251,6 +248,18 @@ app.get('/matcha', (req, res) => {
 	res.render('matcha.pug', {
 		title: 'Find your match',
 		users: [
+			{
+				id: 1,
+				username: 'Queen B',
+				sex: 'F',
+				first_name: 'Jane',
+				last_name: 'Doe',
+				preference: 'M',
+				biography: "Today is a new day!",
+				distance: '19 km away',
+				rating: 9,
+				picture: 'https://i0.wp.com/pmchollywoodlife.files.wordpress.com/2014/07/beyonce-no-makeup-selfie-boston-july-1-ftr.jpg?crop=0px,0px,600px,460px&resize=1000,750'
+			},
 			{
 				id: 1,
 				username: 'Queen B',

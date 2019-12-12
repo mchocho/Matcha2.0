@@ -7,6 +7,17 @@
 	margin-bottom: 3%;
 }
 
+.filter_container {
+	margin-left: 38%;
+	margin-bottom: 1%;
+}
+
+.filter_container img {
+	width: 70px;
+	height: 70px;
+	margin-right: 10px;
+}
+
 .profile img {
 	width: 350px;
 	height: 300px;

@@ -24,7 +24,12 @@ html
     h2(align='center') Your matches
     br
     .filter_container(align='center')
-
+      img(src='images/icons/filter.png')
+      .btn-group(role='group' aria-label='Basic example')
+        button.btn.btn-secondary(type='button') None
+        button.btn.btn-secondary(type='button') Age
+        button.btn.btn-secondary(type='button') Location
+        button.btn.btn-secondary(type='button') Tags
     .match_container.container
       if (users.length === 0)
         h3.no_results It seems there are no results.
