@@ -42,7 +42,11 @@ function script() {
 	find_me.addEventListener('click', function() {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			const pos = {lat: position.coords.latitude, lng: position.coords.longitude};
-			if (pos['lat'] === -26.2309 && pos['lng'] === 28.0583) {
+			//DEV PURPOSES
+			//console.log(JSON.stringify(pos));
+			if (pos['lat'] === -26.2309 && pos['lng'] === 28.0583
+			 || pos['lat'] === -26.2123013 && pos['lng'] === 28.0303075
+			) {
 				pos['lat'] = -26.205083;
 				pos['lng'] = 28.040148;
 			}

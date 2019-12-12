@@ -23,11 +23,6 @@ const express 		= require('express'),
 
 const util = require('util');
 
-// dbc.connection();
-
-// console.log('Connection object --> ' + util.inspect(dbc));
-
-
 ///TESTS
 
 //Load view engine
@@ -37,10 +32,10 @@ app.set('view engine', 'pug');
 //app.set('trust proxy', true);
 // app.set('trust proxy', true);
 
-
+app.use(express.urlencoded());
 const middleware = [
 	app.use(express.static(__dirname + '/public')),
-	app.use(express.urlencoded())
+	
 	// app.use(expressip().getIpInfoMiddleware),
 	
 ];
@@ -61,7 +56,8 @@ app.post('/signup/registration', (req, res) => {
 			  port		: '8080',
 			  password	: '654321',
 			  database  : 'matcha',
-			  socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
+			  socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock'
+			  //socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
 			});
 	const user = req.body;
 	let errors = ft_util.init_errors(),
@@ -118,7 +114,6 @@ app.post('/signup/registration', (req, res) => {
 				//
 
 
-				//Check if username exits
 				sql = "SELECT id FROM users WHERE (username = ?)";
 				dbc.query(sql, [user.username], (err, result) => {
 					if (err) throw err;
@@ -179,6 +174,14 @@ app.get('/signin', (req, res) => {
 });
 
 app.post('/signin/login', (req, res) => {
+	const dbc 			= mysql.createConnection({
+		host		: 'localhost',
+		user 		: 'root',
+		port		: '8080',
+		password	: '654321',
+		database  : 'matcha',
+		socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock'
+	  });
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
@@ -192,10 +195,37 @@ app.post('/signin/login', (req, res) => {
 			result = false;
 			errors['error_1'] = 'Enter your password';
 		}
-		if (res === true)
-			console.log('Great you\'re good to go');
-		else
+		if (result === true) {
+			dbc.connect((err) => {
+				let sql;
+				if (err) {
+				//
+					console.error('error connecting: ' + err.stack);
+					return;
+				}
+					console.log('connected as id ' + dbc.threadId);
+					console.log('Great you\'re good to go!');
+				//
+
+				sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
+
+				dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
+					if (err) throw err;
+					if (result.length == 0) {
+						console.log("Userr credintials don't exist");
+						//redirect user back to sign in page.
+					}
+					else
+					{
+						console.log('Welcome back ' + user.username);
+					}
+	
+				});
+			});
+		} else {
+			console.log();
 			res.redirect('/signin');
+		}
 	}
 });
 
