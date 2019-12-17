@@ -4,24 +4,27 @@ const express 		= require('express'),
 	  body_p		= require('body-parser'),
 	  ft_util		= require('./includes/ft_util.js');
 
+let settings = {
+	host		: 'localhost',
+	user 		: 'root',
+	//port		: '8080',
+	port		: '3000',
+	//password	: '654321',
+	password: 'pw123456',
+	database  : 'matcha',
+	//socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
+	socketPath: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
+	//socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
+  }
+
 let router = express.Router();
 module.exports = router;
+
 
 router.get('/', (req, res) => {
 	res.render('signin.pug');
 }).post('/', (req, res) => {
-	const dbc 			= mysql.createConnection({
-		host		: 'localhost',
-		user 		: 'root',
-		//port		: '8080',
-		port		: '3000',
-		//password	: '654321',
-		password: 'pw123456',
-		database  : 'matcha',
-		//socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
-		socketPath: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
-		//socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-	  });
+	const dbc 			= mysql.createConnection(settings);
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
