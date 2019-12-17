@@ -20,6 +20,7 @@ let settings = {
 let router = express.Router();
 module.exports = router;
 
+//testing merging
 
 router.get('/', (req, res) => {
 	res.render('signin.pug');
