@@ -15,6 +15,8 @@ const express 		= require('express'),
 // const util = require('util');
 // const token = os.hostname + "/signup/verify_email/:Some unique key";
 // console.log(token);
+
+// console.log(uuidv4());
 ///TESTS
 
 

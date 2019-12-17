@@ -7,7 +7,9 @@ const express 		= require('express'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  nodemailer 	= require('nodemailer'),
 	  os			= require('os'),
-	  email			= require('./includes/mail_client.js');
+	  uuidv4 		= require('uuid/v4'),
+	  msgs			= require('./includes/mail_client.js');
+	  mailTemplates = require('./includes/email_templates.js');
 
 let router = express.Router();
 module.exports = router;
@@ -24,23 +26,15 @@ router.get('/', (req, res) => {
 			  password: 'pw123456',
 			  database  : 'matcha',
 			  //socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
-			  socketPath: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
+			  socketPath: '/var/run/mysql.sock'
 			  //socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-			});
-	const user = req.body;
-	const token = os.hostname + "/signup/verify_email/:" + 'Some Unique Key';
-	let errors = ft_util.init_errors(),
-		result = true;
-	const msg = `<h1>Verify Your Email</h1>
-		<p>Please confirm that you want to use this email address for your Cupid's Arrow account. Once it's done you will be able to start using this service.</p>
-		<button>
-			<a href="${token}" target="_blank">Verify my email</a>
-		</button>
-		<br />
-		Or copy and paste the link below into the address bar
-		<br />
-		<br />
-		<p align="center">&copy Cupid's Arrow | 2019</p>`;
+			}),
+		  user = req.body,
+		  token = uuidv4(),
+		  url = os.hostname + "/signup/verify_email/?key=" + token;
+	let   errors = ft_util.init_errors(),
+		  result = true;
+	
 
 	if (user.cupid === 'Submit') {
 		if (user.username === undefined || user.username.length === 0) {
@@ -130,8 +124,16 @@ router.get('/', (req, res) => {
 							[values],
 							function (err, result) {
 							if (err) throw err;
-							console.log("Number of records inserted: " + result.affectedRows);
-							email.main(user.email, "Email verification | Cupid's Arrow", msg);
+							// console.log("Number of records inserted: " + result.affectedRows);
+							email.main(user.email, "Email verification | Cupid's Arrow", msgs.verify_signup(url));
+							sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
+							values = [
+								[
+									result.insertId,
+									token,
+									'registration'
+								]
+							];
 						});
 					});
 				});

@@ -22,17 +22,27 @@ html
         a(href='/messages')
           img.messages.icons(src='images/icons/envelope.png')
     h2(align='center') Your matches
-    br
     .filter_container(align='center')
-      img(src='images/icons/filter.png')
-      .btn-group(role='group' aria-label='Basic example')
-        button.btn.btn-secondary(type='button') None
-        button.btn.btn-secondary(type='button') Age
-        button.btn.btn-secondary(type='button') Location
-        button.btn.btn-secondary(type='button') Tags
+      .content
+        img(src='images/icons/filter.png')
+        .btn-group#filter_group(role='group' aria-label='Filter content')
+          button.btn.btn-secondary.option(type='button', value='none') None
+          button.btn.btn-secondary(type='button', value='age') Age
+          button.btn.btn-secondary(type='button', value='location') Location
+          button.btn.btn-secondary(type='button', value='tags') Tags
+      #slider_container.age-slider.hide
+        label Min Age:
+          span#age_1 18
+          input#slider_1(value='0' min='18' max='80' step='1' type='range')
+        label Max Age:
+          span#age_2
+          input#slider_2(value='80' min='18' max='80' step='1' type='range')
+    br
     .match_container.container
       if (users.length === 0)
-        h3.no_results It seems there are no results.
+        .no_results_container(align='center')
+          img(src='images/icons/broken_heart.png', class='icon')
+          h3.no_results It seems there are no results. Don't give up
       else
         .row
           each val, index in users
@@ -45,6 +55,8 @@ html
   footer
     div(align='center')
       | Icons made by 
-      a(href='https://www.flaticon.com/authors/freepik' title='Freepik') Freepik
+      a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
       |  from 
-      a(href='https://www.flaticon.com/' title='Flaticon') www.flaticon.com
+      a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+  script(src='js/matcha.js')
+

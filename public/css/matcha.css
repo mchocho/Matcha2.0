@@ -8,7 +8,7 @@
 }
 
 .filter_container {
-	margin-left: 38%;
+	margin-left: 55%;
 	margin-bottom: 1%;
 }
 
@@ -21,6 +21,30 @@
 .profile img {
 	width: 350px;
 	height: 300px;
+}
+
+.hide {
+	display: none;
+	visibility: hidden;
+}
+
+.age-slider label,
+.age-slider span {
+	display: inline-block;
+}
+
+.age-slider label:first-of-type {
+	margin-right: 3%;
+	margin-left: -8%;
+}
+
+.age-slider span {
+	transition-duration: 6s;
+	color: #AAAAAA;
+}
+
+.age-slider label input {
+	display: block;
 }
 
 .info_container {
@@ -42,9 +66,16 @@
 	padding-bottom: 30px;
 }
 
+.match_container .icon {
+	margin: auto;
+	display: inline;
+	margin-right: 3%;
+}
+
 .no_results {
+	display: inline;
 	text-align: center;
-	margin-top: 5%;
-	margin-bottom: 13%;
+	/*margin-top: 5%;*/
+	/*margin-bottom: 13%;*/
 	width: 100%;
 }

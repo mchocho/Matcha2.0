@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
 	res.render('matcha.pug', {
 		title: 'Find your match',
 		users: [
-			{
+			/*{
 				id: 1,
 				username: 'Queen B',
 				sex: 'F',
@@ -65,7 +65,7 @@ router.get('/', (req, res) => {
 				distance: '32 km away',
 				rating: 9,
 				picture: 'https://www.pixelstalk.net/wp-content/uploads/2016/08/Cute-Girl-Photography.jpg'
-			}
+			}*/
 		]
 	});
 });
