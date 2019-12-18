@@ -1,13 +1,9 @@
-const mysql = require("mysql");
+const mysql = require("mysql"),
+      users = require("./credentials.js");
 
-dbc = mysql.createConnection({
-	host		: 'localhost',
-	user 		: 'root',
-	port		: '8080',
-	password	: '654321',
-	database  	: 'matcha',
-	socketPath	: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-});
+
+dbc = mysql.createConnection(users['thanos']);
+//dbc = mysql.createConnection(users['roger']);
 
 dbc.connect((err) => {
     if (err){

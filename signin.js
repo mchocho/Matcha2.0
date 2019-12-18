@@ -4,9 +4,10 @@ const express 		= require('express'),
 	  body_p		= require('body-parser'),
 	  uuidv4 		= require('uuid/v4'),
 	  session	    = require('express-session'),
-	  ft_util		= require('./includes/ft_util.js');
+	  ft_util		= require('./includes/ft_util.js'),
+	  conn			= require('./model/sql_connect.js');
 
-let settings = {
+/*let settings = {
 	host		: 'localhost',
 	user 		: 'root',
 	//port		: '8080',
@@ -17,15 +18,18 @@ let settings = {
 	// socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
 	// socketPath: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
 	socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-  }
+  }*/
 
 let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
+	const sess = req.session[0];
+	if (ft_util.isobject(sess))
+		res.redirect('/matcha');
 	res.render('signin.pug');
 }).post('/', (req, res) => {
-	const dbc 			= mysql.createConnection(settings);
+	// const dbc 			= mysql.createConnection(settings);
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
@@ -39,7 +43,7 @@ router.get('/', (req, res) => {
 			errors['error_1'] = 'Enter your password';
 		}
 		if (result === true) {
-			dbc.connect((err) => {
+			conn.dbc.connect((err) => {
 				let sql;
 				if (err) {
 				//TESTS
@@ -48,7 +52,7 @@ router.get('/', (req, res) => {
 				}
 				sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
 
-				dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
+				conn.dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
 					if (err) throw err;
 					if (result.length == 0)
 						res.redirect('/signin');

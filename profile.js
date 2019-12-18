@@ -2,23 +2,18 @@ const express 		= require('express'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
-	  moment		= require('moment'),
-	  URL			= require('url'),
 	  session	    = require('express-session'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  app 			= express(),
-	  PORT 			= process.env.PORT || 5000,
-	  nodemailer 	= require('nodemailer'),
 	  os			= require('os'),
-	  util			= require('util'),
-	  email			= require('./includes/mail_client.js');
+	  util			= require('util');
 
 let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session[0];
-	if (isNaN(sess.id))
+	if (!ft_util.isobject(sess))
 		res.redirect('/..');
 	if (sess.verified === 'F')
 		res.redirect('/verify_email');

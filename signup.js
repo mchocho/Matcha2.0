@@ -8,6 +8,7 @@ const express 		= require('express'),
 	  nodemailer 	= require('nodemailer'),
 	  os			= require('os'),
 	  uuidv4 		= require('uuid/v4'),
+	  conn			= require('./model/sql_connect.js');
 	  msgs			= require('./includes/mail_client.js');
 	  mailTemplates = require('./includes/email_templates.js');
 
@@ -15,21 +16,24 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
+	const sess = req.session[0];
+	if (ft_util.isobject(sess))
+		res.redirect('/matcha');
 	res.render('signup.pug', {errors: ft_util.init_errors()});
 }).post('/', (req, res) => {
-	const dbc 			= mysql.createConnection({
+	/*const dbc 			= mysql.createConnection({
 			  host		: 'localhost',
 			  user 		: 'root',
 			  //port		: '8080',
 			  port		: '3000',
 			  //password	: '654321',
-			  password: 'pw123456',
+			  // password: 'pw123456',
 			  database  : 'matcha',
 			  //socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
 			  socketPath: '/var/run/mysql.sock'
 			  //socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-			}),
-		  user = req.body,
+			}),*/
+	const user = req.body,
 		  token = uuidv4(),
 		  url = os.hostname + "/signup/verify_email/?key=" + token;
 	let   errors = ft_util.init_errors(),
@@ -72,7 +76,7 @@ router.get('/', (req, res) => {
 		}
 
 		if (result === true) {
-			dbc.connect((err) => {
+			conn.dbc.connect((err) => {
 				let sql;
 				if (err) {
 				//TESTS
@@ -85,7 +89,7 @@ router.get('/', (req, res) => {
 
 
 				sql = "SELECT id FROM users WHERE (username = ?)";
-				dbc.query(sql, [user.username], (err, result) => {
+				conn.dbc.query(sql, [user.username], (err, result) => {
 					if (err) throw err;
 					if (result.length !== 0) {
 						result = false;
@@ -93,7 +97,7 @@ router.get('/', (req, res) => {
 					}
 
 					sql = "SELECT id FROM users WHERE (email = ?)";
-					dbc.query(sql, [user.email], (err, result) => {
+					conn.dbc.query(sql, [user.email], (err, result) => {
 						if (err) throw err;
 						if (result.length !== 0) {
 							result = false;
@@ -120,7 +124,7 @@ router.get('/', (req, res) => {
 								'F', 'F', ''
 							  ]
 						];
-						dbc.query(sql,
+						conn.dbc.query(sql,
 							[values],
 							function (err, result) {
 							if (err) throw err;
@@ -134,7 +138,7 @@ router.get('/', (req, res) => {
 									'registration'
 								]
 							];
-							dbc.query(sql,
+							conn.dbc.query(sql,
 								[values],
 								function (err, result) {
 									if (err) throw err;
@@ -145,9 +149,10 @@ router.get('/', (req, res) => {
 				});
 			});
 		}
-		else
-			// res.redirect('/');
+		else {
 			console.log('Error object --> ' + util.inspect(errors));
+			res.redirect('/');
+		}
 	} else {
 		console.log("Something went wrong, please try again");
 		res.redirect('/');

@@ -26,7 +26,7 @@ function ft_isemail(value) {
 }
 
 function ft_isobject(value) {
-	return (Object.prototype.toString.call(value) = '[object Object]');
+	return (Object.prototype.toString.call(value) === '[object Object]');
 }
 
 function ft_isEmptyObj(value) {
