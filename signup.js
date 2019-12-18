@@ -134,6 +134,12 @@ router.get('/', (req, res) => {
 									'registration'
 								]
 							];
+							dbc.query(sql,
+								[values],
+								function (err, result) {
+									if (err) throw err;
+									res.redirect('/verify_email');
+								});
 						});
 					});
 				});

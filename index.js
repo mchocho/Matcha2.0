@@ -4,6 +4,8 @@ const express 		= require('express'),
 	  body_p		= require('body-parser'),
 	  moment		= require('moment'),
 	  URL			= require('url'),
+	  session 		= require('express-session'),
+	  uuidv4 		= require('uuid/v4'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  app 			= express(),
 	  PORT 			= process.env.PORT || 5000,
@@ -26,10 +28,21 @@ app.set('view engine', 'pug');
 
 app.use(body_p.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
+app.use(session({secret: uuidv4(), cookie: {maxAge: 600000}, resave: false, saveUninitialized: true, resave: true}));
+
+
+//I don't know why this block needs to be here
+if (app.get('env') === 'production') 
+	app.set('trust proxy', 1);
+
+
 
 //Home Route
 let signupRouter = require('./signup');
 app.use('/', signupRouter);
+
+let verify_emailRouter = require('./verify_email');
+app.use('/verify_email', verify_emailRouter);
 
 let signinRouter = require('./signin');
 app.use('/signin', signinRouter);
@@ -45,6 +58,10 @@ app.use('/matcha', matchaRouter);
 	if (user.)
 
 });*/
+
+
+let logoutRouter = require('./logout');
+app.use('/logout', logoutRouter);
 
 app.use((req, res) => {
 	res.render('404', {title: '404'});
