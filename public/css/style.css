@@ -108,3 +108,10 @@ input[type="submit"]:hover, .custom_btn:hover {
 	color: #000;
 	border: 1px solid #000;
 }
+
+.list-group a:hover {
+	z-index: 2;
+	color: #fff;
+	background-color: #007bff;
+	border-color: #007bff;
+}

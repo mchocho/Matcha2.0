@@ -38,14 +38,14 @@ if (app.get('env') === 'production')
 
 
 //Home Route
+let signinRouter = require('./signin');
+app.use('/', signinRouter);
+
 let signupRouter = require('./signup');
-app.use('/', signupRouter);
+app.use('/signup', signupRouter);
 
 let verify_emailRouter = require('./verify_email');
 app.use('/verify_email', verify_emailRouter);
-
-let signinRouter = require('./signin');
-app.use('/signin', signinRouter);
 
 let profileRouter = require('./profile');
 app.use('/profile', profileRouter);
@@ -58,6 +58,9 @@ app.use('/matcha', matchaRouter);
 	if (user.)
 
 });*/
+
+let notificationRouter = require('./notifications');
+app.use('/notifications', notificationRouter);
 
 
 let logoutRouter = require('./logout');

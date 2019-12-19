@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 }).post('/', (req, res) => {
 	const user = req.body,
 		  token = uuidv4(),
-		  url = /*os.hostname +*/ "http://localhost:3000/signup/verify_email/?key=" + token;
+		  url = "http://localhost:3000/signup/verify_email/?key=" + token;
 	let   errors = ft_util.init_errors(),
 		  result = true;
 	
