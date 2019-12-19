@@ -5,20 +5,7 @@ const express 		= require('express'),
 	  uuidv4 		= require('uuid/v4'),
 	  session	    = require('express-session'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  conn			= require('./model/sql_connect.js');
-
-/*let settings = {
-	host		: 'localhost',
-	user 		: 'root',
-	//port		: '8080',
-	port		: '3000',
-	password	: '654321',
-	// password: 'pw123456',
-	database  : 'matcha',
-	// socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
-	// socketPath: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
-	socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-  }*/
+	  dbc			= require('./model/sql_connect.js');
 
 let router = express.Router();
 module.exports = router;
@@ -29,7 +16,6 @@ router.get('/', (req, res) => {
 		res.redirect('/matcha');
 	res.render('signin.pug');
 }).post('/', (req, res) => {
-	// const dbc 			= mysql.createConnection(settings);
 	const user = req.body;
 	let errors = ft_util.init_errors(),
 		result = true;
@@ -43,27 +29,21 @@ router.get('/', (req, res) => {
 			errors['error_1'] = 'Enter your password';
 		}
 		if (result === true) {
-			conn.dbc.connect((err) => {
-				let sql;
-				if (err) {
-				//TESTS
-					console.error('error connecting: ' + err.stack);
-					return;
-				}
-				sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
+			const sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
 
-				conn.dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
-					if (err) throw err;
-					if (result.length == 0)
-						res.redirect('/signin');
-					else
-					{
-						Object.assign(req.session, result);
-						req.session.save(function(err) {
-							res.redirect('/profile');
-						});
-					}
-				});
+			dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
+				if (err) throw err;
+				if (result.length == 0)
+					res.redirect('/signin');
+				else if (result.verified === 'F')
+					res.redirect('/verify_email');
+				else
+				{
+					Object.assign(req.session, result);
+					req.session.save(function(err) {
+						res.redirect('/matcha');
+					});
+				}
 			});
 		} else {
 			res.redirect('/signin');

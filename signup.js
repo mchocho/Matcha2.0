@@ -7,10 +7,11 @@ const express 		= require('express'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  nodemailer 	= require('nodemailer'),
 	  os			= require('os'),
+	  util			= require('util'),
 	  uuidv4 		= require('uuid/v4'),
-	  conn			= require('./model/sql_connect.js');
-	  msgs			= require('./includes/mail_client.js');
-	  mailTemplates = require('./includes/email_templates.js');
+	  dbc			= require('./model/sql_connect.js'),
+	  email			= require('./includes/mail_client.js'),
+	  msgTemplates 	= require('./includes/email_templates.js');
 
 let router = express.Router();
 module.exports = router;
@@ -21,21 +22,9 @@ router.get('/', (req, res) => {
 		res.redirect('/matcha');
 	res.render('signup.pug', {errors: ft_util.init_errors()});
 }).post('/', (req, res) => {
-	/*const dbc 			= mysql.createConnection({
-			  host		: 'localhost',
-			  user 		: 'root',
-			  //port		: '8080',
-			  port		: '3000',
-			  //password	: '654321',
-			  // password: 'pw123456',
-			  database  : 'matcha',
-			  //socketPath: '/goinfre/mchocho/MAMP/mysql/tmp/mysql.sock',
-			  socketPath: '/var/run/mysql.sock'
-			  //socketPath: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
-			}),*/
 	const user = req.body,
 		  token = uuidv4(),
-		  url = os.hostname + "/signup/verify_email/?key=" + token;
+		  url = /*os.hostname +*/ "http://localhost:3000/signup/verify_email/?key=" + token;
 	let   errors = ft_util.init_errors(),
 		  result = true;
 	
@@ -76,75 +65,60 @@ router.get('/', (req, res) => {
 		}
 
 		if (result === true) {
-			conn.dbc.connect((err) => {
-				let sql;
-				if (err) {
-				//TESTS
-					console.error('error connecting: ' + err.stack);
-					return;
+			let sql = "SELECT id FROM users WHERE (username = ?)";
+			dbc.query(sql, [user.username], (err, result) => {
+				if (err) throw err;
+				if (result.length !== 0) {
+					result = false;
+					errors['error_0'] = 'Username already exists';
 				}
-					console.log('connected as id ' + dbc.threadId);
-				console.log('Great you\'re good to go!');
-				//ENDOF TESTS
 
-
-				sql = "SELECT id FROM users WHERE (username = ?)";
-				conn.dbc.query(sql, [user.username], (err, result) => {
+				sql = "SELECT id FROM users WHERE (email = ?)";
+				dbc.query(sql, [user.email], (err, result) => {
 					if (err) throw err;
 					if (result.length !== 0) {
 						result = false;
-						errors['error_0'] = 'Username already exists';
+						errors['error_1'] = 'Email already exists';
 					}
 
-					sql = "SELECT id FROM users WHERE (email = ?)";
-					conn.dbc.query(sql, [user.email], (err, result) => {
+					if (result === false) {
+						console.log(errors);
+						res.redirect('../');
+					}
+	
+					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?;",
+					values = [
+							[
+							user.username, 
+							user.f_name, 
+							user.l_name, 
+							user.gender.charAt(0), 
+							user.preference.charAt(0), 
+							user.dob, 
+							user.email, 
+							user.password, 
+							'F', 'F', ''
+							]
+					];
+					dbc.query(sql,
+						[values],
+						function (err, result) {
 						if (err) throw err;
-						if (result.length !== 0) {
-							result = false;
-							errors['error_1'] = 'Email already exists';
-						}
-
-						if (result === false) {
-							console.log(errors);
-							return;
-							//We should redirect user back to registration page instead
-						}
-		
-						sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?;",
+						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url));
+						sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
 						values = [
-							  [
-								user.username, 
-								user.f_name, 
-								user.l_name, 
-								user.gender.charAt(0), 
-								user.preference.charAt(0), 
-								user.dob, 
-								user.email, 
-								user.password, 
-								'F', 'F', ''
-							  ]
+							[
+								result.insertId,
+								token,
+								'registration'
+							]
 						];
-						conn.dbc.query(sql,
+						dbc.query(sql,
 							[values],
 							function (err, result) {
-							if (err) throw err;
-							// console.log("Number of records inserted: " + result.affectedRows);
-							email.main(user.email, "Email verification | Cupid's Arrow", msgs.verify_signup(url));
-							sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
-							values = [
-								[
-									result.insertId,
-									token,
-									'registration'
-								]
-							];
-							conn.dbc.query(sql,
-								[values],
-								function (err, result) {
-									if (err) throw err;
-									res.redirect('/verify_email');
-								});
-						});
+								if (err) throw err;
+								res.redirect('/verify_email');
+							});
 					});
 				});
 			});

@@ -5,7 +5,7 @@ users = {
 		port		: '8080',
 		password	: '654321',
 		database  	: 'matcha',
-		socketPath	: '/goinfre/mchocho/documents/mamp/mysql/tmp/mysql.sock'
+		socketPath	: '/goinfre/mchocho/Documents/mamp/mysql/tmp/mysql.sock'
 	  },
 	  roger: {
 		host		: 'localhost',
