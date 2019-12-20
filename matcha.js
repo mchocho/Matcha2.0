@@ -1,11 +1,11 @@
 const express 		= require('express'),
+	  session	    = require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  URL			= require('url'),
+	  util 			= require('util'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  app 			= express(),
-	  os			= require('os'),
 	  dbc			= require('./model/sql_connect.js'),
 	  email			= require('./includes/mail_client.js');
 
@@ -20,40 +20,31 @@ router.get('/', (req, res) => {
 	if (!ft_util.isobject(sess))
 		res.redirect('/..');
 	
-	// if (sess.gender === 'M')
-	// {
 		if (sess.preferences === 'B')
 		{
-			sql = `SELECT * FROM users WHERE gender = 'F' AND (preferences = '${sess.gender}' OR preferences = 'B')`;
+			sql = `SELECT * FROM users WHERE gender = 'F' AND (preferences = '${sess.gender}' OR preferences = 'B') AND NOT id = '${sess.id}' AND verified = 'T'`;
 			dbc.query(sql, (err, result) => {
 				if (err) throw err;
 				values = result;
-				sql = `SELECT * FROM users WHERE gender = 'M' AND (preferences = '${sess.gender}' OR preferences = 'B')`;
-
+				sql = `SELECT * FROM users WHERE gender = 'M' AND (preferences = '${sess.gender}' OR preferences = 'B') AND NOT id = '${sess.id}' AND verified = 'T'`;
 				dbc.query(sql, (err, result) => {
 					if (err) throw err;
-					dbc.query(sql, (err, result) => {
-						if (err) throw err;
-						res.render('matcha.pug', {
-							title: 'Find your match',
-							users: result.concat(values)
-						});
+					res.render('matcha.pug', {
+						title: 'Find your match',
+						users: result.concat(values)
 					});
 				});
 			});
 		}
 		else if (sess.preferences === 'F')
-			sql = `SELECT * FROM users WHERE gender = 'F' AND (preferences = '${sess.gender}' OR preferences = 'B')`;
+			sql = `SELECT * FROM users WHERE gender = 'F' AND (preferences = '${sess.gender}' OR preferences = 'B') AND NOT id = '${sess.id}' AND verified = 'T'`;
 		else
-			sql = `SELECT * FROM users WHERE gender = 'M' AND (preferences = '${sess.gender}' OR preferences = 'B')`;
+			sql = `SELECT * FROM users WHERE gender = 'M' AND (preferences = '${sess.gender}' OR preferences = 'B') AND NOT id = '${sess.id}' AND verified = 'T'`;
 		dbc.query(sql, (err, result) => {
 			if (err) throw err;
-			dbc.query(sql, (err, result) => {
-				if (err) throw err;
-				res.render('matcha.pug', {
-					title: 'Find your match',
-					users: result.concat(values)
-				});
+			res.render('matcha.pug', {
+				title: 'Find your match',
+				users: result.concat(values)
 			});
 		});
 });

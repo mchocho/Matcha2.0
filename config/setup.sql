@@ -14,14 +14,14 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`users`
 	`biography` VARCHAR(4000) NOT NULL DEFAULT '',
 	`rating` TINYINT NOT NULL DEFAULT '5' ,
 	`notifications` ENUM('T','F') NOT NULL DEFAULT 'T' ,
-	`profile_pic` VARCHAR(120) NOT NULL DEFAULT '' ,
 	`verified` ENUM('T','F') NOT NULL  DEFAULT 'F',
 	`online` ENUM('T','F') NOT NULL  DEFAULT 'F',
 	`valid` ENUM('T','F') NOT NULL DEFAULT 'F',
 	`last_seen` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`last_modified` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY (`id`), UNIQUE (`username`), 
+	PRIMARY KEY (`id`), 
+	UNIQUE (`username`), 
 	UNIQUE (`email`)
 ) ENGINE = InnoDB;
 
@@ -84,8 +84,7 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`images`
 	`user_id` INT NOT NULL , 
 	`profile_pic` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-	PRIMARY KEY (`id`), 
-	UNIQUE (`name`)
+	PRIMARY KEY (`id`) 
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS  `matcha`.`views` 

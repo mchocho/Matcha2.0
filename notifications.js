@@ -1,13 +1,12 @@
 const express 		= require('express'),
+	  session	    = require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
-      session	    = require('express-session'),
-      dbc			= require('./model/sql_connect.js'),
-	  ft_util		= require('./includes/ft_util.js'),
-	  app 			= express(),
 	  os			= require('os'),
-	  util			= require('util');
+	  util			= require('util'),
+	  dbc			= require('./model/sql_connect.js'),
+	  ft_util		= require('./includes/ft_util.js');
 
 let router = express.Router();
 module.exports = router;

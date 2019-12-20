@@ -1,14 +1,14 @@
 const express 		= require('express'),
+      session	    = require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  moment		= require('moment'),
-	  URL			= require('url'),
-	  ft_util		= require('./includes/ft_util.js'),
 	  nodemailer 	= require('nodemailer'),
 	  os			= require('os'),
 	  util			= require('util'),
 	  uuidv4 		= require('uuid/v4'),
+	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
 	  email			= require('./includes/mail_client.js'),
 	  msgTemplates 	= require('./includes/email_templates.js');
@@ -28,7 +28,6 @@ router.get('/', (req, res) => {
 	let   errors = ft_util.init_errors(),
 		  result = true;
 	
-
 	if (user.cupid === 'Submit') {
 		if (user.username === undefined || user.username.length === 0) {
 			result = false;
@@ -86,7 +85,7 @@ router.get('/', (req, res) => {
 						res.redirect('../');
 					}
 	
-					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?;",
+					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?",
 					values = [
 							[
 							user.username, 

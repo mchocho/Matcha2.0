@@ -1,9 +1,9 @@
 const express 		= require('express'),
+	  session	    = require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
-	  uuidv4 		= require('uuid/v4'),
-	  session	    = require('express-session'),
+	  util 			= require('util'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js');
 
@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 			errors['error_1'] = 'Enter your password';
 		}
 		if (result === true) {
-			const sql = "SELECT * FROM users WHERE (password = ?) AND ((username = ?) OR (email = ?))";
+			const sql = "SELECT * FROM users WHERE (password = ? AND (username = ? OR email = ?))";
 
 			dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
 				if (err) throw err;
@@ -46,6 +46,7 @@ router.get('/', (req, res) => {
 				}
 			});
 		} else {
+			console.log(util.inspect(errors));
 			res.redirect('/signin');
 		}
 	}

@@ -37,6 +37,10 @@ function ft_isEmptyObj(value) {
     return true;
 }
 
+function ft_ranint(max) {
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
 function init_errorlist() {
 	return {
 		error_0: '',
@@ -59,3 +63,4 @@ module.exports.isemail = ft_isemail;
 module.exports.init_errors = init_errorlist;
 module.exports.emptyObj = ft_isEmptyObj;
 module.exports.isobject = ft_isobject;
+module.exports.ranint = ft_ranint;
