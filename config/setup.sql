@@ -151,20 +151,12 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`blocked_accounts`
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS  `matcha`.`notifications` 
-( 
-	`id` INT NOT NULL AUTO_INCREMENT , 
-	`user_id` INT NOT NULL , 
-	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
-	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-	PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
-
 CREATE TABLE IF NOT EXISTS  `matcha`.`like_notifications` 	
 ( 
 	`id` INT NOT NULL AUTO_INCREMENT , 
-	`notification_id` INT NOT NULL , 
 	`like_id` INT NOT NULL , 
+	`user_id` INT NOT NULL , 
+	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`), 
 	UNIQUE (`like_id`), 
@@ -174,8 +166,9 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`like_notifications`
 CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications` 	
 ( 
 	`id` INT NOT NULL AUTO_INCREMENT , 
-	`notification_id` INT NOT NULL , 
 	`message_id` INT NOT NULL , 
+	`user_id` INT NOT NULL , 
+	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` INT NOT NULL , 
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
@@ -183,9 +176,10 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications`
 CREATE TABLE IF NOT EXISTS  `matcha`.`unlike_notifications` 
 ( 
 	`id` INT NOT NULL AUTO_INCREMENT , 
-	`notification_id` INT NOT NULL , 
 	`liker` INT NOT NULL , 
 	`liked` INT NOT NULL , 
+	`user_id` INT NOT NULL , 
+	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
@@ -193,8 +187,9 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`unlike_notifications`
 CREATE TABLE IF NOT EXISTS  `matcha`.`views_notifications` 	
 ( 
 	`id` INT NOT NULL AUTO_INCREMENT , 
-	`notification_id` INT NOT NULL , 
 	`view_id` INT NOT NULL , 
+	`user_id` INT NOT NULL , 
+	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
