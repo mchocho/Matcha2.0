@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 	const sess = req.session[0];
 	if (ft_util.isobject(sess))
 		res.redirect('/matcha');
-	res.render('signin.pug');
+	res.render('signin.pug', {});
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
@@ -46,8 +46,7 @@ router.get('/', (req, res) => {
 				}
 			});
 		} else {
-			console.log(util.inspect(errors));
-			res.redirect('/signin');
+			res.render('/signin', {error_2: 'Sorry, your email or password was incorrect.'});
 		}
 	}
 });

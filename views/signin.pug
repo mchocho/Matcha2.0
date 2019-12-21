@@ -18,18 +18,20 @@ block content
       .heading
         h1 Cupid's Arrow
     .profile_container
-      a(href='/') Sign up | 
-      a(href='/signin') Sign in
+      a(href='/signup') Sign up | 
+      a(href='/') Sign in
   .wrapper(align='center')
     h2 Meet and fall in love!
-    form(method='POST')
-      span#error_0
+    form#signin(method='POST')
+      span.error #{error_0} #{error_1}
       label
         | Username
-        span#error_1
         input.txt(type='text' name='username' required='')
+      span.error #{error_2}
       label
         | Password
-        span#error_2
         input.txt(type='password' name='password' required='')
       input(type='submit' name='cupid' value='Submit')
+      br
+      span Forgot your password?
+        a(href='/forgot_password') Click here

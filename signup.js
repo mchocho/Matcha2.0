@@ -82,7 +82,8 @@ router.get('/', (req, res) => {
 
 					if (result === false) {
 						console.log(errors);
-						res.redirect('../');
+						res.render('signup', {errors: errors});
+						return;
 					}
 	
 					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?",
@@ -123,8 +124,7 @@ router.get('/', (req, res) => {
 			});
 		}
 		else {
-			console.log('Error object --> ' + util.inspect(errors));
-			res.redirect('/');
+			res.render('signup', {errors: errors});
 		}
 	} else {
 		console.log("Something went wrong, please try again");
