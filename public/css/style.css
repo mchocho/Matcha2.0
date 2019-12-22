@@ -56,6 +56,11 @@ form {
 	background: rgb(238, 238, 238, 0.4);
 	border-radius: 13px;
 	padding: 13px;
+	padding-bottom: 4%;	
+}
+
+form#signin {
+	background: rgb(238, 238, 238, 0.6);
 }
 
 label {
@@ -80,7 +85,7 @@ label, input {
 	background: #000;
 }
 
-label span {
+.error {
 	display: block;
 	color: red;
 	padding: 15px;
