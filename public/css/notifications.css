@@ -1,0 +1,22 @@
+h2 {
+	text-align: center;
+}
+
+.list-group {
+	width: 80%;
+	margin: auto;
+}
+
+.list-group .list-group-item img {
+	width: 80px;
+	display: inline-block;
+}
+
+.list-group .list-group-item h5 {
+	display: inline-block;
+	vertical-align: bottom;
+}
+
+footer {
+	text-align: center;
+}
