@@ -47,10 +47,10 @@ html
         .row
           each val, index in users
             a.col-sm.profile(class='', href='/user/')
-              if (picture === undefined)
+              if (val.image === undefined)
                 img(src='images/placeholder.png')
               else
-                img(src=val.picture)
+                img(src='images/users/' + val.picture)
               .info_container
                 span.name #{val.username}
                 br
