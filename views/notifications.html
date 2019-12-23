@@ -6,11 +6,9 @@
 		<title>Notifications</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="manifest" href="manifest.webmanifest">
-		<!-- Use inline css -->
-		<!-- <style></style> -->
-        <!-- Or link external file -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 		<link rel="stylesheet" href="/css/style.css" media="all" />
+    <link rel="stylesheet" href="/css/notifications.css" media="all" />
 	</head>
 	<body>
         <header>
@@ -27,32 +25,53 @@
                 </div>
             </a>
         </header>
-        <h2 align="center">Notifications</h2>
-		<div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small>3 days ago</small>
-                  </div>
-                  <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                  <small>Donec id elit non mi porta.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small>3 days ago</small>
-                  </div>
-                  <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                  <small >Donec id elit non mi porta.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small>3 days ago</small>
-                  </div>
-                  <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                  <small>Donec id elit non mi porta.</small>
-                </a>
-              </div>
+        <h2>Notifications</h2>
+	      <div class="list-group">
+          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <span>
+                <img src="images/icons/like.png" />
+                <h5 class="mb-1">Jessica now likes you.</h5>
+              </span>
+              <small>3 hrs ago</small>
+            </div>
+          </a>
+          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <span>
+                <img src="images/icons/heart.png" />
+                <h5 class="mb-1">Queen B now likes you. It seems like there's a connection between the 2 of you.</h5>
+              </span>
+              <small>3 days ago</small>
+            </div>
+          </a>
+          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <span>
+                <img src="images/icons/unlike.png" />
+                <h5 class="mb-1">Jennifer unliked you.</h5>
+              </span>
+              <small>1 day ago</small>
+            </div>
+          </a>
+          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <span>
+                <img src="images/icons/views.png" />
+                <h5 class="mb-1">Someone viewed your profile. Click here to see who it was.</h5>
+              </span>
+              <small>3 days ago</small>
+            </div>
+          </a>
+        </div>
+        <footer>
+          <div>
+            Icons made by
+            <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>
+            |
+            <a href="https://www.flaticon.com/authors/gregor-cresnar" title="Gregor Cresnar">Gregor Cresnar</a> 
+            from 
+            <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        </footer>
 	</body>
 </html>
