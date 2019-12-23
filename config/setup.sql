@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`users`
 CREATE TABLE IF NOT EXISTS  `matcha`.`tokens` 
 (
 	`id` INT NOT NULL AUTO_INCREMENT ,
-	`user_id` INT NOT NULL , `token` VARCHAR(180) NOT NULL , 
-	`request` ENUM('registration','verification','password_reset',
-	'email_reset','username_reset') NOT NULL , 
+	`user_id` INT NOT NULL , 
+	`token` VARCHAR(180) NOT NULL , 
+	`request` ENUM('registration','verification','password_reset','email_reset','username_reset') NOT NULL , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`),
 	UNIQUE (`token`)
@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`likes`
 	`id` INT NOT NULL ,
 	`liker` INT NOT NULL ,
 	`liked` INT NOT NULL ,
+	`unliked` ENUM('T','F') NOT NULL DEFAULT 'F' , 
+	`last_modified` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;

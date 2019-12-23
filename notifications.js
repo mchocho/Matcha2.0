@@ -36,9 +36,9 @@ router.all('/:redirectTo', (req, res) => {
     			req.session.chats = true;
     		if (req.method != 'GET')
     			switch (req.params.redirectTo) {
-    				'matcha':
+    				case 'matcha':
     					res.redirect('/matcha');
-    				'chats':
+    				case 'chats':
     					res.redirect('/chats');
     				default:
     					res.redirect('/profile');
@@ -53,23 +53,37 @@ router.all('/:redirectTo', (req, res) => {
     		if (err) throw err;
     		notifications = result;
     		for (let i = 0, n = notifications.length; i < n; i++) {
-    			switch(notifications[i].type) {
-    				case 'like':
-    					sql = "SELECT * FROM likes WHERE id = ?";
-    					break;
-    				case 'unlike':
-    					sql = "SELECT * FROM likes WHERE id = ? AND unliked = 'T'";
-    					break;
-    				case 'views':
-    					sql = "SELECT * FROM views WHERE id = ?";	//Catch-22
-    					break;
-    			}
+    			let type = notifications[i].type;
+
+    			notifications[i].connection = false;
+    			if (type === 'like')
+					sql = "SELECT * FROM likes WHERE id = ?";
+    			else if (type === 'unlike')
+    				sql = "SELECT * FROM likes WHERE id = ? AND unliked = 'T'";
+    			else if (type === 'views')
+    				sql = "SELECT viewer FROM views WHERE id = ?";
     			dbc.query(sql, [notifications[i].service_id], (err, result) => {
     				if (err) throw err;
-    				notifications[i].assign(result[0]);
+    				notifications[i].service = result[0];
+					sql = "SELECT * FROM users WHERE id = ?";
+					if (type !== 'like' && type !== 'unlike')
+						return;
+    				dbc.query(sql, [result[0].service.liker], (err, result) => {
+    					if (err) throw err;
+    					notifications[i].service.liker = result[0];
+    					sql = "SELECT id FROM likes WHERE liked = ? AND liker = ?";
+    					dbc.query(sql, [result[0].liker, sess.id], (err, result) => {
+    						if (err) throw err;
+    						notifications[i].connection = result.length > 0;
+    					});
+    				});
     			});
     		}
-			res.sendfile('./views/notifications.html');
-    		//res.render('notifications.pug', {notifications: result});
+    		res.render('notifications.pug', {
+    			title: "Your Notifications | Cupid's Arrow",
+    			notifications: req.session.notifications,
+				chats: req.session.chats,
+    			notifications: result
+    		});
     });
 });
