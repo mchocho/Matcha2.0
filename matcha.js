@@ -29,6 +29,8 @@ router.get('/', (req, res) => {
 	dbc.query(sql, [sess.id], (err, result) => {
 		if (err)
 			throw err;
+		if (result.length === 0)
+			res.redirect('/profile');
 		location = result[0];
 		sql = "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?";
 		dbc.query(sql, [sess.id], (err, result) => {
@@ -54,8 +56,8 @@ router.get('/', (req, res) => {
 										if (err) throw err;
 										values[i].location = result[0];
 										googleMapsClient.distanceMatrix({
-											origins: [{lat: location[0], location[1]}],
-											destinations: [{lat: result[0][0], lng: result[0][1]}],
+											origins: [{lat: location.location[0], location.location[1]}],
+											destinations: [{lat: result[0].location[0], lng: result[0].location[1]}],
 											mode: 'walking',
 											units: 'metric'
 										}, (err, response) => {
