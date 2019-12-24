@@ -37,7 +37,6 @@ if (app.get('env') === 'production')
 
 
 
-//Home Route
 let signinRouter = require('./signin');
 app.use('/', signinRouter);
 
@@ -47,17 +46,14 @@ app.use('/signup', signupRouter);
 let verify_emailRouter = require('./verify_email');
 app.use('/verify_email', verify_emailRouter);
 
-let profileRouter = require('./profile');
-app.use('/profile', profileRouter);
+let userRouter = require('./user');
+app.use('/user', userRouter);
 
 let matchaRouter = require('./matcha');
 app.use('/matcha', matchaRouter);
 
-/*app.get('/profile/edit_profile', (req, res) => {
-	const user = req.body;
-	if (user.)
-
-});*/
+let profileRouter = require('./profile');
+app.use('/profile', profileRouter);
 
 let notificationRouter = require('./notifications');
 app.use('/notifications', notificationRouter);
