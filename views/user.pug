@@ -25,15 +25,15 @@ html
         img.profile_pic(src=user.picture, alt='User\'s profile pic')
         span.user_rating
           | #{user.rating} 
-          img(src='images/icons/star.png')
+          each val, index in user.images
+            if (val.profile_pic === 'T')
+              img(src='images/user/' + val.user.name)
         .thumbnails
           label
-            img(src='https://www.clarku.edu/wp-content/themes/clarku/assets/img/placeholder.png', alt='pics')
-            img(src='images/placeholder.png')
-            img(src='images/placeholder.png')
-            img(src='images/placeholder.png')
-            img(src='images/placeholder.png')
-            input.hide(type='file')
+            each val, index in user.images
+              if (val.profile_pic !== 'T')
+                img(src=val.name)
+            input#imageUpload.hide(type='file')
       .views_container
         a(href='view_list.php') #{user.viewcount} views this week
       form
@@ -71,7 +71,7 @@ html
           #preference_group.btn-group(role='group', aria-label='preferences')
             button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
             button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
-            button.btn.btn-secondary(type='button', class=(user.preference == ''  ? 'option' : '')) Both
+            button.btn.btn-secondary(type='button', class=(user.preference == 'B' || user.preference == ''  ? 'option' : '')) Both
         .edit
           p Interests
           input#interests.custom_btn.ib(type='button', value='Add')
@@ -82,19 +82,8 @@ html
               button.btn.btn-secondary(type='button', name='e_username') Confirm
               button.btn.btn-secondary(type='button', name='c_username') Cancel
           ul.interests_list.list.multi-column
-            li Xenon
-            li Coding
-            li hello
-            li Acting
-            li Sports cars
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
-            li Sky diving
+            each val, index in tags
+              li #{val.tagname}
         .edit
           p Biography
           p#biography.value.bio #{user.biography}
