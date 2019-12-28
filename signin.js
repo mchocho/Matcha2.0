@@ -34,7 +34,7 @@ router.get('/', (req, res) => {
 			dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
 				if (err) throw err;
 				if (result.length == 0)
-					res.redirect('/signin');
+					res.render('signin', {error_2: 'Sorry, your email or password was incorrect.'});
 				else if (result.verified === 'F')
 					res.redirect('/verify_email');
 				else
@@ -46,7 +46,7 @@ router.get('/', (req, res) => {
 				}
 			});
 		} else {
-			res.render('/signin', {error_2: 'Sorry, your email or password was incorrect.'});
+			res.render('signin', {error_2: 'Sorry, your email or password was incorrect.'});
 		}
 	}
 });

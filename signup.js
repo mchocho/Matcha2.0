@@ -81,12 +81,11 @@ router.get('/', (req, res) => {
 					}
 
 					if (result === false) {
-						console.log(errors);
 						res.render('signup', {errors: errors});
 						return;
 					}
 	
-					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, biography) VALUES ?",
+					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES ?",
 					values = [
 							[
 							user.username, 
@@ -96,15 +95,14 @@ router.get('/', (req, res) => {
 							user.preference.charAt(0), 
 							user.dob, 
 							user.email, 
-							user.password, 
-							'F', 'F', ''
+							user.password
 							]
 					];
 					dbc.query(sql,
 						[values],
 						function (err, result) {
 						if (err) throw err;
-						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url));
+						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url)).catch(console.error);
 						sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
 						values = [
 							[
@@ -127,7 +125,7 @@ router.get('/', (req, res) => {
 			res.render('signup', {errors: errors});
 		}
 	} else {
-		console.log("Something went wrong, please try again");
-		res.redirect('/');
+		errors['error_6'] = 'Something went wrong, please try again';
+		res.redirect('signup', {errors: errors});
 	}
 });
