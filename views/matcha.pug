@@ -7,24 +7,24 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/profile.css', media='all')       
+    link(rel='stylesheet', href='/css/user.css', media='all')       
     link(rel='stylesheet', href='/css/matcha.css', media='all')       
   body
     header
       a(href='/')
         div
-          img(src='images/logo.png')
+          img(src='/images/logo.png')
         .heading
           h1 Cupid's Arrow
       .profile_container
         a(href='/notifications')
-          img.notifications.icons(src='images/icons/bell_0.png')
+          img.notifications.icons(src='/images/icons/bell_0.png')
         a(href='/messages')
-          img.messages.icons(src='images/icons/envelope.png')
+          img.messages.icons(src='/images/icons/envelope.png')
     h2(align='center') Your matches
     .filter_container(align='center')
       .content
-        img(src='images/icons/filter.png')
+        img(src='/images/icons/filter.png')
         .btn-group#filter_group(role='group' aria-label='Filter content')
           button.btn.btn-secondary.option(type='button', value='none') None
           button.btn.btn-secondary(type='button', value='age') Age
@@ -45,20 +45,28 @@ html
           h3.no_results It seems there are no results. Don't give up
       else
         .row
-          each val, index in users
-            a.col-sm.profile(class='', href='/user/')
-              if (val.image === undefined)
+          each user, index in users
+            a.col-sm.profile(class='', href=user.url)
+              if (user.images.length === 0)
                 img(src='images/placeholder.png')
               else
-                img(src='images/users/' + val.picture)
+                if (user.images[0].name.startsWith('http://'))
+                  img(src=user.images[0].name)
+                else
+                  img(src='images/users/' + user.images[0].name)
               .info_container
-                span.name #{val.username}
+                img(src='images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
+                span.name #{user.username}
                 br
-                span.distance #{val.location.distance.text}
+                span.distance #{user.distance} km
   footer
     div(align='center')
       | Icons made by 
       a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
+      |  | 
+      a(href='https://www.flaticon.com/authors/bqlqn', title='bqlqn') bqlqn
+      |  | 
+      a(href='https://www.flaticon.com/authors/good-ware', title='Good Ware') Good Ware
       |  from 
       a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
   script(src='js/matcha.js')
