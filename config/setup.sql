@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`likes`
 CREATE TABLE IF NOT EXISTS  `matcha`.`locations`
 (
 	`id` INT NOT NULL AUTO_INCREMENT ,
-	`location` GEOMETRY NOT NULL ,
+	`lat` FLOAT( 10, 6 ) NOT NULL ,
+	`lng` FLOAT( 10, 6 ) NOT NULL ,
 	`street_address` VARCHAR(180) NOT NULL ,
 	`area` VARCHAR(80) NOT NULL , 
 	`state` VARCHAR(80) NOT NULL , 
@@ -58,7 +59,8 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`locations`
 	`user_id` INT NOT NULL , 
 	`last_modified` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`), 
+	UNIQUE (`user_id`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS  `matcha`.`tags` 
@@ -173,4 +175,4 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications`
 	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB
