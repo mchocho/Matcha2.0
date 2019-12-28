@@ -30,7 +30,7 @@ router.get('/', (req, res) => {
 		for (let i = 0, n = images.length; i < 5; i++) {
 			if (!ft_util.isobject(image[i]))
 				images[i] = {
-					name = 'images/placeholder.png';
+					name: 'images/placeholder.png'
 				}
 		}
 		sql = "SELECT * from user_tags WHERE user_id = ?";
