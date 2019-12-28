@@ -7,30 +7,42 @@ function ft_isstring() {
 
 function ft_isnumber(value) {
 	for (let i = 0, n = arguments.length; i < n; i++)
-		if (Object.prototype.toString.call(arguments[i]) === "[object Number]");
+		if (Object.prototype.toString.call(arguments[i]) !== "[object Number]");
 			return false;
 	return true;
 }
 
 function ft_isfunction(value) {
 	for (let i = 0, n = arguments.length; i < n; i++)
-		if (Object.prototype.toString.call(arguments[i]) === "[object Function]");
+		if (Object.prototype.toString.call(arguments[i]) !== "[object Function]")
+			return false;
+	return true;
 }
 
 function ft_isdate(value) {
-	return (Object.prototype.toString.call(arguments[i]) === "[object Date]");
+	for (let i = 0, n = arguments.length; i < n; i++)
+		if (Object.prototype.toString.call(arguments[i]) !== "[object Date]")
+			return false;
+	return true;
+}
+
+
+function ft_isobject(value) {
+	for (let i = 0, n = arguments.length; i < n; i++)
+		if (Object.prototype.toString.call(arguments[i]) !== '[object Object]')
+			return false;
+	return true;
+}
+
+function ft_isarray(value) {
+	for (let i = 0, n = arguments.length; i < n; i++)
+		if (Object.prototype.toString.call(value) === '[object Array]')
+			return false;
+	return true;
 }
 
 function ft_isemail(value) {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function ft_isobject(value) {
-	return (Object.prototype.toString.call(value) === '[object Object]');
-}
-
-function ft_isarray(value) {
-	return (Object.prototype.toString.call(value) === '[object Array]');
 }
 
 function ft_isEmptyObj(value) {
@@ -72,8 +84,10 @@ function validateUser(res, sess) {
 
 function ft_removeBlockedUsers(matches, blacklist) {
 	return new Promise((resolve, reject) => {
-		blocked_users.forEach(function(value, index, arr) {
+		blacklist.forEach(function(value, index, arr) {
 			for (let i = 0, n = matches.length; i < n; i++) {
+				if (!'blocked_user' in value)
+					continue;
 				if (value.blocked_user === matches[i].id) {
 					matches = matches.splice(i, 1);
 					break;
