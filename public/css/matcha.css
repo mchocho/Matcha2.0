@@ -54,6 +54,12 @@
 	padding: 12px;
 }
 
+.info_container img {
+	width: 35px;
+	height: 35px;
+	float: left;
+}
+
 .info_container span {
 	padding-right: 6px;
 }
@@ -61,6 +67,8 @@
 .info_container span.name {
 	padding-bottom: 7px;
 }
+
+
 
 .match_container {
 	padding-bottom: 30px;
