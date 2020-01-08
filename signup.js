@@ -1,10 +1,10 @@
-const express 		= require('express'),
-      session	    = require('express-session'),
+const 	  express 		= require('express'),
+      	  session	    	= require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  moment		= require('moment'),
-	  nodemailer 	= require('nodemailer'),
+	  nodemailer 		= require('nodemailer'),
 	  os			= require('os'),
 	  util			= require('util'),
 	  uuidv4 		= require('uuid/v4'),
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 }).post('/', (req, res) => {
 	const user = req.body,
 		  token = uuidv4(),
-		  url = "http://localhost:3000/signup/verify_email/?key=" + token;
+		  url = "http://localhost:3000/verification/?key=" + token;
 	let   errors = ft_util.init_errors(),
 		  result = true;
 	
@@ -99,8 +99,7 @@ router.get('/', (req, res) => {
 							]
 					];
 					dbc.query(sql,
-						[values],
-						function (err, result) {
+						[values], (err, result) => {
 						if (err) throw err;
 						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url)).catch(console.error);
 						sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
@@ -112,11 +111,10 @@ router.get('/', (req, res) => {
 							]
 						];
 						dbc.query(sql,
-							[values],
-							function (err, result) {
+							[values], (err, result) => {
 								if (err) throw err;
 								res.redirect('/verify_email');
-							});
+						});
 					});
 				});
 			});

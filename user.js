@@ -17,21 +17,25 @@ router.get('/', (req, res) => {
 		  images,
 		  tags;
 
-	if (!ft_util.isobject(sess))
-		res.redirect('/..');
-	else if (sess.verified !== 'T')
-		res.redirect('/verify_email');
-	else if (sess.valid !== 'T')
-		res.redirect('/reported_account');
+	if (!ft_util.isobject(sess)) {
+                res.redirect('/logout');
+                return;
+        }
+        else if (sess.verified !== 'T') {
+                res.redirect('/verify_email');
+                return;
+        }
+        else if (sess.valid !== 'T') {
+                res.redirect('/reported_account');
+                return;
+        }
 
 	dbc.query(sql, [sess.id], (err, result) => {
 		if (err) throw err;
 		images = result;
 		for (let i = 0, n = images.length; i < 5; i++) {
-			if (!ft_util.isobject(image[i]))
-				images[i] = {
-					name: 'images/placeholder.png'
-				}
+			if (!ft_util.isobject(images[i]))
+				images[i] = { name: 'images/placeholder.png' }
 		}
 		sql = "SELECT * from user_tags WHERE user_id = ?";
 		dbc.query(sql, [sess.id], (err, result) => {
@@ -63,4 +67,36 @@ router.get('/', (req, res) => {
 			});
 		});
 	});
+}).post('/:key.:val', (req, res) => {
+	const sess = req.session[0],
+	      key = req.params.key,
+	      val = req.params.val;
+	let sql;
+	
+	if (!ft_util.isobject(sess)) {
+                res.redirect('/logout');
+                return;
+        }
+        else if (sess.verified !== 'T') {
+                res.redirect('/verify_email');
+                return;
+        }
+        else if (sess.valid !== 'T') {
+                res.redirect('/reported_account');
+                return;
+        }
+
+	if (key === 'username')
+		sql = "UPDATE users SET username = ? WHERE id = ?";
+	else if (key === 'fullname')
+		sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+	else if (key === 'gender')
+		sql = "UPDATE users SET gender = ? WHERE id = ?";
+	else if (key === 'preferences')
+		sql = "UPDATE users SET preferences = ? WHERE id = ?";
+	else if (key === 'DOB')
+		sql = "UPDATE users SET DOB = ? WHERE id = ?";
+
+
+
 });
