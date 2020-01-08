@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 		matches;
 
 	if (!ft_util.isobject(sess)) {
-		res.redirect('/..');
+		res.redirect('/logout');
 		return;
 	}
 	else if (sess.verified !== 'T') {
@@ -32,15 +32,12 @@ router.get('/', (req, res) => {
 		res.redirect('/reported_account');
 		return;
 	}
-
 	dbc.query(sql, [sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
-			console.log('User has no location data!');
 			return
 		}
-
 		location = result[0];
 		sql = "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?";
 		dbc.query(sql, [sess.id], (err, result) => {
@@ -72,7 +69,7 @@ router.get('/', (req, res) => {
 									}
 									values[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
 									//💩💩💩
-									if (i === values.length - 1)
+									if (i === n - 1)
 										res.render('matcha.pug', {
 											title: "Find your match | Cupid's Arrow",
 											users: values
