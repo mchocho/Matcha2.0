@@ -27,7 +27,7 @@ html
           | #{user.rating} 
           each val, index in user.images
             if (val.profile_pic === 'T')
-              img(src='images/user/' + val.user.name)
+              img(src='images/user/' + val.name)
         .thumbnails
           label
             each val, index in user.images
@@ -37,30 +37,27 @@ html
       .views_container
         a(href='view_list.php') #{user.viewcount} views this week
       form
-        .edit
-          span#username.value #{user.username}
-          br
-          input#s_username.custom_btn.ib(type='button', value='Edit')
+        span#username.value #{user.username}
+        br
+        input#s_username.custom_btn.ib(type='button', value='Edit')
+        .edit.hide
           #username_edit.username_edit
             input#n_username.txt.ib(type='text', placeholder='New username')
             br
             #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-              button.btn.btn-secondary(type='button', name='e_username') Confirm
-              button.btn.btn-secondary(type='button', name='c_username') Cancel
-        .edit
-          span#fullname.value #{user.first_name} #{user.last_name}
-          span#fullname.value
+              button.btn.btn-secondary(type='button', name='username_save') Confirm
+              button.btn.btn-secondary(type='button', name='username_cancel') Cancel
+        span#fullname.value #{user.first_name} #{user.last_name}
+        input#username_edit.custom_btn.ib(type='button', value='Edit')
+        .edit.hide
           #fullname_edit.fullname_edit
-            input#full_username.custom_btn.ib(type='button', value='Edit')
+            input#firstname_edit.txt.ib(type='text', placeholder='First name', value=user.first_name)
             br
-            input#n_fname.txt.ib(type='text', placeholder='First name', value=user.first_name)
-            br
-            input#n_lname.txt.ib(type='text', placeholder='Last name', value=user.last_name)
-          span#fullname.value #{user.fullname}
+            input#lastname_edit.txt.ib(type='text', placeholder='Last name', value=user.last_name)
           br
           #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-            button.btn.btn-secondary(type='button', name='e_username') Confirm
-            button.btn.btn-secondary(type='button', name='c_username') Cancel
+            button.btn.btn-secondary(type='button', name='fullname_save') Confirm
+            button.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
         .edit
           p Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
@@ -71,18 +68,18 @@ html
           #preference_group.btn-group(role='group', aria-label='preferences')
             button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
             button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
-            button.btn.btn-secondary(type='button', class=(user.preference == 'B' || user.preference == ''  ? 'option' : '')) Both
+            button.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
         .edit
           p Interests
           input#interests.custom_btn.ib(type='button', value='Add')
           #interest_edit.interest_edit
-            input#n_interest.txt.ib(type='text', placeholder='Add interest')
+            input#interest_edit.txt.ib(type='text', placeholder='Add interest')
             br
-            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-              button.btn.btn-secondary(type='button', name='e_username') Confirm
-              button.btn.btn-secondary(type='button', name='c_username') Cancel
+            #new-tags-confirm.btn-group(role='group', aria-label='Confirm username change')
+              button.btn.btn-secondary(type='button', name='tag_save') Confirm
+              button.btn.btn-secondary(type='button', name='tag_cancel') Cancel
           ul.interests_list.list.multi-column
-            each val, index in tags
+            each val, index in user.tags
               li #{val.tagname}
         .edit
           p Biography
