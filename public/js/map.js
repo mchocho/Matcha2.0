@@ -1,5 +1,5 @@
 function script() {
-	if (!'google' in window)
+	if (!('google' in window))
 		return;
 	const find_me = document.getElementById('find_me'),
 		  map = new google.maps.Map(document.getElementById('map'), {
