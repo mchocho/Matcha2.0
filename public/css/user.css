@@ -37,6 +37,15 @@ body {
 	padding-bottom: 15px;
 }
 
+span.value {
+	display: block;
+}
+
+.hide {
+	display: none;
+	visibility: hidden;
+}
+
 .custom_btn {
 	margin: 15px 0px;
 }

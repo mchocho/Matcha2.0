@@ -1,3 +1,33 @@
 h2 {
 	text-align: center;
 }
+
+.images {
+	width: 100%;
+	display: block;
+}
+
+.images img {
+	margin: auto;
+	display: block;
+}
+
+.details_container img {
+	width: 90px;
+	height: 90px;
+}
+
+.details_container div {
+	display: inline-block;
+	margin: auto;
+}
+
+.details_container * {
+	vertical-align: bottom;
+	margin: auto;
+}
+.pipe {
+	dislay: inline-block;
+	font-size: 400%;
+	padding: 0% 4%;
+}
