@@ -8,7 +8,8 @@ html
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.css', media='all')
     link(rel='stylesheet', href='/css/profile.css', media='all')
-  body
+    link(rel='stylesheet', href='/css/main.css', media='all')
+  body#profile
     header
       a(href='/')
         div
@@ -31,7 +32,19 @@ html
         each image, index in user.images
           if (image.profile_pic === 'T')
             img(src=image.name)
-      .details_container
+      .connection_status
+       if(clientLikesUser === true && userLikesClient === true)
+        img(src='/images/icons/connected.png')
+        | You and #{user.username} are connected
+       else if (userLikesClient === true)
+        | #{user.username} likes you
+        button.btn.btn-dark(type='button') Like
+       else if (clientLikesUser)
+        | You like #{user.username}
+       else
+        | You and #{user.username} are not connected
+        button.btn.btn-dark(type='button') Like
+      .details_container(align='center')
         .gender
           img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
         span.pipe | 
@@ -40,14 +53,11 @@ html
         span.pipe | 
         .dob
           time #{user.age} old
-      span.connection_status
-       if(clientLikesUser === true && userLikesClient === true)
-        img(src='/images/icons/connected.png')
-        | You and #{user.username} are connected
-       else if (userLikesClient === true)
-        | #{user.username} likes you
-       else if (clientLikesUser)
-        | You like #{user.username}
-       else
-        | No one likes you
-script(src='/js/reloadCSS.js')
+      .location_container
+        h3 Location
+        img(src='/images/icons/distance.png')
+        .distance
+         span #{user.location.area}
+         span #{user.location.country}
+         span #{user.distance} km away
+      script(src='/js/reloadCSS.js')
