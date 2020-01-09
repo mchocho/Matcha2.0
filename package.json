@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
+    "build-sass": "sass public/css/main.scss public/css/main.css",
+    "watch-sass": "sass public/css/main.scss public/css/main.css --watch",
     "start": "node index.js"
   },
   "keywords": [],
@@ -22,6 +24,7 @@
     "nodemailer": "^6.3.1",
     "nodemon": "^1.19.4",
     "pug": "^2.0.4",
+    "sass": "^1.24.3",
     "uuid": "^3.3.3"
   }
 }
