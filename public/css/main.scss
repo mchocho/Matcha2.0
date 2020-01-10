@@ -4,12 +4,169 @@ $black: #111111;
 $white: #eeeeee;
 $grey: #DDDDDD;
 
+@mixin multi-column-list {
+	padding-left: 0;
+	-webkit-columns: 2;
+     -moz-columns: 2;
+          columns: 2;
+}
+
+@mixin setup-column {
+	width: 50%;
+	list-style-position: inside;
+	page-break-inside: avoid;
+	break-inside: avoid;
+ 	-webkit-column-break-inside: avoid;
+}
+
+.hide {
+	display: none;
+	visibility: hidden;
+}
+
 #profile {
+	h2 {
+		text-align: center;
+	}
+
+	.images {
+		width: 100%;
+		display: block;
+		padding: 2% 0%;
+		
+		img {
+			margin: auto;
+			display: block;
+			width: 40%;
+			height: 40%;
+		}		
+	}
+
+	.connection_status {
+		font-size: 130%;
+		width: 100%;
+		text-align: center;
+		font-style: italic;
+
+		button {
+			position: relative;
+			left: 2%;
+		}
+	}
+
+	.details_container {
+		margin: auto;
+		
+		* {
+			margin: auto;
+		}
+
+		img {
+			width: 60px;
+			height: 60px;
+		}
+
+		div {
+			display: inline-block;
+			margin: auto;
+		}
+	}
+
 	.rating {
 		font-size: 250%;
+
+		img {
+			vertical-align: bottom;
+		}
+	}
+
+	.pipe {
+		display: inline-block;
+		font-size: 400%;
+		padding: 0% 4% 0% 4%;
+		position: relative;
+		top: 9px;
 	}
 
 	.dob {
 		font-size: 160%;
-	}	
+	}
+
+	.location_container {
+		margin-top: 2%;
+		text-align: center;
+		
+		h3 {
+			font-size: 140%;
+			padding-right: 1%;
+		}
+
+		img {
+			width: 5%;
+			height: 5%;
+			vertical-align: top;
+		}
+
+		.distance {
+			text-align: left;
+			display: inline-block;
+			position: relative;
+			left: 1%;
+
+			span {
+				display: block;
+				font-size: 115%;
+				width: 120%;
+			}
+		}
+	}
+}
+
+#user {
+	.profile_content {
+		width: 100%;
+	}
+
+	.user_rating {
+		width: 30%;
+		font-size: 90%;
+		margin-left: 15%;
+
+		img {
+			width: 60px;
+			height: 60px;
+			vertical-align: text-bottom;
+		}
+	}
+
+	.thumbnails img {
+		width: 130px;
+		height: 130px;
+		margin-left: 3px;
+		border: 1px solid #000;
+		cursor: pointer;
+	}
+
+	.views_container {
+		font-size: 140%;
+		padding-top: 15px;
+		padding-bottom: 15px;
+	}
+
+	span.value {
+		display: block;
+	}
+
+	.custom_btn {
+		margin: 15px 0px;
+	}
+
+	.edit {
+		padding-bottom: 10px;
+	}
+
+	.ib {
+		display: inline-block;
+	}
+
 }

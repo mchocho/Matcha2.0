@@ -1,8 +1,123 @@
+.hide {
+  display: none;
+  visibility: hidden;
+}
+
+#profile h2 {
+  text-align: center;
+}
+#profile .images {
+  width: 100%;
+  display: block;
+  padding: 2% 0%;
+}
+#profile .images img {
+  margin: auto;
+  display: block;
+  width: 40%;
+  height: 40%;
+}
+#profile .connection_status {
+  font-size: 130%;
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+}
+#profile .connection_status button {
+  position: relative;
+  left: 2%;
+}
+#profile .details_container {
+  margin: auto;
+}
+#profile .details_container * {
+  margin: auto;
+}
+#profile .details_container img {
+  width: 60px;
+  height: 60px;
+}
+#profile .details_container div {
+  display: inline-block;
+  margin: auto;
+}
 #profile .rating {
   font-size: 250%;
 }
+#profile .rating img {
+  vertical-align: bottom;
+}
+#profile .pipe {
+  display: inline-block;
+  font-size: 400%;
+  padding: 0% 4% 0% 4%;
+  position: relative;
+  top: 9px;
+}
 #profile .dob {
   font-size: 160%;
+}
+#profile .location_container {
+  margin-top: 2%;
+  text-align: center;
+}
+#profile .location_container h3 {
+  font-size: 140%;
+  padding-right: 1%;
+}
+#profile .location_container img {
+  width: 5%;
+  height: 5%;
+  vertical-align: top;
+}
+#profile .location_container .distance {
+  text-align: left;
+  display: inline-block;
+  position: relative;
+  left: 1%;
+}
+#profile .location_container .distance span {
+  display: block;
+  font-size: 115%;
+  width: 120%;
+}
+
+#user .profile_content {
+  width: 100%;
+}
+#user .user_rating {
+  width: 30%;
+  font-size: 90%;
+  margin-left: 15%;
+}
+#user .user_rating img {
+  width: 60px;
+  height: 60px;
+  vertical-align: text-bottom;
+}
+#user .thumbnails img {
+  width: 130px;
+  height: 130px;
+  margin-left: 3px;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+#user .views_container {
+  font-size: 140%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+#user span.value {
+  display: block;
+}
+#user .custom_btn {
+  margin: 15px 0px;
+}
+#user .edit {
+  padding-bottom: 10px;
+}
+#user .ib {
+  display: inline-block;
 }
 
 /*# sourceMappingURL=main.css.map */

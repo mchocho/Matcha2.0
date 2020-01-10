@@ -1,6 +1,6 @@
 const util 			= require('util'),
       dbc 			= require('../model/sql_connect.js'),
-      ft_util 			= require('../includes/ft_util.js');
+      ft_util 		= require('../includes/ft_util.js');
 
 dbc.query('DROP DATABASE matcha', (err, result) => {
 	if (err) {

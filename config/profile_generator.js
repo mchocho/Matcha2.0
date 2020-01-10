@@ -2,7 +2,7 @@ const faker 		= require('faker'),
 	  util 			= require('util'),
 	  dbc 			= require('../model/sql_connect.js'),
 	  ft_util 		= require('../includes/ft_util.js'),
-	  count 		= 30;
+	  count 		= 500;
 
 function generate_user(i) {
 	if (i === count) {
@@ -40,11 +40,11 @@ function generate_user(i) {
 			sql = "INSERT INTO images (name, user_id, profile_pic) VALUES (?)";
 			id = result.insertId;
 			dbc.query(sql, [
-					[faker.random.image(), id, 'T'],
-					[faker.random.image(), id, 'F'],
-					[faker.random.image(), id, 'F'],
-					[faker.random.image(), id, 'F'],
-					[faker.random.image(), id, 'F']
+					[(faker.random.image()) + '?random=' + Date.now(), id, 'T'],
+					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
+					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
+					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
+					[(faker.random.image()) + '?random=' + Date.now(), id, 'F']
 				], (err, result) => {
 				if (err) throw err;
 				sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
@@ -64,4 +64,4 @@ function generate_user(i) {
 		});
 	});
 }
-generate_user(1);
+generate_user(0);

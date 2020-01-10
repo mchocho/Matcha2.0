@@ -1,4 +1,4 @@
-function ready() {
+function script() {
 	const ui = [
 		document.getElementById('profile_pic'),
 		document.getElementById('rating'),
@@ -11,6 +11,8 @@ function ready() {
 		document.getElementById('gmap')		
 	];
 
+	$('.slider').bxSlider();
+
 
 	//fetch('https://jsonplaceholder.typicode.com/users/1')
 	/*fetch('https://postman-echo.com/get?foo1=bar1&foo2=bar2', {mode: 'cors', headers: new Headers({"Access-Control-Allow-Origin": '*'})})
@@ -18,5 +20,4 @@ function ready() {
     .then(json => console.log(json))*/
 }
 
-document.addEventListener("DOMContentLoaded", ready);
-
+document.addEventListener("DOMContentLoaded", script);

@@ -1,15 +1,12 @@
 const fs 		= require('fs'),
       util 		= require('util'),
       mysql 	= require("mysql"),
-      users 	= require('../model/credentials.js'),
+      credentials 	= require('../model/credentials.js'),
       ft_util 	= require('../includes/ft_util.js');
 
-//Predefined credentials break this script
-dbc = mysql.createConnection({
-	host		: 'localhost',
-	user 		: 'root',
-	password	: '654321'
-});
+
+const users = credentials.users;
+dbc = mysql.createConnection(users['thanos_setup']);
 
 dbc.connect((err) => {
 	if (err) throw err;
