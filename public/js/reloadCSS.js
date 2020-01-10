@@ -3,7 +3,7 @@ function script() {
 		const links = document.getElementsByTagName('link');
 		console.log('Refreshing CSS');
 		for (let i = 0, n = links.length; i < n; i++) {
-			if (links[i].href.indexOf('bootstrap') === -1)
+			if (links[i].href.indexOf('cdn') === -1)
 				links[i].href += "?";
                 }
 		console.log('CSS page refreshed.');

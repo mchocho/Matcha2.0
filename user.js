@@ -48,6 +48,21 @@ router.get('/', (req, res) => {
 					tags[i].tagname = result[0];
 				});
 			}
+			//DEV
+				console.log(util.inspect({
+					username: sess.username,
+					sex: sess.gender,
+					first_name: sess.first_name,
+					last_name: sess.last_name,
+					preference: sess.preferences,
+					biography: sess.biography,
+					rating: sess.rating,
+					images: images,
+					tags: tags,
+					viewcount: 3889
+				}));
+			//ENDOF DEV
+
 			res.render('user.pug', {
 				title: 'Your profile!',
 				notifications: req.session.notifications,
@@ -74,17 +89,18 @@ router.get('/', (req, res) => {
 	let sql;
 	
 	if (!ft_util.isobject(sess)) {
-                res.redirect('/logout');
-                return;
-        }
-        else if (sess.verified !== 'T') {
-                res.redirect('/verify_email');
-                return;
-        }
-        else if (sess.valid !== 'T') {
-                res.redirect('/reported_account');
-                return;
-        }
+        res.redirect('/logout');
+        return;
+    }
+    else if (sess.verified !== 'T') {
+        res.redirect('/verify_email');
+        return;
+    }
+    else if (sess.valid !== 'T') {
+        res.redirect('/reported_account');
+        return;
+	}
+		
 
 	if (key === 'username')
 		sql = "UPDATE users SET username = ? WHERE id = ?";

@@ -17,7 +17,6 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "faker": "^4.1.0",
-    "geo-from-ip": "^1.2.3",
     "geolocation-utils": "^1.2.2",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",

@@ -20,7 +20,13 @@ users = {
 		user 		: 'root',
 		password	: '654321',
 		database  	: 'matcha'
-	  }
+	  },
+	  "thanos_setup" : {
+		host		: 'localhost',
+		user 		: 'root',
+		password	: '654321',
+		socketPath	: '/goinfre/mchocho/Documents/mamp/mysql/tmp/mysql.sock'
+	 }
 };
 
 module.exports.users = users;

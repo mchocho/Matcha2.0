@@ -6,9 +6,11 @@ html
     title #{title}
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css"', media='all')       
     link(rel='stylesheet', href='/css/style.css', media='all')  
     link(rel='stylesheet', href='/css/user.css', media='all')       
-  body
+    link(rel='stylesheet', href='/css/main.css', media='all')       
+  body#user
     header
       a(href='/')
         div
@@ -21,21 +23,23 @@ html
         a(href='/messages')
           img.messages.icons(src='images/icons/envelope.png')
     .profile_content(align='center')
-      .profile_pic_content
-        img.profile_pic(src=user.picture, alt='User\'s profile pic')
+      .profile_pic_content.slider
+       if (user.images.length === 0)
+          div
+           img(src='images/placeholder.png')
+       else
+        each image, index in user.images
+         if (image.profile_pic === 'T')
+          div
+           if (image.name.startsWith('http://'))
+            img.profile_pic(src=image.name, alt='User\'s profile pic')
+           else
+            img.profile_pic(src='images/users/' + image.name, alt='User\'s profile pic') 
         span.user_rating
           | #{user.rating} 
-          each val, index in user.images
-            if (val.profile_pic === 'T')
-              img(src='images/user/' + val.name)
-        .thumbnails
-          label
-            each val, index in user.images
-              if (val.profile_pic !== 'T')
-                img(src=val.name)
-            input#imageUpload.hide(type='file')
+          img(src='/images/icons/star.png')
       .views_container
-        a(href='view_list.php') #{user.viewcount} views this week
+        | #{user.viewcount} views this week
       form
         span#username.value #{user.username}
         br
@@ -96,12 +100,13 @@ html
         a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
         | |
         a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
-	| |
-	a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons
+  | |
+  a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons
         |  from 
         a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-    script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-    script(type='text/javascript', src='js/button_groups.js')
-    script(type='text/javascript', src='js/map.js')
-    script(type='text/javascript', src='js/logout_test.js')
-
+  script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
+  script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+  script(type='text/javascript', src='https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js')
+  script(type='text/javascript', src='js/button_groups.js')
+  script(type='text/javascript', src='js/map.js')
+  script(type='text/javascript', src='js/logout_test.js')

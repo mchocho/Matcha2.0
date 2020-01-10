@@ -40,6 +40,7 @@ router.get('/', (req, res) => {
 				else
 				{
 					Object.assign(req.session, result);
+					console.log(util.inspect(req.session));
 					req.session.save(function(err) {
 						res.redirect('/matcha');
 					});

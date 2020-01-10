@@ -58,43 +58,52 @@ router.all('/:redirectTo.:arg?', (req, res) => {
 			});
 		});
 	});
-}).get('/', (req, res) => {
+}).get('/notifications', (req, res) => {
 	const sess = req.session[0];
 	let sql = "SELECT * FROM notifications WHERE user_id = ?",
 	    notifications;
 	dbc.query(sql, [sess.id], (err, result) => {
     		if (err) throw err;
-    		notifications = result;
-    		for (let i = 0, n = notifications.length; i < n; i++) {
-    			let type = notifications[i].type;
+			notifications = result;
+			if (notifications.length > 0) {
+    			for (let i = 0, n = notifications.length; i < n; i++) {
+    				let type = notifications[i].type;
 
-    			notifications[i].connection = false;
-    			if (type === 'like')
-					sql = "SELECT * FROM likes WHERE id = ?";
-    			else if (type === 'unlike')
-    				sql = "SELECT * FROM likes WHERE id = ? AND unliked = 'T'";
-    			else if (type === 'views')
-    				sql = "SELECT viewer FROM views WHERE id = ?";
-    			dbc.query(sql, [notifications[i].service_id], (err, result) => {
-    				if (err) throw err;
-    				notifications[i].service = result[0];
-					sql = "SELECT * FROM users WHERE id = ?";
-    				dbc.query(sql, [result[0].service.liker], (err, result) => {
-    					if (err) throw err;
-    					notifications[i].service.liker = result[0];
-    					sql = "SELECT id FROM likes WHERE liked = ? AND liker = ?";
-    					dbc.query(sql, [result[0].liker, sess.id], (err, result) => {
-    						if (err) throw err;
-    						notifications[i].connection = result.length > 0;
-    					});
-    				});
+	    			notifications[i].connection = false;
+	    			if (type === 'like')
+						sql = "SELECT * FROM likes WHERE id = ?";
+	    			else if (type === 'unlike')
+	    				sql = "SELECT * FROM likes WHERE id = ? AND unliked = 'T'";
+	    			else if (type === 'views')
+	    				sql = "SELECT viewer FROM views WHERE id = ?";
+	    			dbc.query(sql, [notifications[i].service_id], (err, result) => {
+	    				if (err) throw err;
+	    				notifications[i].service = result[0];
+						sql = "SELECT * FROM users WHERE id = ?";
+	    				dbc.query(sql, [result[0].service.liker], (err, result) => {
+	    					if (err) throw err;
+	    					notifications[i].service.liker = result[0];
+	    					sql = "SELECT id FROM likes WHERE liked = ? AND liker = ?";
+	    					dbc.query(sql, [result[0].liker, sess.id], (err, result) => {
+	    						if (err) throw err;
+								notifications[i].connection = result.length > 0;
+								if (i === n - 1)
+									res.render('notifications.pug', {
+    									title: "Your Notifications | Cupid's Arrow",
+    									notifications: req.session.notifications,
+										chats: req.session.chats,
+					    				notifications: result
+					    			});
+	    					});
+	    				});
+	    			});
+				}
+			} else
+    			res.render('notifications.pug', {
+    				title: "Your Notifications | Cupid's Arrow",
+    				notifications: req.session.notifications,
+					chats: req.session.chats,
+    				notifications: result
     			});
-    		}
-    		res.render('notifications.pug', {
-    			title: "Your Notifications | Cupid's Arrow",
-    			notifications: req.session.notifications,
-			chats: req.session.chats,
-    			notifications: result
-    		});
     });
 });
