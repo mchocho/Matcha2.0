@@ -137,16 +137,6 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`messages`
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS  `matcha`.`fake_accounts` 
-( 
-	`id` INT NOT NULL AUTO_INCREMENT , 
-	`user_id` INT NOT NULL , 
-	`validated` ENUM('T','F') NOT NULL , 
-	`last_modified` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
-	PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
-
 CREATE TABLE IF NOT EXISTS  `matcha`.`blocked_accounts` 
 ( 
 	`id` INT NOT NULL AUTO_INCREMENT , 
