@@ -45,22 +45,27 @@ router.get('/', (req, res) => {
 			result = false;
 			errors['error_3'] = 'Specify your gender';
 		}
-		if (user.preference !== 'Female' || user.preference !== 'Male')
+		if (user.preference !== 'Female' || user.preference !== 'Male') {
 			user.preference = 'Both';
+		}
 		if (!moment(user.dob, "YYYY-MM-DD").isValid()) {
 			result = false;
-			errors['error_5'] = 'Enter your date of birth';
+			errors['error_4'] = 'Enter your date of birth';
+		}
+		else if (!moment(user.dob).isBefore(moment().subtract(18, 'years'))) {
+			result = false;
+			errors['error_4'] = 'You must be 18 years or older to use this service';
 		}
 		if (!ft_util.isemail(user.email) ) {
 			result = false;
-			errors['error_4'] = 'Enter your email';
+			errors['error_5'] = 'Enter your email';
 		}
 		if (user.password === undefined || user.password.length < 5) {
 			result = false;
 			errors['error_6'] = 'Provide a valid password of 5 characters or more';
 		} else if (user.password !== user.password_confirm) {
 			result = false;
-			errors['error_7'] = 'The passwords you provided don\'t match.'
+			errors['error_7'] = "The passwords you provided don't match."
 		}
 
 		if (result === true) {

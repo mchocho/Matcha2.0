@@ -3,8 +3,34 @@
   visibility: hidden;
 }
 
+/*
+
+	#profile
+	Profile view, after matching process
+
+*/
 #profile h2 {
   text-align: center;
+}
+#profile .available {
+  position: relative;
+  width: 50%;
+}
+#profile .available * {
+  position: relative;
+  right: -86%;
+}
+#profile .available .status {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: lime;
+}
+#profile .available .F {
+  background: red !important;
+}
+#profile .available .last_seen {
+  font-style: italic;
 }
 #profile .images {
   width: 100%;
@@ -82,9 +108,11 @@
   width: 120%;
 }
 
-#user .profile_content {
-  width: 100%;
-}
+/*
+	#user
+	The user settings view
+
+*/
 #user .user_rating {
   width: 30%;
   font-size: 90%;
@@ -94,13 +122,6 @@
   width: 60px;
   height: 60px;
   vertical-align: text-bottom;
-}
-#user .thumbnails img {
-  width: 130px;
-  height: 130px;
-  margin-left: 3px;
-  border: 1px solid #000;
-  cursor: pointer;
 }
 #user .views_container {
   font-size: 140%;
@@ -112,12 +133,13 @@
 }
 #user .custom_btn {
   margin: 15px 0px;
+  border-radius: 0.25rem;
 }
-#user .edit {
-  padding-bottom: 10px;
+#user input[type=text] {
+  margin-bottom: 15px;
 }
-#user .ib {
-  display: inline-block;
+#user h4 {
+  margin: 4% 0% 1% 0%;
 }
 
 /*# sourceMappingURL=main.css.map */

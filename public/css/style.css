@@ -85,7 +85,7 @@ label, input {
 	display: block;
 }
 
-.txt {
+input[type="text"], input[type="password"], input[type="email"] {
 	font-size: 120%;
 	background: unset !important;
 	border: none;
@@ -115,7 +115,7 @@ input[type="submit"], .custom_btn {
 	text-align: center;
 }
 
-input[type="submit"], input[type="button"], button, .custom_btn {
+input[type="submit"], input[type="button"], button, .custom_btn, .btn {
 	-webkit-transition: all .5s;
     -o-transition: all .5s;
     transition: all .5s;

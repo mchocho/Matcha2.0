@@ -2,7 +2,7 @@ const faker 		= require('faker'),
 	  util 			= require('util'),
 	  dbc 			= require('../model/sql_connect.js'),
 	  ft_util 		= require('../includes/ft_util.js'),
-	  count 		= 500;
+	  count 		= 100;
 
 function generate_user(i) {
 	if (i === count) {
@@ -15,7 +15,7 @@ function generate_user(i) {
 		faker.name.lastName(),				//2
 		['M', 'F'][ft_util.ranint(2)],		//3
 		['M', 'F', 'B'][ft_util.ranint(2)],	//4
-		faker.date.past(),					//5
+		faker.date.between('1940-01-01', '2000-12-31'),				//5
 		faker.internet.email(),				//6
 		'OMG42',							//7
 		['T', 'F'][ft_util.ranint(1)],		//8
@@ -40,11 +40,11 @@ function generate_user(i) {
 			sql = "INSERT INTO images (name, user_id, profile_pic) VALUES (?)";
 			id = result.insertId;
 			dbc.query(sql, [
-					[(faker.random.image()) + '?random=' + Date.now(), id, 'T'],
-					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
-					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
-					[(faker.random.image()) + '?random=' + Date.now(), id, 'F'],
-					[(faker.random.image()) + '?random=' + Date.now(), id, 'F']
+					[(faker.random.image()), id, 'T'],
+					[(faker.random.image()), id, 'F'],
+					[(faker.random.image()), id, 'F'],
+					[(faker.random.image()), id, 'F'],
+					[(faker.random.image()), id, 'F']
 				], (err, result) => {
 				if (err) throw err;
 				sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";

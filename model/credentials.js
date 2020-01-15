@@ -26,7 +26,12 @@ users = {
 		user 		: 'root',
 		password	: '654321',
 		socketPath	: '/goinfre/mchocho/Documents/mamp/mysql/tmp/mysql.sock'
-	 }
+	 },
+	 "Titan_setup": {
+		host		: 'localhost',
+		user 		: 'root',
+		password	: '654321'
+	  }
 };
 
 module.exports.users = users;

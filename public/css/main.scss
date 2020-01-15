@@ -24,9 +24,42 @@ $grey: #DDDDDD;
 	visibility: hidden;
 }
 
+
+/*
+	
+	#profile
+	Profile view, after matching process
+
+*/
+
 #profile {
 	h2 {
 		text-align: center;
+	}
+
+	.available {
+		position: relative;
+		width: 50%;
+
+		* {
+			position: relative;
+			right: -86%;
+		}
+
+		.status {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background: lime;
+		}
+
+		.F {
+			background: red !important;
+		}
+
+		.last_seen {
+			font-style: italic;
+		}
 	}
 
 	.images {
@@ -122,11 +155,13 @@ $grey: #DDDDDD;
 	}
 }
 
-#user {
-	.profile_content {
-		width: 100%;
-	}
+/*
+	#user
+	The user settings view
 
+*/
+
+#user {
 	.user_rating {
 		width: 30%;
 		font-size: 90%;
@@ -137,14 +172,6 @@ $grey: #DDDDDD;
 			height: 60px;
 			vertical-align: text-bottom;
 		}
-	}
-
-	.thumbnails img {
-		width: 130px;
-		height: 130px;
-		margin-left: 3px;
-		border: 1px solid #000;
-		cursor: pointer;
 	}
 
 	.views_container {
@@ -159,14 +186,15 @@ $grey: #DDDDDD;
 
 	.custom_btn {
 		margin: 15px 0px;
+		border-radius: .25rem;
 	}
 
-	.edit {
-		padding-bottom: 10px;
+	input[type="text"] {
+		margin-bottom: 15px;
 	}
 
-	.ib {
-		display: inline-block;
+	h4 {
+		margin: 4% 0% 1% 0%;
 	}
 
 }

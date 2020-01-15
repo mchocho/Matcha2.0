@@ -3,7 +3,7 @@ const mysql = require("mysql"),
 
 const users = credentials.users;
 
-dbc = mysql.createConnection(users['thanos']);
+dbc = mysql.createConnection(users['Titan']);
 //dbc = mysql.createConnection(users['roger']);
 
 dbc.connect((err) => {

@@ -33,10 +33,6 @@ router.get('/', (req, res) => {
 	dbc.query(sql, [sess.id], (err, result) => {
 		if (err) throw err;
 		images = result;
-		for (let i = 0, n = images.length; i < 5; i++) {
-			if (!ft_util.isobject(images[i]))
-				images[i] = { name: 'images/placeholder.png' }
-		}
 		sql = "SELECT * from user_tags WHERE user_id = ?";
 		dbc.query(sql, [sess.id], (err, result) => {
 			if (err) throw err;
@@ -86,23 +82,20 @@ router.get('/', (req, res) => {
 	const sess = req.session[0],
 	      key = req.params.key,
 	      val = req.params.val;
-	let sql;
+	let sql,
+	    json = `{"key": "${key}", "value": "${val}", `;
+
+	res.writeHead(200, {"Content-Type": "text/plain"});
 	
-	if (!ft_util.isobject(sess)) {
-        res.redirect('/logout');
-        return;
-    }
-    else if (sess.verified !== 'T') {
-        res.redirect('/verify_email');
-        return;
-    }
-    else if (sess.valid !== 'T') {
-        res.redirect('/reported_account');
-        return;
+	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T') {
+		res.end(json + '"result": "Failed"}');
+        	return;
 	}
 		
+	console.log('STATUS: ' + res.statusCode);
+  	console.log('HEADERS: ' + JSON.stringify(res.headers));
 
-	if (key === 'username')
+  	/*if (key === 'username')
 		sql = "UPDATE users SET username = ? WHERE id = ?";
 	else if (key === 'fullname')
 		sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
@@ -112,7 +105,44 @@ router.get('/', (req, res) => {
 		sql = "UPDATE users SET preferences = ? WHERE id = ?";
 	else if (key === 'DOB')
 		sql = "UPDATE users SET DOB = ? WHERE id = ?";
+	else if (key === 'email')
+		sql = "UPDATE users SET email = ? WHERE id = ?";
+	else if (key === 'password') {
+		sql = "UPDATE users SET password = ? WHERE id = ?";
+		//Encrypt value
+	}
+	else if (key === 'bio')
+		sql = "UPDATE users SET biography = ? WHERE id = ?";
+	else {
+		res.end(json + '"result": "Failed"}');
+        return;
+	}*/
 
+  	switch(key) {
+		case 'username':
+		case 'gender':
+		case 'preferences':
+		case 'DOB':
+		case 'email':
+		case 'password':
+		case 'bio':
+			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
+			//if (key === 'DOB')
+			break;
+		case 'fullname':
+			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+			break;
+		default:
+			res.end(json + '"result": "Failed"}');
+	        return;
+	}
 
+	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val.split('|')[0].trim(), val.split('|')[1].trim(), sess.id],(err, result) => {
+		if (err) throw err;
+		if (result.affectedRows === 1)
+			res.end(json + '"result": "Success"}');
+		else
+			res.end(json + '"result": "Failed"}');
+	});
 
 });

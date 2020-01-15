@@ -6,7 +6,6 @@ html
     title #{title}
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css"', media='all')       
     link(rel='stylesheet', href='/css/style.css', media='all')  
     link(rel='stylesheet', href='/css/user.css', media='all')       
     link(rel='stylesheet', href='/css/main.css', media='all')       
@@ -41,58 +40,57 @@ html
       .views_container
         | #{user.viewcount} views this week
       form
-        span#username.value #{user.username}
-        br
-        input#s_username.custom_btn.ib(type='button', value='Edit')
-        .edit.hide
-          #username_edit.username_edit
-            input#n_username.txt.ib(type='text', placeholder='New username')
-            br
-            #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-              button.btn.btn-secondary(type='button', name='username_save') Confirm
-              button.btn.btn-secondary(type='button', name='username_cancel') Cancel
-        span#fullname.value #{user.first_name} #{user.last_name}
-        input#username_edit.custom_btn.ib(type='button', value='Edit')
-        .edit.hide
-          #fullname_edit.fullname_edit
-            input#firstname_edit.txt.ib(type='text', placeholder='First name', value=user.first_name)
-            br
-            input#lastname_edit.txt.ib(type='text', placeholder='Last name', value=user.last_name)
+        h4#username.value #{user.username}
+        input#username_edit_btn.custom_btn.ib(type='button', value='Edit')
+        #username_edit_container.edit.hide
+          span#error_0.error
+          input#username_txt(type='text', placeholder='New username')
           br
           #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-            button.btn.btn-secondary(type='button', name='fullname_save') Confirm
-            button.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
+            button#username_confirm.btn.btn-secondary(type='button', name='username_save') Confirm
+            button#username_cancel.btn.btn-secondary(type='button', name='username_cancel') Cancel
+        h4#fullname.value #{user.first_name} #{user.last_name}
+        input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
+        #fullname_edit_container.edit.hide
+          span#error_1.error
+          input#firstname_edit_txt(type='text', placeholder='First name', value=user.first_name)
+          br
+          input#lastname_edit_txt(type='text', placeholder='Last name', value=user.last_name)
+          br
+          #new-fullname-confirm.btn-group(role='group', aria-label='Confirm username change')
+            button#fullname_confirm.btn.btn-secondary(type='button', name='fullname_save') Confirm
+            button#fullname_cancel.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
         .edit
-          p Gender
+          h4 Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
             button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
             button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
         .edit
-          p Sexual preference
+          h4 Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
             button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
             button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
             button.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
         .edit
-          p Interests
-          input#interests.custom_btn.ib(type='button', value='Add')
-          #interest_edit.interest_edit
-            input#interest_edit.txt.ib(type='text', placeholder='Add interest')
+          h4 Interests
+          input#interests_add_btn.custom_btn.ib(type='button', value='Add')
+          #interest_edit_container.interest_edit.hide
+            span#error_2.error
+            input#interest_edit_txt(type='text', placeholder='Add interest')
             br
             #new-tags-confirm.btn-group(role='group', aria-label='Confirm username change')
-              button.btn.btn-secondary(type='button', name='tag_save') Confirm
-              button.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+              button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
+              button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
           ul.interests_list.list.multi-column
             each val, index in user.tags
               li #{val.tagname}
         .edit
-          p Biography
+          h4 Biography
           p#biography.value.bio #{user.biography}
           input#biography_edit.custom_btn.ib(type='button', value='Edit')
         .edit
-          #gmap.map
-          input#find_me.custom_btn.ib.geo.hide(type='button', value='Find Me')
           #map
+            input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
       footer
         | Icons made by 
         a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
@@ -105,8 +103,8 @@ html
         |  from 
         a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
   script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-  script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-  script(type='text/javascript', src='https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js')
   script(type='text/javascript', src='js/button_groups.js')
+  script(type='text/javascript', src='js/xhr.js')
   script(type='text/javascript', src='js/map.js')
-  script(type='text/javascript', src='js/logout_test.js')
+  script(type='text/javascript', src='js/reloadCSS.js')
+  script(type='text/javascript', src='js/user.js')

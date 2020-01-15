@@ -98,6 +98,15 @@ function ft_removeBlockedUsers(matches, blacklist) {
 	});
 }
 
+function ft_escape(str){
+  if (!ft_isstring(str))
+	return str;
+  return str.replace(/&(?!\w+;)/g, '&amp;')
+	.replace(/</g, '&lt;')
+	.replace(/>/g, '&gt;')
+	.replace(/"/g, '&quot;');
+}
+
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
 module.exports.isfunction = ft_isfunction;
@@ -110,4 +119,4 @@ module.exports.isarray = ft_isarray;
 module.exports.ranint = ft_ranint;
 module.exports.validateUser = validateUser;
 module.exports.removeBlockedUsers = ft_removeBlockedUsers;
-
+module.exports.escape = ft_escape;

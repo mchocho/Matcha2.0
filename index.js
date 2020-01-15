@@ -14,7 +14,7 @@ app.set('view engine', 'pug');
 
 app.use(body_p.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
-app.use(session({secret: uuidv4(), cookie: {maxAge: 600000}, saveUninitialized: true, resave: true}));
+app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialized: true, resave: true}));
 
 if (app.get('env') === 'production') 
 	app.set('trust proxy', 1);

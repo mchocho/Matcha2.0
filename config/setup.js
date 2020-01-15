@@ -1,12 +1,12 @@
-const fs 		= require('fs'),
-      util 		= require('util'),
-      mysql 	= require("mysql"),
+const fs 			= require('fs'),
+      util 			= require('util'),
+      mysql 		= require("mysql"),
       credentials 	= require('../model/credentials.js'),
-      ft_util 	= require('../includes/ft_util.js');
+      ft_util 		= require('../includes/ft_util.js');
 
 
 const users = credentials.users;
-dbc = mysql.createConnection(users['thanos_setup']);
+dbc = mysql.createConnection(users['Titan_setup']);
 
 dbc.connect((err) => {
 	if (err) throw err;
