@@ -1,16 +1,13 @@
 var http = require('https'),
-	util = require('util');
+	util = require('util'),
+	ft_util = require('../includes/ft_util.js');
 
 
 const urls = [
 	'https://get.geojs.io/v1/ip/geo.json',
-	'https://yts.lt/',
-	'https://yts.lt/api/v2/list_movies.json',
-	'https://yts.lt/api/v2/list_movies.json?quality=3D&page=3',
-	'https://yts.lt/api/v2/list_movies.jsonp?genre=comedy&page=2'
 ];
 
-const req = http.request(urls[3], (res) => {
+/*const req = http.request(urls[3], (res) => {
 	console.log(`STATUS: ${res.statusCode}`);
   	console.log(`HEADERS: ${JSON.stringify(res.headers)}\n\n`);
 
@@ -19,4 +16,12 @@ const req = http.request(urls[3], (res) => {
 	});
 }); 
 
-req.end();
+req.end();*/
+
+
+ft_util.locateUser(true).then(result => {
+	const geo = JSON.parse(result);
+
+	console.log(geo.region);
+	return;
+});

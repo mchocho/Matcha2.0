@@ -13,6 +13,7 @@
   "author": "mchocho 'The King'",
   "license": "ISC",
   "dependencies": {
+    "@google/maps": "^1.0.2",
     "body-parser": "^1.19.0",
     "bxslider": "^4.2.14",
     "express": "^4.17.1",

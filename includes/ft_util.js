@@ -1,3 +1,5 @@
+const http = require('https');
+
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
 		if (Object.prototype.toString.call(arguments[i]) !== "[object String]");
@@ -107,6 +109,29 @@ function ft_escape(str){
 	.replace(/"/g, '&quot;');
 }
 
+function ft_locateUser(report) {
+	return new Promise((resolve, reject) => {
+		const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) => {
+        
+        		res.on('data', (result) => {
+				if (report === true)
+				{
+					console.log(`Status: ${res.statusCode}`);
+        				console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
+                			console.log(`${result}`);
+				}
+				resolve(result)
+        		});
+		});
+		req.end();
+		/*res.on('error', (result) => {
+			reject('Failed to locate user');
+		});*/
+
+	});
+}
+
+module.exports.VERBOSE = true;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
 module.exports.isfunction = ft_isfunction;
@@ -120,3 +145,4 @@ module.exports.ranint = ft_ranint;
 module.exports.validateUser = validateUser;
 module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
+module.exports.locateUser = ft_locateUser;
