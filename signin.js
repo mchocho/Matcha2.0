@@ -50,7 +50,8 @@ router.get('/', (req, res) => {
 					dbc.query(sql, [id], (err, result) => {
 						if (err) throw err;
 						ft_util.locateUser(true).then(userLocation => {
-							const geo = JSON.parse(userLocation);
+							const geo = JSON.parse(userLocation),
+							      locationData = [];
 							googleMapsClient.reverseGeocode({latlng: {lat: geo.latitude, lng: geo.longitude}}, (err, response) => {
 								if (!err /*&& response.length > 0*/) {
                         						// Handle response.
@@ -60,11 +61,13 @@ router.get('/', (req, res) => {
                         							response.json.results.forEach((val, index) => {
                                								console.log("Result " + index);
                                 							console.log(val);
+											console.log("WTF");
                         							});
 									}
 
 									if (result.length === 0) {
 										sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES ?";
+
 									}
 									else {
 										sql = "UPDATE locations SET (lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ?) WHERE user_id = ?";
@@ -79,6 +82,7 @@ router.get('/', (req, res) => {
 										id
 									], (err, result) => {
 										if (err) throw err;
+										console.log("Updated location data for user!!");
 										req.session.save((err) => {
 											res.redirect('/matcha');
 										});
