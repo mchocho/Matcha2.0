@@ -60,9 +60,9 @@ router.get('/', (req, res) => {
 			result = false;
 			errors['error_5'] = 'Enter your email';
 		}
-		if (user.password === undefined || user.password.length < 5) {
+		if (user.password.length < 5 && ft_util.hasuppercase(user.password) && ft_util.haslowercase(user.password) && ft_util.hasNumber(user.password) ) {
 			result = false;
-			errors['error_6'] = 'Provide a valid password of 5 characters or more';
+			errors['error_6'] = 'Provide a valid password of 5 characters or more, with special cases, uppercase and lowercase letters';
 		} else if (user.password !== user.password_confirm) {
 			result = false;
 			errors['error_7'] = "The passwords you provided don't match."
@@ -91,34 +91,15 @@ router.get('/', (req, res) => {
 					}
 	
 					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES ?",
-					values = [
-							[
-							user.username, 
-							user.f_name, 
-							user.l_name, 
-							user.gender.charAt(0), 
-							user.preference.charAt(0), 
-							user.dob, 
-							user.email, 
-							user.password
-							]
-					];
-					dbc.query(sql,
-						[values], (err, result) => {
+					values = [[ user.username, user.f_name, user.l_name, user.gender.charAt(0), user.preference.charAt(0), user.dob, user.email, user.password ]];
+					dbc.query(sql, [values], (err, result) => {
 						if (err) throw err;
 						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url)).catch(console.error);
 						sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
-						values = [
-							[
-								result.insertId,
-								token,
-								'registration'
-							]
-						];
-						dbc.query(sql,
-							[values], (err, result) => {
-								if (err) throw err;
-								res.redirect('/verify_email');
+						values = [[result.insertId, token, 'registration']];
+						dbc.query(sql, [values], (err, result) => {
+							if (err) throw err;
+							res.redirect('/verify_email');
 						});
 					});
 				});

@@ -6,7 +6,7 @@ const fs 			= require('fs'),
 
 
 const users = credentials.users;
-dbc = mysql.createConnection(users['Titan_setup']);
+dbc = mysql.createConnection(users['thanos_setup']);
 
 dbc.connect((err) => {
 	if (err) throw err;
