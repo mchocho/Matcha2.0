@@ -13,13 +13,20 @@ users = {
 		port		: '3000',
 		password	: 'pw123456',
 		database  	: 'matcha',
-		socketPath	: '/goinfre/rhobbs/Desktop/Server/mysql/tmp/mysql.sock'
+		socketPath	: '/goinfre/rhobbs/Desktop/server/mysql/tmp/mysql.sock'
 	  },
 	  "Titan": {
 		host		: 'localhost',
 		user 		: 'root',
 		password	: '654321',
 		database  	: 'matcha'
+	  },
+	  "roger_setup": {
+		host		: 'localhost',
+		user 		: 'root',
+		port		: '3000',
+		password	: 'pw123456',
+		socketPath	: '/goinfre/rhobbs/Desktop/server/mysql/tmp/mysql.sock'
 	  },
 	  "thanos_setup" : {
 		host		: 'localhost',

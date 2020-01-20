@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
-		result = true;
+		result = true
 	if (user.cupid === 'Submit') {
 		if (user.username.length === 0) {
 			result = false;
@@ -40,69 +40,36 @@ router.get('/', (req, res) => {
 					res.redirect('/verify_email');
 				else
 				{
-					const id = result[0].id;
+					const profile = result[0];
 					sql = "SELECT id FROM locations WHERE user_id = ?";
 					Object.assign(req.session, result);
 					if (ft_util.VERBOSE === true) {
 						console.log("User login result:\n");
 						console.log(util.inspect(req.session));
 					}
-					dbc.query(sql, [id], (err, result) => {
+					dbc.query(sql, [profile.id], (err, result) => {
 						if (err) throw err;
-						ft_util.locateUser(true).then(userLocation => {
+						ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 							const geo = JSON.parse(userLocation),
-							      locationData = [];
-							googleMapsClient.reverseGeocode({latlng: {lat: geo.latitude, lng: geo.longitude}}, (err, response) => {
-								if (!err /*&& response.length > 0*/) {
-                        						// Handle response.
-									if (ft_util.VERBOSE === true) {
-                        							console.log(response);
-                        							console.log("Result field");
-                        							response.json.results.forEach((val, index) => {
-                               								console.log("Result " + index);
-                                							console.log(val);
-											console.log("WTF");
-                        							});
-									}
-
-									if (result.length === 0) {
-										sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES ?";
-
-									}
-									else {
-										sql = "UPDATE locations SET (lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ?) WHERE user_id = ?";
-									}
-									dbc.query(sql, [
-										geo.latitude,
-										geo.longitude,
-										response[0].formatted_address,
-										response[0].address_components[3].long_name,
-										response[0].address_components[4].long_name,
-										'South Africa',
-										id
-									], (err, result) => {
-										if (err) throw err;
-										console.log("Updated location data for user!!");
-										req.session.save((err) => {
-											res.redirect('/matcha');
-										});
-									});
-								}
-								else {
-									
-									if (ft_util.VERBOSE === true) {
-										console.log('Failed to determine precise location of user');
-										console.log('Error object: ' + util.inspect(err));
-									}
-									req.session.save((err) => {
-										res.redirect('/user');
-									});
-								}
+							      values = [];
+							if (result.length === 0) {
+								sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
+								values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
+							}
+							else {
+								sql = "UPDATE locations SET lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ? WHERE user_id = ?";
+								values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id);
+							}
+							dbc.query(sql, values, (err, result) => {
+								if (err) throw err;
+								console.log("Updated location data for user!!");
+								req.session.save((err) => {
+									res.redirect('/matcha');
+								});
 							});
 					}).catch((err) => {
 						if (ft_util.VERBOSE === true) {
 							console.log('Failed to locate user');
-							console.log('WTF');
 						}
 						req.session.save((err) => {
 							res.redirect('/user');

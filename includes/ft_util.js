@@ -73,6 +73,22 @@ function init_errorlist() {
 	};
 }
 
+function ft_hasuppercase(value) {
+	if (!ft_isstring(value)) return false;
+	return (value.toLowerCase() != value);
+}
+
+function ft_haslowercase(value) {
+	if (!ft_isstring(value)) return false;
+	return (value.toUpperCase() != value);
+}
+
+
+function ft_hasNumber(value) {
+	if (!ft_isstring(value)) return false;
+	return /\d/.test(value);
+}
+
 function validateUser(res, sess) {
 	if (!ft_isobject(res))
 		return;
@@ -112,22 +128,20 @@ function ft_escape(str){
 function ft_locateUser(report) {
 	return new Promise((resolve, reject) => {
 		const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) => {
-        
         		res.on('data', (result) => {
-				if (report === true)
-				{
-					console.log(`Status: ${res.statusCode}`);
-        				console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
-                			console.log(`${result}`);
-				}
-				resolve(result)
-        		});
+					if (report === true)
+					{
+						console.log(`Status: ${res.statusCode}`);
+							console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
+								console.log(`${result}`);
+					}
+					resolve(result)
+				});
+				res.on('error', (result) => {
+					reject('Failed to locate user');
+				});
 		});
 		req.end();
-		/*res.on('error', (result) => {
-			reject('Failed to locate user');
-		});*/
-
 	});
 }
 
@@ -138,6 +152,9 @@ module.exports.isfunction = ft_isfunction;
 module.exports.isdate = ft_isdate;
 module.exports.isemail = ft_isemail;
 module.exports.init_errors = init_errorlist;
+module.exports.hasuppercase = ft_hasuppercase;
+module.exports.haslowercase = ft_haslowercase;
+module.exports.hasNumber = ft_hasNumber;
 module.exports.emptyObj = ft_isEmptyObj;
 module.exports.isobject = ft_isobject;
 module.exports.isarray = ft_isarray;
@@ -146,3 +163,4 @@ module.exports.validateUser = validateUser;
 module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
+>>>>>>> master
