@@ -63,14 +63,14 @@ html
         .edit
           h4 Gender
           #gender_group.btn-group(role='group', aria-label='Gender')
-            button.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
-            button.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
+            button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+            button#gender_male.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
         .edit
           h4 Sexual preference
           #preference_group.btn-group(role='group', aria-label='preferences')
-            button.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
-            button.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
-            button.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
+            button#preference_female.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+            button#preference_male.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+            button#preference_both.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
         .edit
           h4 Interests
           input#interests_add_btn.custom_btn.ib(type='button', value='Add')

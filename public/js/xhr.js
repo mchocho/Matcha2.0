@@ -1,20 +1,25 @@
 function xhr(url, method, body) {
-  console.log("Beginning XMLHttpRequest");
+ 	const DEVMODE = true;
 
-  let xhr = new XMLHttpRequest();
+	if (DEVMODE)
+		console.log("Beginning XMLHttpRequest");
 
-  xhr.open(method, url);
+  	let xhr = new XMLHttpRequest();
 
-  xhr.send(body);
+  	xhr.open(method, url);
 
-  xhr.onload = function() {
-    if (xhr.status != 200)
-      console.log(`Error ${xhr.status}: ${xhr.statusText}`);
-    else
-      console.log(`Server response:\n ${xhr.responseText}`);
-  };
+  	xhr.send(body);
 
-  xhr.onerror = function() {
-    console.log("Request failed");
-  };
+  	xhr.onload = function() {
+		if (DEVMODE) {
+    			if (xhr.status != 200)
+      				console.log(`Error ${xhr.status}: ${xhr.statusText}`);
+    			else
+      				console.log(`Server response:\n ${xhr.responseText}`);
+		}
+  	};
+
+  	xhr.onerror = function() {
+		console.log("Request failed");
+  	};
 }

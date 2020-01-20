@@ -1,16 +1,24 @@
 function script() {
 	// $('.slider').bxSlider();
+	const DEVMODE = true;
+
+	const inputFields = [
+		document.getElementById('username_txt'),
+		document.getElementById('first_name_txt'),
+		document.getElementById('last_name_txt')
+
+	];
 
 	function isNode(el) {
-        return (el instanceof Element);
-    }
+        	return (el instanceof Element);
+    	}
 
-    function validStr(val) {
-    	return (Object.prototype.toString.call(val) !== "[object String]"
-    		&& val.length > 0 && /^[a-zA-Z]+$/.test(val))
-    }
+    	function isValidStr(val) {
+    		return (Object.prototype.toString.call(val) !== "[object String]"
+    			&& val.length > 0 && /^[a-zA-Z]+$/.test(val))
+    	}
 
-	function editActions(edit_btn, edit_container, confirm_btn, cancel_btn) {
+	function editActions(edit_btn, edit_container, confirm_btn, cancel_btn, validation) {
 		edit_btn.addEventListener('click', function() {
 			edit_btn.classList.add('hide');
 			edit_container.classList.remove('hide');
@@ -18,8 +26,10 @@ function script() {
 		}, true);
 
 		confirm_btn.addEventListener('click', function() {
-			edit_container.classList.add('hide');
-			edit_btn.classList.remove('hide');
+			if (validation) {
+				edit_container.classList.add('hide');
+				edit_btn.classList.remove('hide');
+			}
 			return;
 		}, true);
 
@@ -35,7 +45,8 @@ function script() {
 		document.getElementById('username_edit_btn'),
 		document.getElementById('username_edit_container'),
 		document.getElementById('username_confirm'),
-		document.getElementById('username_cancel')
+		document.getElementById('username_cancel'),
+		validateUsername
 	);
 
 
@@ -43,7 +54,8 @@ function script() {
 		document.getElementById('fullname_edit_btn'),
 		document.getElementById('fullname_edit_container'),
 		document.getElementById('fullname_confirm'),
-		document.getElementById('fullname_cancel')
+		document.getElementById('fullname_cancel'),
+		validateUsername
 	);
 
 	editActions(
@@ -53,22 +65,59 @@ function script() {
 		document.getElementById('interests_cancel')
 	);
 
-	//Validate input
+	//Validation methods
+	function validateUsername() {
+		const value = inputFields[0].value,
+		      error_node = document.getElementById('error_0');
+
+		if (value.length > 3 && !isValidStr(value)) {
+			error_node.textContent = "Please enter a valid username";
+			return false;
+		}
+		error_node.textContent = "";
+		return true;
+	}
+
+	function validateFullname() {
+		const firstname = inputFields[1].value,
+		      lastname = inputField[2].value,
+		      error_node = document.getElementById('error_1');
+
+		if (firstname.length === 0 || !isValidStr(firstname) {
+			error_node.textContent = "Please enter a first name";
+			return false;
+		}
+		if (lastname.length === 0 || !isValidStr(lastname)) {
+			error_node.textContent = 'Please enter a last name';
+			return false;
+		}
+		return true;
+	}
+
+	function validateInterests() {
+		const value = 
+	}
+	
+
+
+
+	//Send requests on confirmation click or button change
 	document.getElementById('username_confirm').addEventListener('click', function() {
-		const value = document.getElementById('username_txt').value;
-		// if (value.length === 0)
-
-	});
-
-
-
-
-	document.getElementById('username_confirm').addEventListener('click', function() {
-		const value = document.getElementById('username_txt').value;
+		const value = inputFields[0].value;
 
 		if (value.length > 0) {
-			console.log('Updating username');
+			if (DEVMODE)
+				console.log('Updating username');
 			xhr('/user/username.' + value, 'POST');
+		}
+	});
+
+	document.getElementById('fullname_confirm').addEventListener('click', function() {
+		const firstname = inputFields[1].value;
+		const lastname = inputField[2].value;
+
+		if (firstname.length < 1) {
+			
 		}
 	});
 
