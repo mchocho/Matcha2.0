@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
 			result = false;
 			errors['error_3'] = 'Specify your gender';
 		}
-		if (user.preference !== 'Female' || user.preference !== 'Male') {
+		if (user.preference !== 'Female' && user.preference !== 'Male') {
 			user.preference = 'Both';
 		}
 		if (!moment(user.dob, "YYYY-MM-DD").isValid()) {

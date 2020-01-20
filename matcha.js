@@ -25,11 +25,17 @@ router.get('/', (req, res) => {
 		return;
 	}
 	else if (sess.verified !== 'T') {
-		res.redirect('/verify_email');
+		req.session.destroy(function(err) {
+			if (err) {throw err}
+			res.redirect('/verify_email');
+		});
 		return;
 	}
 	else if (sess.valid !== 'T') {
-		res.redirect('/reported_account');
+		req.session.destroy(function(err) {
+			if (err) {throw err}
+			res.redirect('/reported_account');
+		});
 		return;
 	}
 	dbc.query(sql, [sess.id], (err, result) => {
