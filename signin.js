@@ -53,7 +53,7 @@ router.get('/', (req, res) => {
 							const geo = JSON.parse(userLocation),
 							      values = [];
 							if (result.length === 0) {
-								sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES ?";
+								sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
 								values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
 							}
 							else {
