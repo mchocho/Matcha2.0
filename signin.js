@@ -18,8 +18,7 @@ router.get('/', (req, res) => {
 		res.redirect('/matcha'); // What does this actaully do
 	}
 	let message = req.flash('message');
-	console.log(message);
-	res.render('signin.pug');
+	res.render('signin.pug', {message: message[0]});
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
