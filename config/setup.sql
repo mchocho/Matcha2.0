@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`tokens`
 	REFERENCES `matcha`.`users` (`id`)
 	ON DELETE CASCADE
   ON UPDATE CASCADE,
-	PRIMARY KEY (`id`),
+	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS  `matcha`.`likes`
