@@ -36,11 +36,12 @@ router.get('/', (req, res) => {
 
 			dbc.query(sql, [user.username, user.username], (err, result) => { // username twice?
 				if (err) {throw err}
-				console.log("HERE" , result);
 				if (result.length == 0) {
 					res.render('signin', {error_2: 'Sorry, your email or password was incorrect.'});
-				}
-				else if (result.verified === 'F') {
+				} 
+				let passwdCheck = bcrypt.compareSync(user.password, result[0].password);
+
+				if (result[0].verified === 'F') {
 					res.redirect('/verify_email');
 				} else {
 					const profile = result[0];
