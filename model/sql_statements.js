@@ -4,6 +4,8 @@ let selAllOthersDesc 	= "SELECT * FROM `users` WHERE `id` != ? ORDER BY `users`.
 let selUserById 		= "SELECT * FROM `users` WHERE `id` = ?";
 let selUserByUname 		= "SELECT * FROM `users` WHERE `username` = ?";
 let selUserByEmail 		= "SELECT * FROM `users` WHERE `email` = ?";
+let findByToken			= "SELECT * FROM `tokens` WHERE `token` = ?";
+let setTokenVerified	= "UPDATE `tokens` SET `token` = ? WHERE `id` = ?";
 
 module.exports = {
 	selAllUsers,
@@ -12,4 +14,6 @@ module.exports = {
 	selUserByEmail,
 	selUserByUname,
 	selUserById,
-};
+	findByToken,
+	setTokenVerified
+}	
