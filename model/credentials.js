@@ -42,6 +42,7 @@ users = {
 		port		: '3000',
 		password	: 'pw123456',
 		socketPath	: '/Users/RogerHobbs/Desktop/Server/mysql/tmp/mysql.sock'
+	  },
 	  "thanos_setup" : {
 		host		: 'localhost',
 		user 		: 'root',
