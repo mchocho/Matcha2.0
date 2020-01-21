@@ -7,6 +7,7 @@ let selUserByEmail 		= "SELECT * FROM `users` WHERE `email` = ?";
 let findByToken			= "SELECT * FROM `tokens` WHERE `token` = ?";
 let setUserVerification	= "UPDATE `users` SET `verified` = ? WHERE `id` = ?";
 let updateToken			= "UPDATE `tokens` SET `token` = ? WHERE `id` = ?";
+let delTokenRow			= "DELETE FROM `tokens` WHERE `id` = ?";
 
 module.exports = {
 	selAllUsers,
@@ -17,5 +18,6 @@ module.exports = {
 	selUserById,
 	findByToken,
 	setUserVerification,
-	updateToken
+	updateToken,
+	delTokenRow
 }	

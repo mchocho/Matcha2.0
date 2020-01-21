@@ -33,12 +33,11 @@ router.get('/:id', (req, res) => {
 			console.log("There was an error in verification api, handle this error");
 			return;
 		}
-		// drop the row !!!
-		let vals = [null, tokenRow.id]
-		dbc.query(sql.updateToken, vals, setUsedTokenToNull)	
+		let vals = [tokenRow.id]
+		dbc.query(sql.delTokenRow, vals, delToken)	
 	}
 
-	function setUsedTokenToNull(err, result) {
+	function delToken(err, result) {
 		if (err) {throw err}
 		if (result.affectedRows === 0) {
 			console.log("There was an error in verification api, handle this error");
