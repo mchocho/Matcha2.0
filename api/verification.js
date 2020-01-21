@@ -23,9 +23,21 @@ router.get('/:id', (req, res) => {
 			return;
 		}
 		tokenRow = result[0];
-		const verified = ["verified"];
-		dbc.query(sql.setTokenVerified, verified)
+		let vals = ['T', tokenRow.user_id];
+		dbc.query(sql.setUserVerification, vals, setUserVerified)
+		// const verified = ["verified"];
+		// dbc.query(sql.setTokenNull, verified)
 	}
+
+	function setUserVerified(err, result) {
+		if (err) {throw err}
+		if (result.affectedRows === 0) {
+			console.log("There was an error in verification api, handle this error");
+			return;
+		}
+		res.send("Things happened");		
+	}
+
 });
 
 		  
