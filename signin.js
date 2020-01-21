@@ -15,7 +15,7 @@ module.exports = router;
 router.get('/', (req, res) => {
 	const sess = req.session[0];
 	if (ft_util.isobject(sess)) { // Why the isObject func?
-		res.redirect('/matcha');
+		res.redirect('/matcha'); // What does this actaully do
 	}
 	res.render('signin.pug', {});
 }).post('/', (req, res) => {
