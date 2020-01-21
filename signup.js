@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 }).post('/', (req, res) => {
 	const user = req.body,
 		  token = uuidv4(),
-		  url = "http://localhost:3000/verification/?key=" + token;
+		  url = "http://localhost:3000/verification/" + token;
 	let   errors = ft_util.init_errors(),
 		  result = true;
 	

@@ -1,21 +1,21 @@
 var nodemailer = require('nodemailer');
 
 async function main(to, subject, message) {
-  let testAccount = await nodemailer.createTestAccount();
+  let testAccount = await nodemailer.createTestAccount(); // What's this for?
 
   let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'noreplycupidsarrow@gmail.com',
-        pass: 'cupidsarrowstaff'
-    }
+	service: 'gmail',
+	auth: {
+		user: 'noreplycupidsarrow@gmail.com',
+		pass: 'cupidsarrowstaff'
+	}
   });
 
   let info = await transporter.sendMail({
-    from: '"Cupid\'s Arrow Admin" <noreplycupidsarrow@gmail.com>',
-    to: to,
-    subject: subject,
-    html: message
+	from: '"Cupid\'s Arrow Admin" <noreplycupidsarrow@gmail.com>',
+	to: to,
+	subject: subject,
+	html: message
   });
 
   console.log("Message sent: %s", info.messageId);
@@ -24,5 +24,5 @@ async function main(to, subject, message) {
 }
 
 module.exports = {
-    main
+	main
 }
