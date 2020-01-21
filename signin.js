@@ -17,7 +17,9 @@ router.get('/', (req, res) => {
 	if (ft_util.isobject(sess)) { // Why the isObject func?
 		res.redirect('/matcha'); // What does this actaully do
 	}
-	res.render('signin.pug', {});
+	let message = req.flash('message');
+	console.log(message);
+	res.render('signin.pug');
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),

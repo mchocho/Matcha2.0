@@ -7,7 +7,7 @@ const 	  express 		= require('express'),
 	  session 		= require('express-session'),
 	  uuidv4 		= require('uuid/v4'),
 	  app 			= express(),
-	  flash			= require('connect-flash');
+	  flash			= require('connect-flash'),
 	  PORT 			= 3000;
 
 app.set('views', path.join(__dirname, 'views'));
