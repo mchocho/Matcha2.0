@@ -18,6 +18,7 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/:id', (req, res) => {
+	
 	res.send(req.params.id);
 });
 
