@@ -10,6 +10,7 @@ const 	  express 		= require('express'),
 	  flash			= require('connect-flash'),
 	  PORT 			= 3000;
 
+app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
