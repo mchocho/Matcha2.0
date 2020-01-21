@@ -38,13 +38,16 @@ router.get('/', (req, res) => {
 				if (err) {throw err}
 				if (result.length == 0) {
 					res.render('signin', {error_2: 'Sorry, your email/username or password was incorrect.'});
+					return;
 				} 
 				let passwdCheck = bcrypt.compareSync(user.password, result[0].password);
 				if (!passwdCheck) {
 					res.render('signin', {error_2: 'Sorry, your email/username or password was incorrect.'});
+					return;
 				}
 				if (result[0].verified === 'F') {
 					res.redirect('/verify_email');
+					return;
 				} else {
 					const profile = result[0];
 					sql = "SELECT id FROM locations WHERE user_id = ?";

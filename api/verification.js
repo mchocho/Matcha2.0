@@ -42,6 +42,7 @@ router.get('/:id', (req, res) => {
 			console.log("There was an error in verification api, handle this error");
 			return;
 		}
+		//req.flash();
 		res.redirect('/');
 	}
 });
