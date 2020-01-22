@@ -1,12 +1,18 @@
 function script() {
 	// $('.slider').bxSlider();
-	const DEVMODE = true;
-
-	const inputFields = [
-		document.getElementById('username_txt'),
-		document.getElementById('first_name_txt'),
-		document.getElementById('last_name_txt')
-
+	const DEVMODE = true,
+	      inputFields = [
+		document.getElementById('username_txt'),			//0
+		document.getElementById('firstname_txt'),			//1
+		document.getElementById('lastname_txt'),			//2
+		document.getElementById('gender_female_btn'),			//3
+		document.getElementById('gender_male_btn'),			//4
+		document.getElementById('preference_female_btn'),		//5
+		document.getElementById('preference_male_btn'),			//6
+		document.getElementById('preference_both_btn'),			//7
+		document.getElementById('preference_both_btn'),			//8
+		document.getElementById('interest_txt'),			//9
+		document.getElementById('biography_txt')			//10
 	];
 
 	function isNode(el) {
@@ -14,7 +20,7 @@ function script() {
     	}
 
     	function isValidStr(val) {
-    		return (Object.prototype.toString.call(val) !== "[object String]"
+    		return (Object.prototype.toString.call(val) === "[object String]"
     			&& val.length > 0 && /^[a-zA-Z]+$/.test(val))
     	}
 
@@ -26,7 +32,7 @@ function script() {
 		}, true);
 
 		confirm_btn.addEventListener('click', function() {
-			if (validation) {
+			if (validation()) {
 				edit_container.classList.add('hide');
 				edit_btn.classList.remove('hide');
 			}
@@ -40,7 +46,7 @@ function script() {
 		}, true);
 	}
 
-	//Enable edit
+	//Enable text input editing
 	editActions(
 		document.getElementById('username_edit_btn'),
 		document.getElementById('username_edit_container'),
@@ -49,41 +55,47 @@ function script() {
 		validateUsername
 	);
 
-
 	editActions(
 		document.getElementById('fullname_edit_btn'),
 		document.getElementById('fullname_edit_container'),
 		document.getElementById('fullname_confirm'),
 		document.getElementById('fullname_cancel'),
-		validateUsername
+		validateFullname
 	);
 
 	editActions(
 		document.getElementById('interests_add_btn'),
 		document.getElementById('interest_edit_container'),
 		document.getElementById('interests_confirm'),
-		document.getElementById('interests_cancel')
+		document.getElementById('interests_cancel'),
+		validateInterests
 	);
 
 	//Validation methods
 	function validateUsername() {
-		const value = inputFields[0].value,
+		const value =  inputFields[0].value.trim(),
 		      error_node = document.getElementById('error_0');
 
-		if (value.length > 3 && !isValidStr(value)) {
+		if (value.length < 3 && !isValidStr(value)) {
 			error_node.textContent = "Please enter a valid username";
 			return false;
 		}
 		error_node.textContent = "";
+		if (DEVMODE)
+			console.log('Updating username');
+		xhr('/user/username.' + value, 'POST', null, function(xhr) {
+			console.log("Hello xhr callback!");
+			//const result = xhr.resp
+		});
 		return true;
 	}
 
 	function validateFullname() {
-		const firstname = inputFields[1].value,
-		      lastname = inputField[2].value,
+		const firstname = inputFields[1].value.trim(),
+		      lastname = inputFields[2].value.trim(),
 		      error_node = document.getElementById('error_1');
 
-		if (firstname.length === 0 || !isValidStr(firstname) {
+		if (firstname.length === 0 || !isValidStr(firstname)) {
 			error_node.textContent = "Please enter a first name";
 			return false;
 		}
@@ -91,36 +103,41 @@ function script() {
 			error_node.textContent = 'Please enter a last name';
 			return false;
 		}
+		if (firstname.indexOf('|') > -1 || lastname.indexOf('|') > -1)
+		{
+			error_node.textContent = 'No pipe characters allowed';
+			return false;
+		}
+		error_node.textContent = "";
+		if (DEVMODE)
+			console.log('Updating full name');
+		xhr('/user/fullname.' + firstname + '.' + lastname);
 		return true;
 	}
 
 	function validateInterests() {
-		const value = 
+		const value = inputFields[9].value.trim(),
+		      error_node = document.getElementById('error_4');
+
+		if (value.length <= 2) {
+			error_node.textContent = 'Please enter your interests';
+			return false;
+		}
+		error_node.textContent = "";
+		return true;
 	}
-	
 
+	function validateBio() {
+		const value = inputFields[10].value,
+		      error_node = document.getElementById('error_5');
 
-
-	//Send requests on confirmation click or button change
-	document.getElementById('username_confirm').addEventListener('click', function() {
-		const value = inputFields[0].value;
-
-		if (value.length > 0) {
-			if (DEVMODE)
-				console.log('Updating username');
-			xhr('/user/username.' + value, 'POST');
+		if (value.length == 0) {
+			error_node.textContent = 'Please enter your biography';
+			return false;
 		}
-	});
-
-	document.getElementById('fullname_confirm').addEventListener('click', function() {
-		const firstname = inputFields[1].value;
-		const lastname = inputField[2].value;
-
-		if (firstname.length < 1) {
-			
-		}
-	});
-
+		error_node.textContent = "";
+		return true;
+	}
 
 	//TEST
 	// let pair = 'email.HappyDay'

@@ -17,7 +17,7 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
-	const sess = req.session[0];
+	const sess = req.session.user;
 	if (ft_util.isobject(sess))
 		res.redirect('/matcha');
 	res.render('signup.pug', {errors: ft_util.init_errors()});
@@ -113,4 +113,3 @@ router.get('/', (req, res) => {
 		res.redirect('signup', {errors: errors});
 	}
 });
->>>>>>> master

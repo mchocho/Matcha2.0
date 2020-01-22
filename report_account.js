@@ -17,7 +17,7 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/:id', (req, res) => {
-	const sess = req.session[0],
+	const sess = req.session.user,
 		id = Number(req.params.id),
 		token = uuidv4(),
 		url = "http://localhost:3000/verification/?key=" + token;

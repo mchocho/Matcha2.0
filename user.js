@@ -12,7 +12,7 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
-	const sess = req.session[0];
+	const sess = req.session.user;
 	let   sql = "SELECT * from images WHERE user_id = ?",
 		  images,
 		  tags;
@@ -78,45 +78,24 @@ router.get('/', (req, res) => {
 			});
 		});
 	});
-}).post('/:key.:val', (req, res) => {
-	const sess = req.session[0],
-	      key = req.params.key,
-	      val = req.params.val;
+}).post('/:key.:val.:val2?', (req, res) => {
+	const sess = req.session.user,
+	      key = req.params.key.trim(),
+	      val = req.params.val.trim();
 	let sql,
 	    json = `{"key": "${key}", "value": "${val}", `;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});
 	
-	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T') {
+	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || val.length === 0) {
 		res.end(json + '"result": "Failed"}');
         	return;
 	}
 		
-	console.log('STATUS: ' + res.statusCode);
-  	console.log('HEADERS: ' + JSON.stringify(res.headers));
-
-  	/*if (key === 'username')
-		sql = "UPDATE users SET username = ? WHERE id = ?";
-	else if (key === 'fullname')
-		sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
-	else if (key === 'gender')
-		sql = "UPDATE users SET gender = ? WHERE id = ?";
-	else if (key === 'preferences')
-		sql = "UPDATE users SET preferences = ? WHERE id = ?";
-	else if (key === 'DOB')
-		sql = "UPDATE users SET DOB = ? WHERE id = ?";
-	else if (key === 'email')
-		sql = "UPDATE users SET email = ? WHERE id = ?";
-	else if (key === 'password') {
-		sql = "UPDATE users SET password = ? WHERE id = ?";
-		//Encrypt value
+	if (ft_util.VERBOSE) {
+		console.log('STATUS: ' + res.statusCode);
+  		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
-	else if (key === 'bio')
-		sql = "UPDATE users SET biography = ? WHERE id = ?";
-	else {
-		res.end(json + '"result": "Failed"}');
-        return;
-	}*/
 
   	switch(key) {
 		case 'username':
@@ -127,17 +106,36 @@ router.get('/', (req, res) => {
 		case 'password':
 		case 'bio':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
-			//if (key === 'DOB')
 			break;
 		case 'fullname':
 			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
-			break;
+			if (ft_util.isstring(req.params.val2))
+				if (req.params.val2.length > 0)
+					break;
 		default:
 			res.end(json + '"result": "Failed"}');
 	        return;
 	}
 
-	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val.split('|')[0].trim(), val.split('|')[1].trim(), sess.id],(err, result) => {
+	
+	if (key === 'username' || key === 'email')
+	{
+		ft_util.valueExists(dbc, 'users', key, val).then((result) => {
+			if (result) {
+				res.end(json + '"result": "Not unique"}');
+			} else {
+				dbc.query(sql, [val, sess.id], (err, result) => {
+					if (err) {throw err}
+					if (result.affectedRows === 1)
+						res.end(json + '"result": "Success"}');
+					else
+						res.end(json + '"result": "Failed"}');
+				});
+			}
+		});
+		return;
+	}
+	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, req.param.val2, sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1)
 			res.end(json + '"result": "Success"}');

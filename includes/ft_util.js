@@ -137,11 +137,20 @@ function ft_locateUser(report) {
 					}
 					resolve(result)
 				});
-				res.on('error', (result) => {
-					reject('Failed to locate user');
-				});
+			res.on('error', (result) => {
+				reject('Failed to locate user');
+			});
 		});
 		req.end();
+	});
+}
+
+function ft_valueExists(dbc, table, key, value) {
+	return new Promise((resolve, reject) => {
+		dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ?", [value], (err, result) => {
+			if (err) {throw err}
+			resolve(result.length > 0);
+		});
 	});
 }
 
@@ -163,4 +172,4 @@ module.exports.validateUser = validateUser;
 module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
->>>>>>> master
+module.exports.valueExists = ft_valueExists;

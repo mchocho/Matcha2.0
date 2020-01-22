@@ -13,7 +13,7 @@ let router = express.Router();
 module.exports = router;
 
 router.all('/:redirectTo.:arg?', (req, res) => {
-	const sess = req.session[0];
+	const sess = req.session.user;
 	let sql = "SELECT valid FROM users WHERE id = ?";
 	
 	if (!ft_util.isobject(sess)) {

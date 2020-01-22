@@ -1,4 +1,8 @@
-function xhr(url, method, body) {
+function isFunction(value) {
+  return Object.prototype.toString.call(value) == '[object Function]';
+}
+
+function xhr(url, method, body, callback) {
  	const DEVMODE = true;
 
 	if (DEVMODE)
@@ -8,7 +12,10 @@ function xhr(url, method, body) {
 
   	xhr.open(method, url);
 
-  	xhr.send(body);
+	if (body != null)
+		xhr.send(body);
+	else
+		xhr.send();		
 
   	xhr.onload = function() {
 		if (DEVMODE) {
@@ -17,6 +24,8 @@ function xhr(url, method, body) {
     			else
       				console.log(`Server response:\n ${xhr.responseText}`);
 		}
+		if (isFunction(callback))
+			callback(xhr);
   	};
 
   	xhr.onerror = function() {

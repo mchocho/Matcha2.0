@@ -53,32 +53,34 @@ html
         input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
         #fullname_edit_container.edit.hide
           span#error_1.error
-          input#firstname_edit_txt(type='text', placeholder='First name', value=user.first_name)
+          input#firstname_txt(type='text', placeholder='First name', value=user.first_name)
           br
-          input#lastname_edit_txt(type='text', placeholder='Last name', value=user.last_name)
+          input#lastname_txt(type='text', placeholder='Last name', value=user.last_name)
           br
-          #new-fullname-confirm.btn-group(role='group', aria-label='Confirm username change')
+          #new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
             button#fullname_confirm.btn.btn-secondary(type='button', name='fullname_save') Confirm
             button#fullname_cancel.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
         .edit
           h4 Gender
-          #gender_group.btn-group(role='group', aria-label='Gender')
+          span#error_2.error
+          #gender_group.btn-group(role='group', aria-label='Confirm gender change')
             button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
-            button#gender_male.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
+            button#gender_male_btn.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
         .edit
           h4 Sexual preference
-          #preference_group.btn-group(role='group', aria-label='preferences')
-            button#preference_female.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
-            button#preference_male.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
-            button#preference_both.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
+          span#error_3.error
+          #preference_group.btn-group(role='group', aria-label='Confirm preference change')
+            button#preference_female_btn.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+            button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+            button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
         .edit
           h4 Interests
+          span#error_4.error
           input#interests_add_btn.custom_btn.ib(type='button', value='Add')
           #interest_edit_container.interest_edit.hide
-            span#error_2.error
-            input#interest_edit_txt(type='text', placeholder='Add interest')
+            input#interest_txt(type='text', placeholder='Add interest')
             br
-            #new-tags-confirm.btn-group(role='group', aria-label='Confirm username change')
+            #new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
               button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
               button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
           ul.interests_list.list.multi-column
@@ -86,11 +88,16 @@ html
               li #{val.tagname}
         .edit
           h4 Biography
+          span#error_5.error
           p#biography.value.bio #{user.biography}
           input#biography_edit.custom_btn.ib(type='button', value='Edit')
+          .edit_container.biography.hide
+            textarea#biography_txt(placeholder='Say something about yourself')
+            #new-tags-confirm.btn-group(role='group', aria-label='Confirm username change')
         .edit
-          #map
-            input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
+         span#error_6.error
+         input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
+         #map
       footer
         | Icons made by 
         a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy

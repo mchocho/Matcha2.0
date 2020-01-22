@@ -15,8 +15,6 @@ function script() {
         filter_btns[i].addEventListener('click', function(e) {
             const value = e.target.textContent.trim();
            
-            console.log('User has chosen value: ' + value);
-
             if (value === 'Age')
                 slider_container.classList.remove('hide');
             else if (!slider_container.classList.contains('hide'))
@@ -40,6 +38,5 @@ function script() {
 
     age_1.textContent = slider_1.value;
     age_2.textContent = slider_2.value;
-    console.log('Hello world');
 }
 document.addEventListener("DOMContentLoaded", script);

@@ -9,7 +9,7 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
-	const sess = req.session[0];
+	const sess = req.session.user;
 	let sql = "UPDATE users SET online = 'F' WHERE id = ?";
 	if (ft_util.isobject(sess))
 		dbc.query(sql, [sess.id], (err, result) => {

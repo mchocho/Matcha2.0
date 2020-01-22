@@ -13,7 +13,7 @@ function generate_user(i) {
 		faker.name.findName(),				//0
 		faker.name.firstName(),				//1
 		faker.name.lastName(),				//2
-		['M', 'F'][ft_util.ranint(2)],		//3
+		['M', 'F'][ft_util.ranint(1)],		//3
 		['M', 'F', 'B'][ft_util.ranint(2)],	//4
 		faker.date.between('1940-01-01', '2000-12-31'),				//5
 		faker.internet.email(),				//6

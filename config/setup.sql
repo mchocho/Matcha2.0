@@ -237,4 +237,3 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications`
   ON UPDATE CASCADE , 
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
->>>>>>> master
