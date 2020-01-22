@@ -37,7 +37,7 @@ let verifyUserEmail = require('./api/verification');
 app.use('/verification', verifyUserEmail);
 
 let forgotPassword = require('./forgot_password');
-app.use('/forgotpassword', forgotPassword);
+app.use('/forgot_password', forgotPassword);
 
 let userRouter = require('./user');
 app.use('/user', userRouter);
