@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`tokens`
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 	`user_id` INT UNSIGNED NOT NULL , 
 	`token` VARCHAR(180) DEFAULT NULL ,
-	`new_password` VARCHAR(180) DEFAULT NULL , 
 	`request` ENUM('registration','verification','password_reset','email_reset','username_reset') NOT NULL , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	CONSTRAINT `tokens_id_constraint`
