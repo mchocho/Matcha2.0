@@ -9,7 +9,9 @@ let setUserVerification	= "UPDATE `users` SET `verified` = ? WHERE `id` = ?";
 let updateToken			= "UPDATE `tokens` SET `token` = ? WHERE `id` = ?";
 let delTokenRow			= "DELETE FROM `tokens` WHERE `id` = ?";
 let selUserIdByEmail	= "SELECT `id` FROM `users` WHERE email = ?";
-let insNewToken			= "INSERT INTO `tokens` (`user_id`, `token`, `request`) VALUES (?, ?, ?)"
+let insNewPwToken		= "INSERT INTO `tokens` " +
+							" (`user_id`, `token`, `new_password`,`request`) " +
+							" VALUES (?, ?, ?, ?)";
 
 module.exports = {
 	selAllUsers,
@@ -23,5 +25,5 @@ module.exports = {
 	updateToken,
 	delTokenRow,
 	selUserIdByEmail,
-	insNewToken
+	insNewPwToken
 }	
