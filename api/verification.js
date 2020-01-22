@@ -23,6 +23,7 @@ router.get('/:id', (req, res) => {
 		}
 		tokenRow = result[0];
 		let vals = ['T', tokenRow.user_id];
+		
 		dbc.query(sql.setUserVerification, vals, setUserVerified)
 	}
 

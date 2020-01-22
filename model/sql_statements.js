@@ -8,6 +8,8 @@ let findByToken			= "SELECT * FROM `tokens` WHERE `token` = ?";
 let setUserVerification	= "UPDATE `users` SET `verified` = ? WHERE `id` = ?";
 let updateToken			= "UPDATE `tokens` SET `token` = ? WHERE `id` = ?";
 let delTokenRow			= "DELETE FROM `tokens` WHERE `id` = ?";
+let selUserIdByEmail	= "SELECT `id` FROM `users` WHERE email = ?";
+let insNewToken			= "INSERT INTO `tokens` (`user_id`, `token`, `request`) VALUES (?, ?, ?)"
 
 module.exports = {
 	selAllUsers,
@@ -19,5 +21,7 @@ module.exports = {
 	findByToken,
 	setUserVerification,
 	updateToken,
-	delTokenRow
+	delTokenRow,
+	selUserIdByEmail,
+	insNewToken
 }	
