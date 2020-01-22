@@ -5,6 +5,14 @@ const express 		= require('express'),
 let router = express.Router();
 module.exports = router;
 
-router.get('/', (req, res) => {
+router.route('/')
+.get((req, res) => {
 	res.render('forgot_password');
+}).post((req, res) => {
+	let vals = [req.body.username];
+	dbc.query(sql.selUserByUname, vals, getUserId);
+
+	function getUserId(err, result) {
+		if (err) {throw err}
+	}
 });
