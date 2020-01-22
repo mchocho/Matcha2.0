@@ -4,9 +4,7 @@ const fs 			= require('fs'),
       credentials 	= require('../model/credentials.js'),
       ft_util 		= require('../includes/ft_util.js');
 
-
-const users = credentials.users;
-dbc = mysql.createConnection(users['roger_mbp_setup']);
+dbc = mysql.createConnection(credentials.setupCred);
 
 dbc.connect((err) => {
 	if (err) throw err;
