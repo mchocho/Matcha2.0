@@ -25,6 +25,9 @@ router.get('/:id', (req, res) => {
 		let vals = ['T', tokenRow.user_id];
 		if (tokenRow.request == 'registration') {
 			dbc.query(sql.setUserVerification, vals, delTokenRow)
+		} else if (tokenRow.request == 'password_reset') {
+			vals = [tokenRow.new_password, tokenRow.user_id];
+			dbc.query(sql.updatePasswd, vals, delTokenRow);
 		}
 	}
 
@@ -40,11 +43,17 @@ router.get('/:id', (req, res) => {
 
 	function returnSuccess(err, result) {
 		if (err) {throw err}
+		let message;
 		if (result.affectedRows === 0) {
 			console.log("There was an error in verification api, handle this error");
 			return;
 		}
-		req.flash('message', 'You have successfully verified your account, please signin.');
+		if (tokenRow.request == 'registration') {
+			message = 'You have successfully verified your account, please signin.';
+		} else if (tokenRow.request == 'password_reset') {
+			message = 'You have successfully changed your password, please signin';
+		}
+		req.flash('message', message);
 		res.redirect('/');
 	}
 });

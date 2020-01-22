@@ -12,18 +12,14 @@ let selUserIdByEmail	= "SELECT `id` FROM `users` WHERE email = ?";
 let insNewPwToken		= "INSERT INTO `tokens` " +
 							" (`user_id`, `token`, `new_password`,`request`) " +
 							" VALUES (?, ?, ?, ?)";
+let updatePasswd		= "UPDATE `users` SET `password` = ? WHERE `id` = ?";
 
 module.exports = {
-	selAllUsers,
-	selAllUsersDesc,
-	selAllOthersDesc,
-	selUserByEmail,
-	selUserByUname,
-	selUserById,
-	findByToken,
-	setUserVerification,
-	updateToken,
-	delTokenRow,
-	selUserIdByEmail,
-	insNewPwToken
+	selAllUsers, selAllUsersDesc,
+	selAllOthersDesc, selUserByEmail,
+	selUserByUname, selUserById,
+	findByToken, setUserVerification,
+	updateToken, delTokenRow,
+	selUserIdByEmail, insNewPwToken,
+	updateToken, updatePasswd
 }	
