@@ -1,9 +1,7 @@
 const mysql = require("mysql"),
-      credentials = require("./credentials.js");
+      credentials = require("./credentials");
 
-const users = credentials.users;
-
-dbc = mysql.createConnection(users['Titan']);
+dbc = mysql.createConnection(credentials.connCred);
 
 dbc.connect((err) => {
     if (err){

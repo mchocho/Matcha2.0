@@ -1,20 +1,24 @@
-const 	  express 		= require('express'),
-	  path			= require('path'),
-	  mysql			= require('mysql'),
-	  body_p		= require('body-parser'),
-	  moment		= require('moment'),
-	  URL			= require('url'),
-	  session 		= require('express-session'),
-	  uuidv4 		= require('uuid/v4'),
-	  app 			= express(),
-	  PORT 			= 3000;
+const express 		= require('express'),
+	  	path		= require('path'),
+	  	mysql		= require('mysql'),
+	  	body_p		= require('body-parser'),
+	  	moment		= require('moment'),
+	  	URL			= require('url'),
+	  	session 	= require('express-session'),
+	  	uuidv4 		= require('uuid/v4'),
+	  	app 		= express(),
+	  	flash		= require('connect-flash'),
+	  	PORT 		= 3000;
 
+require('dotenv').config();
+app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(body_p.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
-app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialized: true, resave: true}));
+// Does the secret not change everytime?
+app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialized: true, resave: true})); 
 
 if (app.get('env') === 'production') 
 	app.set('trust proxy', 1);
@@ -27,6 +31,10 @@ app.use('/signup', signupRouter);
 
 let verify_emailRouter = require('./verify_email');
 app.use('/verify_email', verify_emailRouter);
+
+// This route will do the actual email verification step
+let verifyUserEmail = require('./api/verification');
+app.use('/verification', verifyUserEmail);
 
 let userRouter = require('./user');
 app.use('/user', userRouter);

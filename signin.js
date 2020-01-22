@@ -4,6 +4,7 @@ const express 			= require('express'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  util 			= require('util'),
+	  bcrypt		= require('bcrypt'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
 	  googleMapsClient  = require('@google/maps').createClient({key: 'AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q'});
@@ -13,9 +14,11 @@ module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
-	if (ft_util.isobject(sess))
-		res.redirect('/matcha');
-	res.render('signin.pug', {});
+	if (ft_util.isobject(sess)) { // Why the isObject func?
+		res.redirect('/matcha'); // What does this actaully do
+	}
+	let message = req.flash('message');
+	res.render('signin.pug', {message: message[0]});
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
@@ -30,19 +33,23 @@ router.get('/', (req, res) => {
 			errors['error_1'] = 'Enter your password';
 		}
 		if (result === true) {
-			let sql = "SELECT * FROM users WHERE (password = ? AND (username = ? OR email = ?))";
-			dbc.query(sql, [user.password, user.username, user.username], (err, result) => {
+			let sql = "SELECT * FROM users WHERE (username = ? OR email = ?)";
+
+			dbc.query(sql, [user.username, user.username], (err, result) => { // username twice?
 				if (err) {throw err}
 				if (result.length == 0) {
-					res.render('signin', {error_2: 'Sorry, your email or password was incorrect.'});
+					res.render('signin', {error_2: 'Sorry, your email/username or password was incorrect.'});
+					return;
+				} 
+				let passwdCheck = bcrypt.compareSync(user.password, result[0].password);
+				if (!passwdCheck) {
+					res.render('signin', {error_2: 'Sorry, your email/username or password was incorrect.'});
 					return;
 				}
-				else if (result[0].verified === 'F') {
+				if (result[0].verified === 'F') {
 					res.redirect('/verify_email');
 					return;
-				}
-				else
-				{
+				} else {
 					const profile = result[0];
 					req.session.user = profile;
 					sql = "SELECT id FROM locations WHERE user_id = ?";
