@@ -1,7 +1,8 @@
 const express 		= require('express'),
 	  	dbc			= require('./model/sql_connect.js'),
 		sql			= require('./model/sql_statements'),
-		uuidv4 		= require('uuid/v4');
+		uuidv4 		= require('uuid/v4'),
+		email		= require('./includes/mail_client.js');
 
 let router = express.Router();
 module.exports = router;
