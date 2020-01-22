@@ -149,7 +149,7 @@ function ft_valueExists(dbc, table, key, value) {
 	return new Promise((resolve, reject) => {
 		dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ?", [value], (err, result) => {
 			if (err) {throw err}
-			resolve(result.length > 0);
+			resolve(result);
 		});
 	});
 }

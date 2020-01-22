@@ -1,117 +1,138 @@
 doctype html
 html
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title #{title}
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/user.css', media='all')       
-    link(rel='stylesheet', href='/css/main.css', media='all')       
-  body#user
-    header
-      a(href='/')
-        div
-          img(src='images/logo.png')
-        .heading
-          h1 Cupid's Arrow
-      .profile_container
-        a(href='/notifications')
-          img.notifications.icons(src='images/icons/bell_0.png')
-        a(href='/messages')
-          img.messages.icons(src='images/icons/envelope.png')
-    .profile_content(align='center')
-      .profile_pic_content.slider
-       if (user.images.length === 0)
-          div
-           img(src='images/placeholder.png')
-       else
-        each image, index in user.images
-         if (image.profile_pic === 'T')
-          div
-           if (image.name.startsWith('http://'))
-            img.profile_pic(src=image.name, alt='User\'s profile pic')
-           else
-            img.profile_pic(src='images/users/' + image.name, alt='User\'s profile pic') 
-        span.user_rating
-          | #{user.rating} 
-          img(src='/images/icons/star.png')
-      .views_container
-        | #{user.viewcount} views this week
-      form
-        h4#username.value #{user.username}
-        input#username_edit_btn.custom_btn.ib(type='button', value='Edit')
-        #username_edit_container.edit.hide
-          span#error_0.error
-          input#username_txt(type='text', placeholder='New username')
-          br
-          #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-            button#username_confirm.btn.btn-secondary(type='button', name='username_save') Confirm
-            button#username_cancel.btn.btn-secondary(type='button', name='username_cancel') Cancel
-        h4#fullname.value #{user.first_name} #{user.last_name}
-        input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
-        #fullname_edit_container.edit.hide
-          span#error_1.error
-          input#firstname_txt(type='text', placeholder='First name', value=user.first_name)
-          br
-          input#lastname_txt(type='text', placeholder='Last name', value=user.last_name)
-          br
-          #new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
-            button#fullname_confirm.btn.btn-secondary(type='button', name='fullname_save') Confirm
-            button#fullname_cancel.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
-        .edit
-          h4 Gender
-          span#error_2.error
-          #gender_group.btn-group(role='group', aria-label='Confirm gender change')
-            button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
-            button#gender_male_btn.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
-        .edit
-          h4 Sexual preference
-          span#error_3.error
-          #preference_group.btn-group(role='group', aria-label='Confirm preference change')
-            button#preference_female_btn.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
-            button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
-            button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
-        .edit
-          h4 Interests
-          span#error_4.error
-          input#interests_add_btn.custom_btn.ib(type='button', value='Add')
-          #interest_edit_container.interest_edit.hide
-            input#interest_txt(type='text', placeholder='Add interest')
-            br
-            #new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-              button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
-              button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
-          ul.interests_list.list.multi-column
-            each val, index in user.tags
-              li #{val.tagname}
-        .edit
-          h4 Biography
-          span#error_5.error
-          p#biography.value.bio #{user.biography}
-          input#biography_edit.custom_btn.ib(type='button', value='Edit')
-          .edit_container.biography.hide
-            textarea#biography_txt(placeholder='Say something about yourself')
-            #new-tags-confirm.btn-group(role='group', aria-label='Confirm username change')
-        .edit
-         span#error_6.error
-         input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
-         #map
-      footer
-        | Icons made by 
-        a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
-        |  from 
-        a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-        | |
-        a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
-  | |
-  a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons
-        |  from 
-        a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-  script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-  script(type='text/javascript', src='js/button_groups.js')
-  script(type='text/javascript', src='js/xhr.js')
-  script(type='text/javascript', src='js/map.js')
-  script(type='text/javascript', src='js/reloadCSS.js')
-  script(type='text/javascript', src='js/user.js')
+	head
+		meta(charset='utf-8')
+		meta(http-equiv='X-UA-Compatible', content='IE=edge')
+		title #{title}
+		meta(name='viewport', content='width=device-width, initial-scale=1')
+		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+		link(rel='stylesheet', href='/../../node_modules/bxslider/dist/jquery.bxslider.css')
+		link(rel='stylesheet', href='/css/style.css', media='all')  
+		link(rel='stylesheet', href='/css/user.css', media='all')       
+		link(rel='stylesheet', href='/css/main.css', media='all')       
+	body#user
+		header
+			a(href='/')
+				div
+					img(src='images/logo.png')
+				.heading
+					h1 Cupid's Arrow
+			.profile_container
+				a(href='/notifications')
+					img.notifications.icons(src='images/icons/bell_0.png')
+				a(href='/messages')
+					img.messages.icons(src='images/icons/envelope.png')
+		.profile_content(align='center')
+			.profile_pic_content.slider
+				if (user.images.length === 0)
+					div
+						img(src='images/placeholder.png')
+				else
+					each image, index in user.images
+						if (image.profile_pic === 'T')
+							div
+								if (image.name.startsWith('http://'))
+									img.profile_pic(src=image.name, alt='User\'s profile pic')
+						else
+							img.profile_pic(src='images/users/' + image.name, alt='User\'s profile pic') 
+				span.user_rating
+					| #{user.rating} 
+					img(src='/images/icons/star.png')
+			.views_container
+				| #{user.viewcount} views this week
+			form
+				h4#username.value #{user.username}
+				input#username_edit_btn.custom_btn.ib(type='button', value='Edit')
+				#username_edit_container.edit.hide
+					span#error_0.error
+					input#username_txt(type='text', placeholder='New username')
+					br
+					#new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+						button#username_confirm.btn.btn-secondary(type='button', name='username_save') Confirm
+						button#username_cancel.btn.btn-secondary(type='button', name='username_cancel') Cancel
+				h3#fullname.value #{user.first_name} #{user.last_name}
+				input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
+				#fullname_edit_container.edit.hide
+					span#error_1.error
+					input#firstname_txt(type='text', placeholder='First name', value=user.first_name)
+					br
+					input#lastname_txt(type='text', placeholder='Last name', value=user.last_name)
+					br
+					#new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
+						button#fullname_confirm.btn.btn-secondary(type='button', name='fullname_save') Confirm
+						button#fullname_cancel.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
+				.edit
+					h4 Gender
+					span#error_2.error
+					#gender_group.btn-group(role='group', aria-label='Confirm gender change')
+						button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+						button#gender_male_btn.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
+				.edit
+					h4 Sexual preference
+					span#error_3.error
+					#preference_group.btn-group(role='group', aria-label='Confirm preference change')
+						button#preference_female_btn.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+						button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+						button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
+				.edit
+					h4 Password
+					input#password_edit_btn.custom_btn.ib(type='button', value='Change password')
+					#password_edit_container.interest_edit.hide
+						span#error_4.error
+						input#old_password_txt(type='password', placeholder='Enter current password')
+						br
+						input#new_password_txt(type='password', placeholder='Enter new password')
+						br
+						input#confirm_password_txt(type='password', placeholder='Confirm password')
+						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
+							button#password_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
+							button#password_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+					ul.interests_list.list.multi-column
+						each val, index in user.tags
+							li #{val.tagname}
+				.edit
+					h4 Interests
+					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
+					#interest_edit_container.interest_edit.hide
+						span#error_5.error
+						input#interest_txt(type='text', placeholder='Add interest')
+						br
+						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
+							button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
+							button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+					ul.interests_list.list.multi-column
+						each val, index in user.tags
+							li #{val.tagname}
+				.edit
+					h4 Biography
+					span#error_6.error
+					p#biography.value.bio #{user.biography}
+					input#biography_edit_btn.custom_btn.ib(type='button', value='Edit')
+					#biography_edit_container.biography.hide
+						textarea#biography_txt(placeholder='Say something about yourself')
+						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
+							button#biography_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
+							button#biography_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+				.edit
+					span#error_7.error
+					input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
+					#map
+			footer
+				| Icons made by 
+				a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
+				|  from 
+				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+				| |
+				a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
+	| |
+	a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons
+				|  from 
+				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+	script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
+	script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+	script(type='text/javascript', src='/node_modules/bxslider/dist/jquery.bxslider.min.js')
+	script(type='text/javascript', src='js/button_groups.js')
+	script(type='text/javascript', src='js/xhr.js')
+	script(type='text/javascript', src='js/map.js')
+	script(type='text/javascript', src='js/reloadCSS.js')
+	script(type='text/javascript', src='js/user.js')
