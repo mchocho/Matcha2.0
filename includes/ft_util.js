@@ -154,7 +154,26 @@ function ft_valueExists(dbc, table, key, value) {
 	});
 }
 
+function ft_getTagNames(dbc, tags) {
+	return new Promise((resolve, reject) => {
+		if (!ft_isarray(tags))
+			resolve([]);
+		if (tags.length === 0)
+			resolve([]);
+		for(let i = 0, n = tags.length; i < n; i++) {
+			dbc.query("SELECT name FROM tags WHERE id = ?", [tags[i].tag_id], (err, result) => {
+				if (err) {throw err}
+				if (result.length > 0)
+					tags[i]['tagname'] = result[0].name;
+				if (i === n - 1)
+					resolve(tags);
+			});
+		}
+	});
+}
+
 module.exports.VERBOSE = true;
+module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
 module.exports.isfunction = ft_isfunction;
@@ -173,3 +192,4 @@ module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
+module.exports.getTagNames = ft_getTagNames;

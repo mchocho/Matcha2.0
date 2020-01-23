@@ -118,7 +118,7 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/password.' + oldpw+ '.' + confirmpw, 'POST', null, function(xhr) {
+		xhr('/user/resetpassword.' + oldpw+ '.' + confirmpw, 'POST', null, function(xhr) {
 			//Handle the request
 		});
 		return true;

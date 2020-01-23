@@ -61,7 +61,7 @@ router.get('/', (req, res) => {
 			result = false;
 			errors['error_5'] = 'Enter your email';
 		}
-		if (user.password.length < 5 && ft_util.hasuppercase(user.password) && ft_util.haslowercase(user.password) && ft_util.hasNumber(user.password) ) {
+		if (user.password.length < 5 || !ft_util.hasuppercase(user.password) || !ft_util.haslowercase(user.password) || !ft_util.hasNumber(user.password) ) {
 			result = false;
 			errors['error_6'] = 'Provide a valid password of 5 characters or more, with special cases, uppercase and lowercase letters';
 		} else if (user.password !== user.password_confirm) {
@@ -91,8 +91,7 @@ router.get('/', (req, res) => {
 						return;
 					}
 
-					let salt = 10;
-					let hash = bcrypt.hashSync(user.password, salt);
+					let hash = bcrypt.hashSync(user.password, ft_util.SALT);
 	
 					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES ?",  //Only one "?"
 					values = [[ user.username, user.f_name, user.l_name, user.gender.charAt(0), user.preference.charAt(0), user.dob, user.email, hash]]; //What is charAt? where is values declared?
