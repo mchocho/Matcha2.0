@@ -19,7 +19,18 @@ function report_account(url) {
 		<footer align="center">&copy Cupid's Arrow | 2019</footer>`;
 }
 
+function passwordReset(url) {
+	return `<h1>Verify Password Change</h1>
+		<p>Please confirm that you requested to change your password.</p>
+		<button>
+			<a href="${url}" target="_blank">Verify Password Change</a>
+		</button>
+		<br />
+		<footer align="center">&copy Cupid's Arrow | 2019</footer>`;
+}
+
 // export function 
 
 module.exports.verify_signup = registration_verifiaction;
 module.exports.report_account = report_account;
+module.exports.passwordReset = passwordReset;

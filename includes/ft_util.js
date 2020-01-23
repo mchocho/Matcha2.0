@@ -146,8 +146,9 @@ function ft_locateUser(report) {
 }
 
 function ft_valueExists(dbc, table, key, value) {
+	//Checks whether a given value already exists in a table
 	return new Promise((resolve, reject) => {
-		dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ?", [value], (err, result) => {
+		dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ? LIMIT 1", [value], (err, result) => {
 			if (err) {throw err}
 			resolve(result);
 		});
@@ -172,6 +173,24 @@ function ft_getTagNames(dbc, tags) {
 	});
 }
 
+function ft_passwd_check(passwd)
+{
+	// Password Checker only checks if password is long enough and not only numbers
+	let numCheck = 0;
+	if (passwd.length < 6) {
+		return false;
+	} 
+	for (let i = 0; i < passwd.length; i++) {
+		if (isNaN(passwd[i]) === false) {
+			numCheck++;
+		}
+	}
+	if (numCheck === passwd.length) {
+		return false;
+	}
+	return true;
+}
+
 module.exports.VERBOSE = true;
 module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
@@ -192,4 +211,8 @@ module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
+<<<<<<< HEAD
 module.exports.getTagNames = ft_getTagNames;
+=======
+module.exports.passwdCheck = ft_passwd_check;
+>>>>>>> master

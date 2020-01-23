@@ -3,7 +3,7 @@
 *.swp
 *.ghc
 *.stackdump
-DS_STORE
+.DS_Store
 node_modules
 ./package-lock.json
 .env

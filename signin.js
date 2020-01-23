@@ -34,7 +34,7 @@ router.get('/', (req, res) => {
 		}
 		if (result === true) {
 			let sql = "SELECT * FROM users WHERE (username = ? OR email = ?)";
-
+			
 			dbc.query(sql, [user.username, user.username], (err, result) => { // username twice?
 				if (err) {throw err}
 				if (result.length == 0) {
