@@ -22,15 +22,20 @@ router.route('/')
 	let url = "http://localhost:3000/verification/" + token;
 	let vals = [req.body.email];
 
-	let num = req.body.newPassword;
-	// console.log(num.length, isNaN(num[0]));
-	console.log(ft_util.passwdCheck(num));
-	// console.log(_.isNumber(req.body.newPassword));
-	return ;
-
+	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
+		errs.push("Feilds can't be empty");
+	}
+	
 	if (req.body.newPassword !== req.body.confPassword) {
 		errs.push("Passwords don't match");
-	} 
+	} else if (ft_util.passwdCheck(req.body.newPassword) === false) {
+		errs.push("Password must be 6 characters or more and not a number");
+	}
+
+	if (errs.length > 0) {
+		res.render('forgot_password', {messages: errs});
+		return;
+	}
 
 	dbc.query(sql.selUserByEmail, vals, getUserId);
 
@@ -39,6 +44,7 @@ router.route('/')
 		user = result[0];
 		if (!user) {
 			// This is to throw off people trying to guess emails
+			// ie, no email gets sent
 			res.render('confirm_passwordchange');
 			return;
 		}

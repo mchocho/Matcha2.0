@@ -156,17 +156,11 @@ function ft_valueExists(dbc, table, key, value) {
 
 function ft_passwd_check(passwd)
 {
+	// Password Checker only checks if password is long enough and not only numbers
 	let numCheck = 0;
 	if (passwd.length < 6) {
 		return false;
-	} else if (passwd.match('/[a-z]/') === false) {
-		return false;
-	} else if (passwd.match('/[A-Z]/') === false) {
-		return false;
-	} else if (passwd.match("/^[a-zA-Z0-9]+$/") === false) {
-		 // No special chars or spaces
-		return false;
-	}
+	} 
 	for (let i = 0; i < passwd.length; i++) {
 		if (isNaN(passwd[i]) === false) {
 			numCheck++;
