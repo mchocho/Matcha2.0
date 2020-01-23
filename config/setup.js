@@ -1,8 +1,8 @@
-const fs 			= require('fs'),
-      util 			= require('util'),
-      mysql 		= require("mysql"),
-      credentials 	= require('../model/credentials.js'),
-      ft_util 		= require('../includes/ft_util.js');
+const fs = require('fs'),
+	util = require('util'),
+	mysql = require("mysql"),
+	credentials = require('../model/credentials.js'),
+	ft_util = require('../includes/ft_util.js');
 
 dbc = mysql.createConnection(credentials.setupCred);
 
