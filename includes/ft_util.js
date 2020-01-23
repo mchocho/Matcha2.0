@@ -211,8 +211,5 @@ module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
-<<<<<<< HEAD
 module.exports.getTagNames = ft_getTagNames;
-=======
 module.exports.passwdCheck = ft_passwd_check;
->>>>>>> master
