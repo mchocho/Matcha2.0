@@ -254,7 +254,6 @@ router.get('/', (req, res) => {
 	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, req.param.val2, sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
-			if ()
 			res.end(json + '"result": "Success"}');
 		}
 		else
