@@ -4,7 +4,9 @@ const express 		= require('express'),
 		uuidv4 		= require('uuid/v4'),
 		email		= require('./includes/mail_client.js'),
 		msg 		= require('./includes/email_templates.js'),
-		bcrypt		= require('bcrypt');
+		bcrypt		= require('bcrypt'),
+		ft_util		= require('./includes/ft_util.js'),
+		_			= require('lodash');
 
 let router = express.Router();
 module.exports = router;
@@ -19,14 +21,24 @@ router.route('/')
 	let token = uuidv4();
 	let url = "http://localhost:3000/verification/" + token;
 	let vals = [req.body.email];
-	dbc.query(sql.selUserByEmail, vals, getUserId);
 
+	let num = req.body.newPassword;
+	// console.log(num.length, isNaN(num[0]));
+	console.log(ft_util.passwdCheck(num));
+	// console.log(_.isNumber(req.body.newPassword));
+	return ;
+
+	if (req.body.newPassword !== req.body.confPassword) {
+		errs.push("Passwords don't match");
+	} 
+
+	dbc.query(sql.selUserByEmail, vals, getUserId);
 
 	function getUserId(err, result) {
 		if (err) {throw err}
 		user = result[0];
 		if (!user) {
-			// This is to thow off people trying to guess emails
+			// This is to throw off people trying to guess emails
 			res.render('confirm_passwordchange');
 			return;
 		}

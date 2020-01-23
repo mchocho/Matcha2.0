@@ -154,6 +154,26 @@ function ft_valueExists(dbc, table, key, value) {
 	});
 }
 
+function ft_passwd_check(passwd)
+{
+	if (passwd.length < 6) {
+		return false;
+	} else if (passwd.match('/[a-z]/') === false) {
+		return false;
+	} else if (passwd.match('/[A-Z]/') === false) {
+		return false;
+	} else if (passwd.match("/^[a-zA-Z0-9]+$/") === false) {
+		 // No special chars or spaces
+		return false;
+	}
+	for (let i = 0; i < passwd.length; i++) {
+		if (isNaN(passwd[i]) === false) {
+			return false;
+		}
+	}
+	return true;
+}
+
 module.exports.VERBOSE = true;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
@@ -173,3 +193,4 @@ module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
+module.exports.passwdCheck = ft_passwd_check;
