@@ -43,15 +43,15 @@ router.get('/', (req, res) => {
 			sql = "SELECT * from user_tags WHERE user_id = ?";
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) {throw err}
-				/*tags = result;
-				sql = "SELECT name from tags WHERE id = ?";
+				tags = result;
+				/*sql = "SELECT name from tags WHERE id = ?";
 				for (let i = 0, n = tags.length; i < n; i++) {
 					dbc.query(sql, [tags[i].tag_id], (err, result) => {
 						if (err) throw err;
 						tags[i].tagname = result[0];
 					});
 				}*/
-				ft_util.getTagNames(dbc, result).then((tags) => {
+				ft_util.getTagNames(dbc, tags).then((tags) => {
 					if (ft_util.VERBOSE) {
 						console.log(util.inspect({
 							username: sess.username,
@@ -107,19 +107,19 @@ router.get('/', (req, res) => {
 
   	switch(key) {	//Request will accept these keys only
 		case 'interest':
-			ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
+			ft_util.valueExists(dbc, 'tags', 'name', val.toLowerCase()).then((result) => {
 				if (result.length > 0) {
-					sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-					dbc.query(sql, [sess.id, result.id], (err, result) => {
+					sql = "INSERT INTO user_tags (user_id, tag_id) VALUES (?)";
+					dbc.query(sql, [[sess.id, result[0].id]], (err, result) => {
 						if (err) {throw err}
 						res.end(json + '"result": "Success"}');
 					});
 				} else {
-					sql = "INSERT INTO tags (name) VALUES ?";
-					dbc.query(sql, [sess.id, result.id], (err, result) => {
+					sql = "INSERT INTO tags (name) VALUES (?)";
+					dbc.query(sql, [[val.toLowerCase()]], (err, result) => {
 						if (err) {throw err}
-						sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-						dbc.query(sql, [sess.id, result.insertId], (err, result) => {
+						sql = "INSERT INTO user_tags (user_id, tag_id) VALUES (?)";
+						dbc.query(sql, [[sess.id, result.insertId]], (err, result) => {
 							if (err) {throw err}
 							res.end(json + '"result": "Success"}');
 						});
