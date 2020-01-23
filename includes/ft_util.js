@@ -84,9 +84,18 @@ function ft_haslowercase(value) {
 }
 
 
+// function ft_hasNumber(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return /\d/.test(value);
+// }
+
 function ft_hasNumber(value) {
-	if (!ft_isstring(value)) return false;
-	return /\d/.test(value);
+	for (let i = 0; i < value.length; i++) {
+		if (isNaN(value[i]) === false) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function validateUser(res, sess) {
@@ -175,6 +184,7 @@ function ft_getTagNames(dbc, tags) {
 
 function ft_passwd_check(passwd)
 {
+	// Using this in forgot password, will try consolidate it later.
 	// Password Checker only checks if password is long enough and not only numbers
 	let numCheck = 0;
 	if (passwd.length < 6) {
@@ -212,4 +222,4 @@ module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
 module.exports.getTagNames = ft_getTagNames;
-module.exports.passwdCheck = ft_passwd_check;
+module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now
