@@ -3,14 +3,14 @@ const http = require('https');
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
 		if (Object.prototype.toString.call(arguments[i]) !== "[object String]");
-			return false;
+	return false;
 	return true;
 }
 
 function ft_isnumber(value) {
 	for (let i = 0, n = arguments.length; i < n; i++)
 		if (Object.prototype.toString.call(arguments[i]) !== "[object Number]");
-			return false;
+	return false;
 	return true;
 }
 
@@ -48,11 +48,11 @@ function ft_isemail(value) {
 }
 
 function ft_isEmptyObj(value) {
-    for(var key in value) {
-        if(value.hasOwnProperty(key))
-            return false;
-    }
-    return true;
+	for (var key in value) {
+		if (value.hasOwnProperty(key))
+			return false;
+	}
+	return true;
 }
 
 function ft_ranint(max) {
@@ -96,13 +96,13 @@ function validateUser(res, sess) {
 		res.redirect('/..');
 	else if (sess.verified !== 'T')
 		res.redirect('/verify_email');
-    else if (sess.valid !== 'T')
-        res.redirect('/reported_account');
+	else if (sess.valid !== 'T')
+		res.redirect('/reported_account');
 }
 
 function ft_removeBlockedUsers(matches, blacklist) {
 	return new Promise((resolve, reject) => {
-		blacklist.forEach(function(value, index, arr) {
+		blacklist.forEach(function (value, index, arr) {
 			for (let i = 0, n = matches.length; i < n; i++) {
 				if (!'blocked_user' in value)
 					continue;
@@ -116,27 +116,26 @@ function ft_removeBlockedUsers(matches, blacklist) {
 	});
 }
 
-function ft_escape(str){
-  if (!ft_isstring(str))
-	return str;
-  return str.replace(/&(?!\w+;)/g, '&amp;')
-	.replace(/</g, '&lt;')
-	.replace(/>/g, '&gt;')
-	.replace(/"/g, '&quot;');
+function ft_escape(str) {
+	if (!ft_isstring(str))
+		return str;
+	return str.replace(/&(?!\w+;)/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;');
 }
 
 function ft_locateUser(report) {
 	return new Promise((resolve, reject) => {
 		const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) => {
-        		res.on('data', (result) => {
-					if (report === true)
-					{
-						console.log(`Status: ${res.statusCode}`);
-							console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
-								console.log(`${result}`);
-					}
-					resolve(result)
-				});
+			res.on('data', (result) => {
+				if (report === true) {
+					console.log(`Status: ${res.statusCode}`);
+					console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
+					console.log(`${result}`);
+				}
+				resolve(result)
+			});
 			res.on('error', (result) => {
 				reject('Failed to locate user');
 			});
@@ -149,7 +148,9 @@ function ft_valueExists(dbc, table, key, value) {
 	//Checks whether a given value already exists in a table
 	return new Promise((resolve, reject) => {
 		dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ? LIMIT 1", [value], (err, result) => {
-			if (err) {throw err}
+			if (err) {
+				throw err
+			}
 			resolve(result);
 		});
 	});
@@ -161,9 +162,11 @@ function ft_getTagNames(dbc, tags) {
 			resolve([]);
 		if (tags.length === 0)
 			resolve([]);
-		for(let i = 0, n = tags.length; i < n; i++) {
+		for (let i = 0, n = tags.length; i < n; i++) {
 			dbc.query("SELECT name FROM tags WHERE id = ?", [tags[i].tag_id], (err, result) => {
-				if (err) {throw err}
+				if (err) {
+					throw err
+				}
 				if (result.length > 0)
 					tags[i]['tagname'] = result[0].name;
 				if (i === n - 1)
@@ -173,13 +176,12 @@ function ft_getTagNames(dbc, tags) {
 	});
 }
 
-function ft_passwd_check(passwd)
-{
+function ft_passwd_check(passwd) {
 	// Password Checker only checks if password is long enough and not only numbers
 	let numCheck = 0;
 	if (passwd.length < 6) {
 		return false;
-	} 
+	}
 	for (let i = 0; i < passwd.length; i++) {
 		if (isNaN(passwd[i]) === false) {
 			numCheck++;
@@ -211,8 +213,5 @@ module.exports.removeBlockedUsers = ft_removeBlockedUsers;
 module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
-<<<<<<< HEAD
 module.exports.getTagNames = ft_getTagNames;
-=======
 module.exports.passwdCheck = ft_passwd_check;
->>>>>>> master
