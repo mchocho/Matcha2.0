@@ -25,7 +25,7 @@ router.route('/')
 	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
 		errs.push("Feilds can't be empty");
 	}
-	
+
 	if (req.body.newPassword !== req.body.confPassword) {
 		errs.push("Passwords don't match");
 	} else if (ft_util.passwdCheck(req.body.newPassword) === false) {
@@ -48,7 +48,14 @@ router.route('/')
 			res.render('confirm_passwordchange');
 			return;
 		}
-		createToken(user);
+		checkOldTokens(user);
+	}
+
+	function checkOldTokens(user) {
+		dbc.query(sql.delOldTokens, [user.id], (err, result) => {
+			if (err) {throw err}
+			createToken(user);
+		});
 	}
 
 	function createToken(user) {

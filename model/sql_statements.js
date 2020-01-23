@@ -13,6 +13,7 @@ let insNewPwToken		= "INSERT INTO `tokens` " +
 							" (`user_id`, `token`, `new_password`,`request`) " +
 							" VALUES (?, ?, ?, ?)";
 let updatePasswd		= "UPDATE `users` SET `password` = ? WHERE `id` = ?";
+let delOldTokens		= "DELETE FROM `tokens` WHERE `user_id` = ?";
 
 module.exports = {
 	selAllUsers, selAllUsersDesc,
@@ -21,5 +22,6 @@ module.exports = {
 	findByToken, setUserVerification,
 	updateToken, delTokenRow,
 	selUserIdByEmail, insNewPwToken,
-	updateToken, updatePasswd
+	updateToken, updatePasswd,
+	delOldTokens
 }	
