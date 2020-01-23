@@ -12,18 +12,24 @@ module.exports = router;
 router.route('/')
 .get((req, res) => {
 	// TODO Stop a signed in user from seeing this page
-	let messages = req.flash('messages');
-	res.render('forgot_password', {messages});
+	res.render('forgot_password');
 }).post((req, res) => {
+	let errs = [];
 	let user;
 	let token = uuidv4();
 	let url = "http://localhost:3000/verification/" + token;
 	let vals = [req.body.email];
 	dbc.query(sql.selUserByEmail, vals, getUserId);
 
+
 	function getUserId(err, result) {
 		if (err) {throw err}
 		user = result[0];
+		if (!user) {
+			// This is to thow off people trying to guess emails
+			res.render('confirm_passwordchange');
+			return;
+		}
 		createToken(user);
 	}
 
