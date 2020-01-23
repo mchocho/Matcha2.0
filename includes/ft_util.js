@@ -1,4 +1,5 @@
 const http = require('https');
+let format = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
@@ -80,8 +81,10 @@ function init_errorlist() {
 
 // Returns true on first occurence of uppercase char 
 function ft_hasuppercase(str) {
+	let char;
 	for (let i = 0; i < str.length; i++) {
-		if (str[i] >= 65 || str[i] <= 90) {
+		char = str[i];
+		if (isNaN(char) && !char.match(format) && char == char.toUpperCase()) {
 			return true;
 		}
 	}
@@ -90,8 +93,10 @@ function ft_hasuppercase(str) {
 
 // Returns true on first occurrence of lowercase char
 function ft_haslowercase(str) {
+	let char;
 	for (let i = 0; i < str.length; i++) {
-		if (str[i] >= 97 || str[i] <= 122) {
+		char = str[i];
+		if (isNaN(char) && !char.match(format) && char == char.toLowerCase()) {
 			return true;
 		}
 	}
