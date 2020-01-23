@@ -156,6 +156,7 @@ function ft_valueExists(dbc, table, key, value) {
 
 function ft_passwd_check(passwd)
 {
+	let numCheck = 0;
 	if (passwd.length < 6) {
 		return false;
 	} else if (passwd.match('/[a-z]/') === false) {
@@ -168,8 +169,11 @@ function ft_passwd_check(passwd)
 	}
 	for (let i = 0; i < passwd.length; i++) {
 		if (isNaN(passwd[i]) === false) {
-			return false;
+			numCheck++;
 		}
+	}
+	if (numCheck === passwd.length) {
+		return false;
 	}
 	return true;
 }
