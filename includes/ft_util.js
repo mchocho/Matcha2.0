@@ -73,15 +73,35 @@ function init_errorlist() {
 	};
 }
 
-function ft_hasuppercase(value) {
-	if (!ft_isstring(value)) return false;
-	return (value.toLowerCase() != value);
+// function ft_hasuppercase(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return (value.toLowerCase() != value);
+// }
+
+// Returns true on first occurence of uppercase char 
+function ft_hasuppercase(str) {
+	for (let i = 0; i < str.length; i++) {
+		if (str[i] >= 65 || str[i] <= 90) {
+			return true;
+		}
+	}
+	return false;
 }
 
-function ft_haslowercase(value) {
-	if (!ft_isstring(value)) return false;
-	return (value.toUpperCase() != value);
+// Returns true on first occurrence of lowercase char
+function ft_haslowercase(str) {
+	for (let i = 0; i < str.length; i++) {
+		if (str[i] >= 97 || str[i] <= 122) {
+			return true;
+		}
+	}
+	return false;
 }
+
+// function ft_haslowercase(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return (value.toUpperCase() != value);
+// }
 
 
 // function ft_hasNumber(value) {
@@ -89,6 +109,7 @@ function ft_haslowercase(value) {
 // 	return /\d/.test(value);
 // }
 
+// Returns true on first occurrence of digit
 function ft_hasNumber(value) {
 	for (let i = 0; i < value.length; i++) {
 		if (isNaN(value[i]) === false) {
