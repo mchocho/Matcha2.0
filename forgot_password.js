@@ -11,7 +11,9 @@ module.exports = router;
 
 router.route('/')
 .get((req, res) => {
-	res.render('forgot_password');
+	// TODO Stop a signed in user from seeing this page
+	let messages = req.flash('messages');
+	res.render('forgot_password', {messages});
 }).post((req, res) => {
 	let user;
 	let token = uuidv4();
@@ -40,5 +42,6 @@ router.route('/')
 		}
 		email.main(user.email, "Password Reset Confirmation", msg.passwordReset(url))
 		.catch(console.error);
+		res.render('confirm_passwordchange');
 	}
 });
