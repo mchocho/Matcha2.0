@@ -220,7 +220,23 @@ function ft_passwd_check(passwd)
 	return true;
 }
 
-module.exports.VERBOSE = false;
+var tagsToReplace = {
+    '&': '&amp;',
+    '<': '&lt;',
+	'>': '&gt;',
+	"'": '&#39;',
+	'"': '&#34;'
+};
+
+function replaceTag(tag) {
+    return tagsToReplace[tag] || tag;
+}
+
+function ft_escapeHtmlTags(str) {
+    return str.replace(/[&<>'"]/g, replaceTag);
+}
+
+module.exports.VERBOSE = true;
 module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
@@ -242,3 +258,4 @@ module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
 module.exports.getTagNames = ft_getTagNames;
 module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now
+module.exports.escapeHtmlTags = ft_escapeHtmlTags;

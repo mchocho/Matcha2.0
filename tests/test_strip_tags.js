@@ -1,21 +1,9 @@
-let text = "Mc\"Do'nald";
-cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+let ft_util = require('../includes/ft_util');
 
-var tagsToReplace = {
-    '&': '&amp;',
-    '<': '&lt;',
-	'>': '&gt;',
-	"'": '&#39;',
-	'"': '&#34;'
-};
+let text = "<tag>\'</tag>"
 
-function replaceTag(tag) {
-    return tagsToReplace[tag] || tag;
-}
+let test = ft_util.escapeHtmlTags(text);
+console.log(test);
+test = ft_util.escape(text);
+console.log(test);
 
-function safe_tags_replace(str) {
-    return str.replace(/[&<>'"]/g, replaceTag);
-}
-
-text = safe_tags_replace(text);
-console.log(text);
