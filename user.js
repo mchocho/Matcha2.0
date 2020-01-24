@@ -3,7 +3,7 @@ const express 		= require('express'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
-	  bcrypt		= require('bcrypt'),
+	  bcrypt		= require('bcryptjs'),
 	  moment                = require('moment'),
 	  os			= require('os'),
 	  util			= require('util'),
@@ -152,7 +152,10 @@ router.get('/', (req, res) => {
 						if (result.affectedRows === 1) {
 							sess[key] = val;
 							req.session.user = sess
-							res.end(json + '"result": "Success"}');
+							req.session.save((err) => {
+								if (err) {throw err}
+								res.end(json + '"result": "Success"}');
+							});
 						}
 						else
 							res.end(json + '"result": "Failed"}');
@@ -178,9 +181,12 @@ router.get('/', (req, res) => {
 			} else res.end(json + '"result": "Incorrect password"}');
 			return;
 		case 'DOB':
-		case 'gender':
+			if (!moment(val, "YYYY-MM-DD").isValid()) {
+				res.end(json + '"result": "Failed"}');
+				return;
+			}
 		case 'preferences':
-		case 'password':
+		case 'gender':
 		case 'bio':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
 			break;
@@ -191,71 +197,15 @@ router.get('/', (req, res) => {
 					break;
 		default:
 			res.end(json + '"result": "Failed"}');
-	        return;
+	        	return;
 	}
-
-	/*if (key === 'interest') {
-		ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
-			if (result.length > 0) {
-				sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-				dbc.query(sql, [sess.id, result.id], (err, result) => {
-					if (err) {throw err}
-					res.end(json + '"result": "Success"}');
-				});
-			} else {
-				sql = "INSERT INTO tags (name) VALUES ?";
-				dbc.query(sql, [sess.id, result.id], (err, result) => {
-					if (err) {throw err}
-					sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-					dbc.query(sql, [sess.id, result.insertId], (err, result) => {
-						if (err) {throw err}
-						res.end(json + '"result": "Success"}');
-					});
-				});
-			}
-		}).catch((err) => {	res.end(json + '"result": "Failed"}');	});
-		return;
-	}
-
-	if (key === 'rm_interest') {
-		ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
-			if (result.length > 0) {
-				sql = "DELETE FROM user_tags WHERE user_id = ? AND tag_id = ?";
-				dbc.query(sql, [sess.id, result.id], (err, result) => {
-					if (err) {throw err}
-					res.end(json + '"result": "Success"}');
-				});
-			}
-		});
-		return;
-	}
-	
-	if (key === 'username' || key === 'email')
-	{
-		ft_util.valueExists(dbc, 'users', key, val).then((result) => {
-			if (result.length > 0) {
-				res.end(json + '"result": "Not unique"}');
-			} else {
-				dbc.query(sql, [val, sess.id], (err, result) => {
-					if (err) {throw err}
-					if (result.affectedRows === 1)
-						res.end(json + '"result": "Success"}');
-					else
-						res.end(json + '"result": "Failed"}');
-				});
-			}
-		});
-		return;
-	}*/
-	
-
-
 
 	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, req.param.val2, sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
-			if ()
-			res.end(json + '"result": "Success"}');
+			if (key === 'fullname') {
+			
+			} else res.end(json + '"result": "Success"}');
 		}
 		else
 			res.end(json + '"result": "Failed"}');

@@ -1,6 +1,6 @@
 const faker 		= require('faker'),
 	  util 			= require('util'),
-	  bcrypt		= require('bcrypt');
+	  bcrypt		= require('bcryptjs');
 	  dbc 			= require('../model/sql_connect.js'),
 	  ft_util 		= require('../includes/ft_util.js'),
 	  count 		= 5;

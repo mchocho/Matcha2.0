@@ -33,6 +33,8 @@ if (process.env.OS == 'mac') {
 	};
 }
 
+console.log(setupCred);
+
 module.exports = {
 	setupCred,
 	connCred

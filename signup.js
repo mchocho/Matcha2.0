@@ -1,7 +1,7 @@
 const 	  express 		= require('express'),
 	  moment		= require('moment'),
 	  uuidv4 		= require('uuid/v4'),
-	  bcrypt		= require('bcrypt');
+	  bcrypt		= require('bcryptjs');
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
 	  email			= require('./includes/mail_client.js'),
