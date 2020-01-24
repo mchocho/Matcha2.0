@@ -52,7 +52,8 @@ router.route('/')
 	}
 
 	function checkOldTokens(user) {
-		dbc.query(sql.delOldTokens, [user.id], (err, result) => {
+		let vals = [user.id, "password_reset"];
+		dbc.query(sql.delOldTokens, vals, (err, result) => {
 			if (err) {throw err}
 			createToken(user);
 		});
