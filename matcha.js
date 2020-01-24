@@ -58,7 +58,7 @@ router.get('/', (req, res) => {
 				if (err) throw err;
 				ft_util.removeBlockedUsers(result, blacklist)
 				.then(values => {
-					if (values.length > 0)
+					if (values.length > 0) {
 						for (let i = 0, n = values.length; i < n; i++) {
 							sql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
 							values[i]['url'] = '/profile/' + values[i].id;
@@ -85,7 +85,7 @@ router.get('/', (req, res) => {
 								});
 							});
 						}
-					else
+					} else
 						res.render('matcha.pug', {
 							title: "Find your match | Cupid's Arrow",
 							users: []

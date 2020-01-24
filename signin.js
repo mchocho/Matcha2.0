@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 	const sess = req.session.user;
 	if (ft_util.isobject(sess)) { // Why the isObject func?
 		res.redirect('/matcha'); // What does this actaully do
+		return;
 	}
 	let message = req.flash('message');
 	res.render('signin.pug', {message: message[0]});
@@ -79,6 +80,7 @@ router.get('/', (req, res) => {
 								req.session.save((err) => {
 									if (err) {throw err}
 									res.redirect('/matcha');
+									return;
 								});
 							});
 						}).catch((err) => {
@@ -87,6 +89,7 @@ router.get('/', (req, res) => {
 							}
 							req.session.save((err) => {
 								res.redirect('/user');
+								return;
 							});
 						});
 					});

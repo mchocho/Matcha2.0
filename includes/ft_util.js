@@ -220,7 +220,7 @@ function ft_passwd_check(passwd)
 	return true;
 }
 
-module.exports.VERBOSE = true;
+module.exports.VERBOSE = false;
 module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;

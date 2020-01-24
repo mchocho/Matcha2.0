@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS  matcha;
 CREATE TABLE IF NOT EXISTS  `matcha`.`users` 				
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-	`username` VARCHAR(50) NOT NULL ,
+	`username` VARCHAR(30) NOT NULL ,
 	`first_name` VARCHAR(120) NOT NULL ,
 	`last_name` VARCHAR(120) NOT NULL ,
 	`gender` ENUM('M','F') NOT NULL ,

@@ -1,4 +1,4 @@
-let text = "Mc\"Don<ald";
+let text = "Mc\"Do'nald";
 cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
 
 var tagsToReplace = {
@@ -14,7 +14,7 @@ function replaceTag(tag) {
 }
 
 function safe_tags_replace(str) {
-    return str.replace(/[&<>]/g, replaceTag);
+    return str.replace(/[&<>'"]/g, replaceTag);
 }
 
 text = safe_tags_replace(text);
