@@ -30,7 +30,7 @@ router.route('/')
 	if (req.body.newPassword !== req.body.confPassword) {
 		errs.push("Passwords don't match");
 	} else if (ft_util.passwdCheck(req.body.newPassword) === false) {
-		errs.push("Password must be 6 characters or more and not a number");
+		errs.push("Provide a valid password of 5 characters or more, with special cases, uppercase and lowercase letters");
 	}
 
 	if (errs.length > 0) {
