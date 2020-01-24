@@ -22,6 +22,7 @@ router.route('/')
 	let url = "http://localhost:3000/verification/" + token;
 	let vals = [req.body.email];
 
+	// We need to handle white space input and XSS
 	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
 		errs.push("Feilds can't be empty");
 	}

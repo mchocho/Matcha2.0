@@ -1,5 +1,5 @@
 const http = require('https');
-let format = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
@@ -210,20 +210,13 @@ function ft_getTagNames(dbc, tags) {
 
 function ft_passwd_check(passwd)
 {
-	// Using this in forgot password, will try consolidate it later.
-	// Password Checker only checks if password is long enough and not only numbers
-	let numCheck = 0;
-	if (passwd.length < 6) {
+	// Should we handle special chars specifically?
+	if (passwd.length < 5) {
 		return false;
 	} 
-	for (let i = 0; i < passwd.length; i++) {
-		if (isNaN(passwd[i]) === false) {
-			numCheck++;
-		}
-	}
-	if (numCheck === passwd.length) {
+	if (!ft_haslowercase(passwd) || !ft_hasuppercase(passwd) || !ft_hasNumber(passwd)) {
 		return false;
-	}
+	} 
 	return true;
 }
 
