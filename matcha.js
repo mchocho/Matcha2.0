@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
 									values[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
 									//💩💩💩
 									if (i === n - 1) {
-										console.log("Hello render");
+										console.log("HERE");
 										res.render('matcha.pug', {
 											title: "Find your match | Cupid's Arrow",
 											users: values
@@ -85,11 +85,12 @@ router.get('/', (req, res) => {
 								});
 							});
 						}
-					} else
+					} else {
 						res.render('matcha.pug', {
 							title: "Find your match | Cupid's Arrow",
 							users: []
 						}); 
+					}
 				}).catch(err => {
 					throw err;
 				});
