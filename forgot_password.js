@@ -4,7 +4,7 @@ const express 		= require('express'),
 		uuidv4 		= require('uuid/v4'),
 		email		= require('./includes/mail_client.js'),
 		msg 		= require('./includes/email_templates.js'),
-		bcrypt		= require('bcrypt'),
+		bcrypt		= require('bcryptjs'),
 		ft_util		= require('./includes/ft_util.js'),
 		_			= require('lodash');
 

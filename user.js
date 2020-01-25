@@ -43,14 +43,6 @@ router.get('/', (req, res) => {
 			sql = "SELECT * from user_tags WHERE user_id = ?";
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) {throw err}
-				/*tags = result;
-				sql = "SELECT name from tags WHERE id = ?";
-				for (let i = 0, n = tags.length; i < n; i++) {
-					dbc.query(sql, [tags[i].tag_id], (err, result) => {
-						if (err) throw err;
-						tags[i].tagname = result[0];
-					});
-				}*/
 				ft_util.getTagNames(dbc, result).then((tags) => {
 					if (ft_util.VERBOSE) {
 						console.log(util.inspect({
@@ -105,7 +97,7 @@ router.get('/', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-  	switch(key) {	//Request will accept these keys only
+  	switch(key) {	//Ajax request will accept these keys only
 		case 'interest':
 			ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
 				if (result.length > 0) {
@@ -164,9 +156,9 @@ router.get('/', (req, res) => {
 			}).catch((err) => {res.end(json + '"result": "Failed"}')});
 			return;
 		case 'resetpassword':
-			if (bcrypt.compareSync(val, sess.password)) {
-				sql = "UPDATE users SET password = ? WHERE id = ?";
-				if (val.length >= 5 && ft_util.hasuppercase(val) && ft_util.haslowercase(val) && ft_util.hasNumber(val)) {
+			sql = "UPDATE users SET password = ? WHERE id = ?";
+			if (val.length >= 5 /* !ft_util.passwdCheck(user.password) */) {
+				if (bcrypt.compareSync(val, sess.password)) {
 					let hash = bcrypt.hashSync(val, ft_util.SALT); 
 					dbc.query(sql, [hash, sess.id], (err, result) => {
 						if (err) {throw err}
@@ -177,9 +169,14 @@ router.get('/', (req, res) => {
 						}
 						else res.end(json + '"result": "Failed"}');
 					});
-				} else res.end(json + '"result": "Weak password"}');
-			} else res.end(json + '"result": "Incorrect password"}');
+				} else res.end(json + '"result": "Incorrect password"}');
+			} else res.end(json + '"result": "Weak password"}');
 			return;
+		case 'fullname':
+			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+			if (ft_util.isstring(req.params.val2))
+				if (req.params.val2.length > 0)
+					break;
 		case 'DOB':
 			if (!moment(val, "YYYY-MM-DD").isValid()) {
 				res.end(json + '"result": "Failed"}');
@@ -187,24 +184,25 @@ router.get('/', (req, res) => {
 			}
 		case 'preferences':
 		case 'gender':
+			if (key === 'preferences' || key === 'gender')
+				if (val !== 'M' && val !== 'F' && val !== 'B') {
+					res.end(json + '"result": "Failed | Specify a gender or preference"}');
+					// res.end(json + '"result": "Failed | value = ' + val + '"}');
+					return;
+				}
 		case 'bio':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
 			break;
-		case 'fullname':
-			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
-			if (ft_util.isstring(req.params.val2))
-				if (req.params.val2.length > 0)
-					break;
 		default:
 			res.end(json + '"result": "Failed"}');
-	        	return;
+	        return;
 	}
 
 	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, req.param.val2, sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
 			if (key === 'fullname') {
-			
+				res.end(json + ' "value_2": "' + req.param.val2 + '", "result": "Success"}');
 			} else res.end(json + '"result": "Success"}');
 		}
 		else

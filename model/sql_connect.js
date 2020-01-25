@@ -1,11 +1,7 @@
 const mysql = require("mysql"),
       credentials = require("./credentials");
 
-console.log(credentials.connCred);
-return;
-
 dbc = mysql.createConnection(credentials.connCred);
-
 
 dbc.connect((err) => {
     if (err){

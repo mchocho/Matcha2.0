@@ -119,7 +119,16 @@ function script() {
 		}
 		error_node.textContent = "";
 		xhr('/user/resetpassword.' + oldpw+ '.' + confirmpw, 'POST', null, function(xhr) {
-			//Handle the request
+			const res = JSON.parse(xhr.responseText),
+				  el = document.getElementById('username');
+			if (res.result === 'Success') {
+				el.textContent = "Password change successful";
+				setTimeout(8000, function() {
+					el.textContent = "";
+				});
+			} else if (res.result === 'Weak password') {
+				el.textContent = "Please provide a 5 letter password that contains lower and upper cases, as well as numbers";
+			}
 		});
 		return true;
 	}
@@ -228,16 +237,6 @@ function script() {
 	updatePreference(inputFields[6]);
 	updatePreference(inputFields[7]);
 
-
-
-	//TEST
-	// let pair = 'email.HappyDay'
-
-	// setTimeout(function() {
-	// 	xhr('/user/' + pair, 'POST');
-	// }, 8000);
-
-	//ENDOF TEST
 }
 
 document.addEventListener("DOMContentLoaded", script);

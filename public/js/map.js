@@ -29,11 +29,16 @@ function script() {
 			location: pos
 		}, function(results, status) {
 			if (status === google.maps.GeocoderStatus.OK) {
+				const form = new FormData();
 				let user = '<h3>Your location</h3>';
 				user += 'Address: ' + results[0].formatted_address;
 				infoWindow.setContent(user);
 				infoWindow.setMap(map);
 				infoWindow.setPosition(pos);
+
+				//Send the data to server
+				formData.append('key', 'user_location');
+				formData.append();
 			}
 		});
 	}
@@ -41,7 +46,7 @@ function script() {
 
 	find_me.addEventListener('click', function() {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			const pos = {lat: position.coords.latitude, lng: position.coords.longitude};
+			const pos = {lat: position.coords.latitude, lng: position.coords.longitude},
 			//console.log(JSON.stringify(pos));
 			if (pos['lat'] === -26.2309 && pos['lng'] === 28.0583
 			 || pos['lat'] === -26.2123013 && pos['lng'] === 28.0303075
