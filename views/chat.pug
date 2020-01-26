@@ -11,14 +11,11 @@ html
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js')
+    script(src='http://localhost:3000/socket.io/socket.io.js')
     script(src='https://code.jquery.com/jquery-1.11.1.js')
     script.
       $(function () {
-      var socket = io.connect();
-      socket.on('connect', function () {
-        console.log('Hello bro');
-      });
+      var socket = io('http://localhost:3000');
       $('form').submit(function(e){
       e.preventDefault(); // prevents page reloading
       socket.emit('chat message', $('#m').val());

@@ -8,11 +8,17 @@ const express = require("express"),
 	uuidv4 = require("uuid/v4"),
 	app = express(),
 	flash = require("connect-flash"),
-	//http = require('http'),
-	//socket = require('socket.io'),
-	server = require("http").createServer(app),
-	io = require("socket.io").listen(server);
-PORT = process.env.PORT || 3000;
+	//server = require("http").createServer(app),
+	//io = require("socket.io").listen(server);
+	PORT = process.env.PORT || 3000;
+
+var http = require("http");
+// var socket = require('socket.io');
+
+//Chat socket connection
+const server = http.createServer(app);
+// const io = socket(server);
+var io = require("socket.io")(server);
 
 require("dotenv").config();
 app.use(flash());
@@ -24,7 +30,9 @@ app.use(
 		extended: true
 	})
 );
-app.use(express.static(__dirname + "/public"));
+//app.use(express.static(__dirname + "/public"));
+
+app.use(express.static("public"));
 // Does the secret not change everytime?
 app.use(
 	session({
@@ -36,35 +44,6 @@ app.use(
 		resave: true
 	})
 );
-
-app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept"
-	);
-	next();
-});
-
-//Chat socket connection
-//const server = http.createServer(app);
-//const io = socket(server);
-
-io.sockets.on('connection', (socket) => {
-	console.log("New user connected");
-
-});
-
-io.on("connect", (socket) => {
-	console.log("New user connected");
-	socket.on("chat message", (msg) => {
-		console.log(msg);
-		io.emit("chat message", msg);
-	});
-	socket.on("disconnect", () => {
-		console.log("User disconnected");
-	});
-});
 
 io.on("connection", (socket) => {
 	console.log("New user connected");
@@ -95,8 +74,9 @@ app.use("/verification", verifyUserEmail);
 //Chat route
 // let chatRouter = require('./chats');
 // app.use('/chats', ());
-app.get("/chats", (req, res) => {
-	console.log("Hello chats.js");
+
+app.get("/chat", (req, res) => {
+	console.log("Hello chat.js");
 	res.render("chat.pug");
 });
 
@@ -124,6 +104,10 @@ app.use((req, res) => {
 	});
 });
 
-app.listen(PORT, () => {
-	console.log("Server started on port " + PORT);
+// app.listen(PORT, () => {
+// 	console.log("Server started on port " + PORT);
+// });
+
+server.listen(PORT, () => {
+	console.log("Socket started on port " + PORT);
 });
