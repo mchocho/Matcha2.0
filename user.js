@@ -17,21 +17,20 @@ router.get('/', (req, res) => {
 	const sess = req.session.user;
 	let   sql = "SELECT * from images WHERE user_id = ?",
 		views,
-		images,
-		tags;
+		images;
 
 	if (!ft_util.isobject(sess)) {
-                res.redirect('/logout');
-                return;
-        }
-        else if (sess.verified !== 'T') {
-                res.redirect('/verify_email');
-                return;
-        }
-        else if (sess.valid !== 'T') {
-                res.redirect('/reported_account');
-                return;
-        }
+			res.redirect('/logout');
+			return;
+	}
+	else if (sess.verified !== 'T') {
+			res.redirect('/verify_email');
+			return;
+	}
+	else if (sess.valid !== 'T') {
+			res.redirect('/reported_account');
+			return;
+	}
 
 	dbc.query(sql, [sess.id], (err, result) => {
 		if (err) {throw err}
@@ -44,6 +43,7 @@ router.get('/', (req, res) => {
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) {throw err}
 				ft_util.getTagNames(dbc, result).then((tags) => {
+					console.log("Result of tags is --> " + tags);
 					if (ft_util.VERBOSE) {
 						console.log(util.inspect({
 							username: sess.username,
@@ -101,17 +101,17 @@ router.get('/', (req, res) => {
 		case 'interest':
 			ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
 				if (result.length > 0) {
-					sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-					dbc.query(sql, [sess.id, result.id], (err, result) => {
+					sql = "INSERT INTO user_tags (user_id, tag_id) VALUES (?)";
+					dbc.query(sql, [[sess.id, result[0].id]], (err, result) => {
 						if (err) {throw err}
 						res.end(json + '"result": "Success"}');
 					});
 				} else {
-					sql = "INSERT INTO tags (name) VALUES ?";
-					dbc.query(sql, [sess.id, result.id], (err, result) => {
+					sql = "INSERT INTO tags (name) VALUES (?)";
+					dbc.query(sql, [[val.toLocaleLowerCase()]], (err, result) => {
 						if (err) {throw err}
-						sql = "INSERT INTO user_tags (user_id, tag_id) VALUES ?";
-						dbc.query(sql, [sess.id, result.insertId], (err, result) => {
+						sql = "INSERT INTO user_tags (user_id, tag_id) VALUES (?)";
+						dbc.query(sql, [[sess.id, result.insertId]], (err, result) => {
 							if (err) {throw err}
 							res.end(json + '"result": "Success"}');
 						});
@@ -120,15 +120,13 @@ router.get('/', (req, res) => {
 			}).catch((err) => {res.end(json + '"result": "Failed"}')});
 			return;
 		case 'rm_interest':
-			ft_util.valueExists(dbc, 'tags', 'name', val).then((result) => {
-				if (result.length > 0) {
-					sql = "DELETE FROM user_tags WHERE user_id = ? AND tag_id = ?";
-					dbc.query(sql, [sess.id, result.id], (err, result) => {
-						if (err) {throw err}
-						res.end(json + '"result": "Success"}');
-					});
-				}
-			}).catch((err) => {res.end(json + '"result": "Failed"}')});
+			if (!isNaN(val)) {
+				sql = "DELETE FROM user_tags WHERE user_id = ? AND tag_id = ?";
+				dbc.query(sql, [sess.id, Number(val)], (err, result) => {
+					if (err) {throw err}
+					res.end(json + '"result": "Success"}');
+				});
+			} else res.end(json + '"result": "Failed"}');
 			return;
 		case 'username':
 		case 'email':
@@ -157,9 +155,9 @@ router.get('/', (req, res) => {
 			return;
 		case 'resetpassword':
 			sql = "UPDATE users SET password = ? WHERE id = ?";
-			if (val.length >= 5 /* !ft_util.passwdCheck(user.password) */) {
+			if (req.params.val2.length >= 5 /* !ft_util.passwdCheck(user.password) */) {
 				if (bcrypt.compareSync(val, sess.password)) {
-					let hash = bcrypt.hashSync(val, ft_util.SALT); 
+					let hash = bcrypt.hashSync(req.params.val2, ft_util.SALT); 
 					dbc.query(sql, [hash, sess.id], (err, result) => {
 						if (err) {throw err}
 						if (result.affectedRows === 1) {
@@ -186,8 +184,7 @@ router.get('/', (req, res) => {
 		case 'gender':
 			if (key === 'preferences' || key === 'gender')
 				if (val !== 'M' && val !== 'F' && val !== 'B') {
-					res.end(json + '"result": "Failed | Specify a gender or preference"}');
-					// res.end(json + '"result": "Failed | value = ' + val + '"}');
+					res.end(json + '"result": "Failed"}');
 					return;
 				}
 		case 'bio':

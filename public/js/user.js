@@ -1,6 +1,7 @@
 function script() {
 	// $('.slider').bxSlider();
 	const DEVMODE = true,
+	interests = document.getElementById('interests_list').childNodes,
 	inputFields = [
 		document.getElementById('username_txt'),			//0
 		document.getElementById('firstname_txt'),			//1
@@ -118,7 +119,7 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/resetpassword.' + oldpw+ '.' + confirmpw, 'POST', null, function(xhr) {
+		xhr('/user/resetpassword.' + oldpw + '.' + confirmpw, 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText),
 				  el = document.getElementById('username');
 			if (res.result === 'Success') {
@@ -128,6 +129,8 @@ function script() {
 				});
 			} else if (res.result === 'Weak password') {
 				el.textContent = "Please provide a 5 letter password that contains lower and upper cases, as well as numbers";
+			} else {
+
 			}
 		});
 		return true;
@@ -142,6 +145,17 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
+		xhr('/user/interest.' + value, 'POST', null, function(xhr) {
+			const res = JSON.parse(xhr.responseText),
+				  el = document.getElementById('interests_list'),
+				  li = document.createElement('li');
+			if (res.result === 'Success') {
+				li.textContent = value;
+				el.appendChild(li);		
+			} else {
+				el.textContent = 'Please try again.';
+			}
+		});
 		return true;
 	}
 
@@ -154,6 +168,9 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
+		xhr('/user/interest.' + value, 'POST', null, function(xhr) {
+			const res = JSON.parse(xhr.responseText);
+		});
 		return true;
 	}
 
@@ -231,11 +248,30 @@ function script() {
 		});
 	}
 
+	function rmPreferenceEvent(node) {
+		if (!isNode(node)) return;
+		node.addEventListener('click', function(e) {
+			xhr('/user/rm_interest.' + node.id, 'POST', null, function(xhr) {
+				const res = JSON.parse(xhr.responseText);
+				if (res.result === 'Success') {
+					document.getElementById('interests_list').removeChild(node);
+				}
+			});
+		});
+	}
+
 	updateGender(inputFields[3]);
 	updateGender(inputFields[4]);
 	updatePreference(inputFields[5]);
 	updatePreference(inputFields[6]);
 	updatePreference(inputFields[7]);
+
+	interests.forEach(function(res) {
+		rmPreferenceEvent(res);
+	});
+
+
+
 
 }
 

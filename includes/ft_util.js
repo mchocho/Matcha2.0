@@ -157,17 +157,19 @@ function ft_valueExists(dbc, table, key, value) {
 
 function ft_getTagNames(dbc, tags) {
 	return new Promise((resolve, reject) => {
-		if (!ft_isarray(tags))
-			resolve([]);
+		const names = [];
 		if (tags.length === 0)
 			resolve([]);
 		for(let i = 0, n = tags.length; i < n; i++) {
 			dbc.query("SELECT name FROM tags WHERE id = ?", [tags[i].tag_id], (err, result) => {
 				if (err) {throw err}
-				if (result.length > 0)
-					tags[i]['tagname'] = result[0].name;
-				if (i === n - 1)
+				if (result.length > 0) {
+					names.push(result[0].name);
+					tags[i]['name'] = result[0].name;
+				}
+				if (i === n - 1) {
 					resolve(tags);
+				}
 			});
 		}
 	});

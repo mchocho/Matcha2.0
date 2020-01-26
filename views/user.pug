@@ -6,7 +6,6 @@ html
 		title #{title}
 		meta(name='viewport', content='width=device-width, initial-scale=1')
 		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-		link(rel='stylesheet', href='/../../node_modules/bxslider/dist/jquery.bxslider.css')
 		link(rel='stylesheet', href='/css/style.css', media='all')  
 		link(rel='stylesheet', href='/css/user.css', media='all')       
 		link(rel='stylesheet', href='/css/main.css', media='all')       
@@ -87,9 +86,6 @@ html
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
 							button#password_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
 							button#password_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
-					ul.interests_list.list.multi-column
-						each val, index in user.tags
-							li #{val.tagname}
 				.edit
 					h4 Interests
 					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
@@ -100,9 +96,9 @@ html
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
 							button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
 							button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
-					ul.interests_list.list.multi-column
+					ul#interests_list.list.multi-column
 						each val, index in user.tags
-							li #{val.tagname}
+							li(id=val.tag_id) #{val.name}
 				.edit
 					h4 Biography
 					span#error_6.error
@@ -129,8 +125,7 @@ html
 				|  from 
 				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
 	//- script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-	script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-	//- script(type='text/javascript', src='/node_modules/bxslider/dist/jquery.bxslider.min.js')
+	//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
 	script(type='text/javascript', src='js/button_groups.js')
 	script(type='text/javascript', src='js/xhr.js')
 	script(type='text/javascript', src='js/map.js')
