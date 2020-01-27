@@ -224,8 +224,6 @@ var tagsToReplace = {
     '&': '&amp;',
     '<': '&lt;',
 	'>': '&gt;',
-	"'": '&#39;',
-	'"': '&#34;'
 };
 
 function replaceTag(tag) {
@@ -233,7 +231,7 @@ function replaceTag(tag) {
 }
 
 function ft_escapeHtmlTags(str) {
-    return str.replace(/[&<>'"]/g, replaceTag);
+    return str.replace(/[&<>]/g, replaceTag);
 }
 
 module.exports.VERBOSE = true;
