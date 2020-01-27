@@ -4,7 +4,7 @@ const express 		= require('express'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  bcrypt		= require('bcryptjs'),
-	  moment                = require('moment'),
+	  moment        = require('moment'),
 	  os			= require('os'),
 	  util			= require('util'),
 	  ft_util		= require('./includes/ft_util.js'),
@@ -48,6 +48,8 @@ router.get('/', (req, res) => {
 						console.log(util.inspect({
 							username: sess.username,
 							sex: sess.gender,
+							email: sess.email,
+							dob: sess.DOB,
 							first_name: sess.first_name,
 							last_name: sess.last_name,
 							preference: sess.preferences,
@@ -65,6 +67,8 @@ router.get('/', (req, res) => {
 						user: {
 							username: sess.username,
 							sex: sess.gender,
+							email: sess.email,
+							dob: sess.DOB,
 							first_name: sess.first_name,
 							last_name: sess.last_name,
 							preference: sess.preferences,
@@ -82,9 +86,9 @@ router.get('/', (req, res) => {
 }).post('/:key.:val.:val2?', (req, res) => {
 	const sess = req.session.user,
 	      key = req.params.key.trim(),
-	      val = req.params.val.trim();
+	      val = decodeURIComponent(req.params.val);
 	let sql,
-	    json = `{"key": "${key}", "value": "${val}", `;
+	    json = `{"key": "${ft_util.escapeStr(key)}", "value": "${ft_util.escapeStr(val)}", `;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});	//Allows us to respond to the client
 	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || val.length === 0) {
@@ -131,11 +135,13 @@ router.get('/', (req, res) => {
 		case 'username':
 		case 'email':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
+			if (key === 'email' && !ft_util.isemail(val)) {
+				res.end(json + '"result": "Not email"}');
+				return;
+			}
 			ft_util.valueExists(dbc, 'users', key, val).then((result) => {
 				if (result.length > 0) {
 					res.end(json + '"result": "Not unique"}');
-				} else if (key === 'email' && !ft_util.isemail(val)) {
-					res.end(json + '"result": "Not email"}');
 				} else {
 					dbc.query(sql, [val, sess.id], (err, result) => {
 						if (err) {throw err}

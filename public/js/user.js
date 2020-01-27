@@ -17,15 +17,20 @@ function script() {
 		document.getElementById('old_password_txt'),			//11
 		document.getElementById('new_password_txt'),			//12
 		document.getElementById('confirm_password_txt'),			//13
+		document.getElementById('email_txt')					//14
 	];
 
 	function isNode(el) {
        	return (el instanceof Element);
     }
 
-	function isValidStr(val) {
-		return (Object.prototype.toString.call(val) === "[object String]"
-			&& val.length > 0 && /^[a-zA-Z]+$/.test(val))
+    function isEmail(value) {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+	}
+
+	function isValidStr(value) {
+		return (Object.prototype.toString.call(value) === "[object String]"
+			&& value.length > 0 && /^[a-zA-Z]+$/.test(value))
 	}
 
 	function editActions(edit_btn, edit_container, confirm_btn, cancel_btn, validation) {
@@ -60,10 +65,10 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/username.' + value, 'POST', null, function(xhr) {
+		xhr('/user/username.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText);
 			if (res.result === 'Success') {
-				document.getElementById('username').textContent = xhr.value;
+				document.getElementById('username').textContent = res.value;
 			} else {
 				error_node.textContent = "Please try again.";
 			}
@@ -84,23 +89,32 @@ function script() {
 			error_node.textContent = 'Please enter a last name';
 			return false;
 		}
-		if (firstname.indexOf('|') > -1 || lastname.indexOf('|') > -1)
-		{
-			error_node.textContent = 'No pipe characters allowed';
-			return false;
-		}
 		error_node.textContent = "";
-		xhr('/user/fullname.' + firstname + '.' + lastname, 'POST', null, function(xhr) {
+		xhr('/user/fullname.' + encodeURIComponent(firstname) + '.' + encodeURIComponent(lastname), 'POST', null, function(xhr) {
 			//Handle the request
 		});
 		return true;
+	}
+
+	function validateEmail() {
+		const value = inputFields[14].value.toLowerCase().trim(),
+			  error_node = document.getElementById('error_4');
+
+		if (!isEmail(value)) {
+			error_node.textContent = "Please enter your new email address";
+			return false;
+		}
+		error_node.textContent = "";
+		xhr('/user/email.' + encodeURIComponent(value), 'POST', null, function(xhr) {
+			//Handle the request
+		});
 	}
 
 	function validatePassword() {
 		const oldpw = inputFields[11].value.trim(),
 			  newpw = inputFields[12].value.trim(),
 			  confirmpw = inputFields[13].value.trim(),
-			  error_node = document.getElementById('error_4');
+			  error_node = document.getElementById('error_5');
 
 		if (oldpw.length === 0) {
 			error_node.textContent = "Please enter your password";
@@ -119,7 +133,7 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/resetpassword.' + oldpw + '.' + confirmpw, 'POST', null, function(xhr) {
+		xhr('/user/resetpassword.' + encodeURIComponent(oldpw) + '.' + encodeURIComponent(confirmpw), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText),
 				  el = document.getElementById('username');
 			if (res.result === 'Success') {
@@ -138,14 +152,14 @@ function script() {
 
 	function validateInterests() {
 		const value = inputFields[9].value.trim(),
-		      error_node = document.getElementById('error_5');
+		      error_node = document.getElementById('error_6');
 
 		if (value.length <= 2) {
 			error_node.textContent = 'Please enter an interest';
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/interest.' + value, 'POST', null, function(xhr) {
+		xhr('/user/interest.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText),
 				  el = document.getElementById('interests_list'),
 				  li = document.createElement('li');
@@ -161,14 +175,14 @@ function script() {
 
 	function validateBio() {
 		const value = inputFields[10].value.trim(),
-		      error_node = document.getElementById('error_6');
+		      error_node = document.getElementById('error_7');
 
 		if (value.length == 0) {
 			error_node.textContent = 'Please enter your biography';
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/interest.' + value, 'POST', null, function(xhr) {
+		xhr('/user/interest.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText);
 		});
 		return true;
@@ -189,6 +203,14 @@ function script() {
 		document.getElementById('fullname_confirm'),
 		document.getElementById('fullname_cancel'),
 		validateFullname
+	);
+
+	editActions(
+		document.getElementById('email_edit_btn'),
+		document.getElementById('email_edit_container'),
+		document.getElementById('email_confirm'),
+		document.getElementById('email_cancel'),
+		validateEmail	
 	);
 
 	editActions(
@@ -214,6 +236,7 @@ function script() {
 		document.getElementById('biography_cancel'),
 		validateBio
 	);
+
 
 	function updateGender(node) {
 		node.addEventListener('click', function(e) {

@@ -47,19 +47,19 @@ html
 					input#username_txt(type='text', placeholder='New username')
 					br
 					#new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-						button#username_confirm.btn.btn-secondary(type='button', name='username_save') Confirm
-						button#username_cancel.btn.btn-secondary(type='button', name='username_cancel') Cancel
+						button#username_confirm.btn.btn-secondary(type='button') Confirm
+						button#username_cancel.btn.btn-secondary(type='button') Cancel
 				h3#fullname.value #{user.first_name} #{user.last_name}
 				input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
 				#fullname_edit_container.edit.hide
 					span#error_1.error
-					input#firstname_txt(type='text', placeholder='First name', value=user.first_name)
+					input#firstname_txt(type='text', placeholder='First name')
 					br
-					input#lastname_txt(type='text', placeholder='Last name', value=user.last_name)
+					input#lastname_txt(type='text', placeholder='Last name')
 					br
 					#new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
-						button#fullname_confirm.btn.btn-secondary(type='button', name='fullname_save') Confirm
-						button#fullname_cancel.btn.btn-secondary(type='button', name='fullname_cancel') Cancel
+						button#fullname_confirm.btn.btn-secondary(type='button') Confirm
+						button#fullname_cancel.btn.btn-secondary(type='button') Cancel
 				.edit
 					h4 Gender
 					span#error_2.error
@@ -74,43 +74,67 @@ html
 						button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
 						button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
 				.edit
+					h4
+						img(src='images/icons/bithday.png', alt='email address', class='input_icon')
+						| #{user.dob}
+					input#email_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
+					#email_edit_container.interest_edit.hide
+						span#error_4.error
+						input#email_txt(type='email', placeholder='Date of birth')
+						br
+						#new-email-confirm.btn-group(role='group', aria-label='Confirm date of birth')
+							button#dob_confirm.btn.btn-secondary(type='button') Confirm
+							button#dob_cancel.btn.btn-secondary(type='button') Cancel
+				.edit
+					h4
+						img(src='images/icons/envelope.png', alt='email address', class='input_icon')
+						| #{user.email}
+					input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
+					#email_edit_container.interest_edit.hide
+						span#error_4.error
+						input#email_txt(type='email', placeholder='New email')
+						br
+						#new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
+							button#email_confirm.btn.btn-secondary(type='button') Confirm
+							button#email_cancel.btn.btn-secondary(type='button') Cancel
+				.edit
 					h4 Password
 					input#password_edit_btn.custom_btn.ib(type='button', value='Change password')
 					#password_edit_container.interest_edit.hide
-						span#error_4.error
+						span#error_5.error
 						input#old_password_txt(type='password', placeholder='Enter current password')
 						br
 						input#new_password_txt(type='password', placeholder='Enter new password')
 						br
 						input#confirm_password_txt(type='password', placeholder='Confirm password')
-						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-							button#password_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
-							button#password_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+						#new-password-confirm.btn-group(role='group', aria-label='Confirm new password')
+							button#password_confirm.btn.btn-secondary(type='button') Confirm
+							button#password_cancel.btn.btn-secondary(type='button') Cancel
 				.edit
 					h4 Interests
 					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
 					#interest_edit_container.interest_edit.hide
-						span#error_5.error
+						span#error_6.error
 						input#interest_txt(type='text', placeholder='Add interest')
 						br
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-							button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
-							button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+							button#interests_confirm.btn.btn-secondary(type='button') Confirm
+							button#interests_cancel.btn.btn-secondary(type='button') Cancel
 					ul#interests_list.list.multi-column
 						each val, index in user.tags
 							li(id=val.tag_id) #{val.name}
 				.edit
 					h4 Biography
-					span#error_6.error
+					span#error_7.error
 					p#biography.value.bio #{user.biography}
 					input#biography_edit_btn.custom_btn.ib(type='button', value='Edit')
 					#biography_edit_container.biography.hide
 						textarea#biography_txt(placeholder='Say something about yourself')
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-							button#biography_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
-							button#biography_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
+							button#biography_confirm.btn.btn-secondary(type='button') Confirm
+							button#biography_cancel.btn.btn-secondary(type='button') Cancel
 				.edit
-					span#error_7.error
+					span#error_8.error
 					input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
 					#map
 			footer

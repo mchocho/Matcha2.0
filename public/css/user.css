@@ -20,12 +20,19 @@ ul li {
 				 cursor: pointer;
 				 margin-left: 20%;
 }
-#password_edit_btn {
+#password_edit_btn, #email_edit_btn  {
 	width: unset;
 }
 
 #new-tags-confirm {
 	margin-top: 1.5%;
+}
+
+.input_icon {
+	display: block;
+	width: 10%;
+	height: 6%;
+	margin-bottom: 1%;
 }
 
 p.bio {

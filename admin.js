@@ -106,4 +106,48 @@ router.all('/:redirectTo.:arg?', (req, res) => {
     				notifications: result
     			});
     });
+}).post('/connect:profile', (req, res) => {
+	const sess = req.session.user,
+	      profile = req.params.profile.trim();
+	let sql = "SELECT * FROM likes WHERE (liker = ? AND liked = ?) OR (liker = ? AND liked = ?)",
+	    userLikesYou = false,
+	    youLikeUser = false,
+	    json = `{"service": "connect", "profile": "${profile}", `;
+
+	res.writeHead(200, {"Content-Type": "text/plain"});	//Allows us to respond to the client
+	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || isNaN(profile)) {
+		res.end(json + '"result": "Failed"}');
+        return;
+	}
+		
+	if (ft_util.VERBOSE) {
+		console.log('STATUS: ' + res.statusCode);
+  		console.log('HEADERS: ' + JSON.stringify(res.headers));
+	}
+
+	dbc.query(sql, [sess.id, profile, profile, sess.id], (err, result) => {
+		if (err) {throw err}
+		for (let i = 0, n = result.length; i < n; i++) {
+			if (result[i].liker === Number(profile))
+				userLikesYou = true;
+			if (result[i].liker === Number(sess.id))
+				youLikeUser = true;
+		}
+		if (youLikeUser === true)
+			sql = "DELETE FROM likes WHERE liker = ? AND liked = ?";
+		else
+			sql = "INSERT INTO likes (liker, liked) VALUES (?)";
+
+		dbc.query(sql, [sess.id, profile], (err, result) => {
+			if (err) {throw err}
+			if (result.affectedRows === 1) {
+				res.end(json + '"result": "Success", "message": }');
+        		return;
+			}
+		});
+	});
+
+
+
+
 });

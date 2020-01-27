@@ -12,7 +12,7 @@ function script() {
 	    var storage;
 	    try {
 	        storage = window[type];
-	        var x = 'March_21_95';
+	        var x = 'N032195';
 	        storage.setItem(x, x);
 	        storage.removeItem(x);
 	        return true;
@@ -45,28 +45,30 @@ function script() {
 
 	document.getElementById('signup').addEventListener('change', function() {
 		formIds.forEach(function(value) {
-			if (storageAvailable)
+			if (storageAvailable('sessionStorage'))
 				sessionStorage.setItem(value, document.getElementById(value).value);
 		});
 	});
 
 	formIds.forEach(function(value) {
-		const item = sessionStorage.getItem(value).trim();
-		if (item.length > 0) {
-			if (value === 'gender') {
-				if (item === 'Female')
-					gender_btns[0].classList.add('option');
-				else
-					gender_btns[1].classList.add('option');
-			} else if (value === 'preference') {
-				if (item === 'Female')
-					preference_btns[0].classList.add('option');
-				else if (item === 'Male')
-					preference_btns[1].classList.add('option');
-				else
-					preference_btns[2].classList.add('option');
+		if (storageAvailable('sessionStorage')) {
+			const item = sessionStorage.getItem(value).trim();
+			if (item.length > 0) {
+				if (value === 'gender') {
+					if (item === 'Female')
+						gender_btns[0].classList.add('option');
+					else
+						gender_btns[1].classList.add('option');
+				} else if (value === 'preference') {
+					if (item === 'Female')
+						preference_btns[0].classList.add('option');
+					else if (item === 'Male')
+						preference_btns[1].classList.add('option');
+					else
+						preference_btns[2].classList.add('option');
+				}
+				document.getElementById(value).value = sessionStorage.getItem(value);
 			}
-			document.getElementById(value).value = sessionStorage.getItem(value);
 		}
 	});
 }
