@@ -85,7 +85,7 @@ router.get('/', (req, res) => {
 					}
 
 					let hash = bcrypt.hashSync(user.password, ft_util.SALT);
-	
+					user.username = ft_util.escapeHtmlTags(user.username);
 					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES ?",  //Only one "?"
 					values = [[ user.username, user.f_name, user.l_name, user.gender.charAt(0), user.preference.charAt(0), user.dob, user.email, hash]]; //What is charAt? where is values declared?
 					dbc.query(sql, [values], (err, result) => {
