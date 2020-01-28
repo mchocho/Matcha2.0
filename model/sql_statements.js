@@ -16,6 +16,20 @@ let updatePasswd		= "UPDATE `users` SET `password` = ? WHERE `id` = ?";
 let delOldTokens		= "DELETE FROM `tokens` WHERE `user_id` = ? && `request` = ?";
 let selUserLocation		= "SELECT * FROM `locations` WHERE `user_id` = ?";
 let selBlockedUsers		= "SELECT `blocked_user` FROM `blocked_accounts` WHERE `user_id` = ?";
+let selAllMale			= "SELECT * FROM users " + 
+							"WHERE gender = 'M' " +
+							"AND (preferences = ? OR preferences = 'B') " + 
+							"AND verified = 'T' " + 
+							"AND NOT id = ?";
+let selAllFemale		= "SELECT * FROM users " + 
+							"WHERE gender = 'F' " +
+							"AND (preferences = ? OR preferences = 'B') " + 
+							"AND verified = 'T' " + 
+							"AND NOT id = ?";
+let selAllBoth			= "SELECT * FROM users " + 
+							"WHERE (preferences = ? OR preferences = 'B') " + 
+							"AND verified = 'T' " + 
+							"AND NOT id = ?";
 
 module.exports = {
 	selAllUsers, selAllUsersDesc,
@@ -26,5 +40,6 @@ module.exports = {
 	selUserIdByEmail, insNewPwToken,
 	updateToken, updatePasswd,
 	delOldTokens, selUserLocation,
-	selBlockedUsers
+	selBlockedUsers, selAllMale,
+	selAllFemale, selAllBoth
 }	

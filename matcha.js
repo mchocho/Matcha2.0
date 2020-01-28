@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 	let	blacklist;
 	let	location;
 	let	matches;
-
+	
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
 		return;
@@ -32,6 +32,8 @@ router.get('/', (req, res) => {
 		});
 		return;
 	}
+	console.log("You are in matcha route");
+	console.log("Query", sql.selUserLocation);
 	dbc.query(sql.selUserLocation, [sess.id], addUserLocation);
 
 	function addUserLocation(err, result) {
@@ -47,14 +49,15 @@ router.get('/', (req, res) => {
 	function findPrefrences(err, result) {
 		if (err) {throw err}
 		blacklist = result;
+		let prefSql;
 		if (sess.preferences === 'M') {
-			sql = "SELECT * FROM users WHERE gender = 'M' AND (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
+			prefSql = sql.selAllMale;
 		} else if (sess.preferences === 'F') {
-			sql = "SELECT * FROM users WHERE gender = 'F' AND (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
+			prefSql = sql.selAllFemale;
 		} else {
-			sql = "SELECT * FROM users WHERE (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
+			prefSql = sql.selAllBoth;
 		}
-		dbc.query(sql, [sess.gender, sess.id], (err, result) => {
+		dbc.query(prefSql, [sess.gender, sess.id], (err, result) => {
 			if (err) throw err;
 			ft_util.removeBlockedUsers(result, blacklist)
 			.then(values => {
