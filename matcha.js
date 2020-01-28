@@ -32,18 +32,19 @@ router.get('/', (req, res) => {
 		});
 		return;
 	}
-	dbc.query(sql.selUserLocation, [sess.id], checkUserLocation);
+	dbc.query(sql.selUserLocation, [sess.id], addUserLocation);
 
-	function checkUserLocation(err, result) {
+	function addUserLocation(err, result) {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
 			return;
 		}
-	
-		
 		location = result[0];
-		dbc.query(sql.selBlockedUsers, [sess.id], (err, result) => {
+		dbc.query(sql.selBlockedUsers, [sess.id], findPrefrences)
+		
+		function findPrefrences(err, result) {
+			if (err) {throw err}
 			blacklist = result;
 			if (sess.preferences === 'M') {
 				sql = "SELECT * FROM users WHERE gender = 'M' AND (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
@@ -95,6 +96,6 @@ router.get('/', (req, res) => {
 					throw err;
 				});
 			});
-		});
+		};
 	};
 });
