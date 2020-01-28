@@ -68,6 +68,7 @@ router.get('/', (req, res) => {
 									}
 									values[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
 									//💩💩💩
+									console.log("Here", i, n - 1);
 									if (i === n - 1) {
 										console.log("Hello render");
 										res.render('matcha.pug', {
