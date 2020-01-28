@@ -45,12 +45,12 @@ html
         span#connection_status You and #{user.username} are connected
        else if (userLikesClient === true)
         | #{user.username} likes you
-        button#connection_button.btn.btn-dark(type='button') Like
+        button#connection_btn.btn.btn-dark(type='button') Connect
        else if (clientLikesUser)
         | You like #{user.username}
        else
         | You and #{user.username} are not connected
-        button.btn.btn-dark(type='button') Like
+        button#connection_btn.btn.btn-dark(type='button') Connect
       .details_container(align='center')
         .gender
           img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
@@ -67,4 +67,6 @@ html
          span #{user.location.area}
          span #{user.location.country}
          span #{user.distance} km away
+      script(src='/js/xhr.js')
+      script(src='/js/profile.js')
       script(src='/js/reloadCSS.js')
