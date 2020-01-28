@@ -1,17 +1,17 @@
 const express 		= require('express'),
 	  geo			= require('geolocation-utils'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js');
+	  dbc			= require('./model/sql_connect.js'),
+	  sql			= require('./model/sql_statements');
 
 let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
-	let sql = "SELECT * FROM locations WHERE user_id = ?",
-		blacklist,
-		location,
-		matches;
+	let	blacklist;
+	let	location;
+	let	matches;
 
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 		});
 		return;
 	}
-	dbc.query(sql, [sess.id], (err, result) => {
+	dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
