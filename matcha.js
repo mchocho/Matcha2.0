@@ -32,12 +32,16 @@ router.get('/', (req, res) => {
 		});
 		return;
 	}
-	dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
+	dbc.query(sql.selUserLocation, [sess.id], checkUserLocation);
+
+	function checkUserLocation(err, result) {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
 			return;
 		}
+	
+		
 		location = result[0];
 		dbc.query(sql.selBlockedUsers, [sess.id], (err, result) => {
 			blacklist = result;
@@ -52,7 +56,6 @@ router.get('/', (req, res) => {
 				if (err) throw err;
 				ft_util.removeBlockedUsers(result, blacklist)
 				.then(values => {
-					console.log("Values ", values[0]);
 					if (values.length > 0) {
 						for (let i = 0, n = values.length; i < n; i++) {
 							sql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
@@ -64,12 +67,13 @@ router.get('/', (req, res) => {
 								dbc.query(sql, [values[i].id], (err, result) => {
 									if (err) throw err;
 									if (result.length === 0) {
+										console.log("VID", values[i].id);
+										console.log("XXXXXX");
 										values.splice(i, 1);
 										i--;
 										return;
 									}
 									values[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
-									//💩💩💩
 									console.log("Here", i, n - 1);
 									if (i === n - 1) {
 										console.log("Hello render");
@@ -92,5 +96,5 @@ router.get('/', (req, res) => {
 				});
 			});
 		});
-	});
+	};
 });
