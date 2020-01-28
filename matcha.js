@@ -1,14 +1,7 @@
 const express 		= require('express'),
-	  session	    = require('express-session'),
-	  path			= require('path'),
-	  mysql			= require('mysql'),
-	  body_p		= require('body-parser'),
-	  URL			= require('url'),
-	  util 			= require('util'),
 	  geo			= require('geolocation-utils'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js'),
-	  email			= require('./includes/mail_client.js');
+	  dbc			= require('./model/sql_connect.js');
 
 let router = express.Router();
 module.exports = router;
