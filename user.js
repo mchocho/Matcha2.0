@@ -49,7 +49,7 @@ router.get('/', (req, res) => {
 							username: sess.username,
 							sex: sess.gender,
 							email: sess.email,
-							dob: sess.DOB,
+							dob: sess.DOB.slice(0, 10),
 							first_name: sess.first_name,
 							last_name: sess.last_name,
 							preference: sess.preferences,
@@ -68,7 +68,7 @@ router.get('/', (req, res) => {
 							username: sess.username,
 							sex: sess.gender,
 							email: sess.email,
-							dob: sess.DOB,
+							dob: sess.DOB.slice(0, 10),
 							first_name: sess.first_name,
 							last_name: sess.last_name,
 							preference: sess.preferences,
@@ -167,7 +167,7 @@ router.get('/', (req, res) => {
 					dbc.query(sql, [hash, sess.id], (err, result) => {
 						if (err) {throw err}
 						if (result.affectedRows === 1) {
-							sess[key] = val;
+							sess['password'] = val;
 							req.session.user = sess
 							res.end(json + '"result": "Success"}');
 						}
@@ -183,7 +183,10 @@ router.get('/', (req, res) => {
 					break;
 		case 'DOB':
 			if (!moment(val, "YYYY-MM-DD").isValid()) {
-				res.end(json + '"result": "Failed"}');
+				res.end(json + '"result": "Invalid date"}');
+				return;
+			} else if (!moment(val).isBefore(moment().subtract(18, 'years'))) {
+				res.end(json + '"result": "Too young"}');
 				return;
 			}
 		case 'preferences':
@@ -193,7 +196,7 @@ router.get('/', (req, res) => {
 					res.end(json + '"result": "Failed"}');
 					return;
 				}
-		case 'bio':
+		case 'biography':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
 			break;
 		default:
@@ -205,8 +208,21 @@ router.get('/', (req, res) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
 			if (key === 'fullname') {
-				res.end(json + ' "value_2": "' + req.param.val2 + '", "result": "Success"}');
-			} else res.end(json + '"result": "Success"}');
+				sess['first_name'] = val;
+				sess['last_name'] = req.param.val2
+				req.session.user = sess
+				req.session.save((err) => {
+					if (err) {throw err}
+					res.end(json + ' "value_2": "' + req.param.val2 + '", "result": "Success"}');
+				});
+			} else {
+				sess[key] = val;
+				req.session.user = sess
+				req.session.save((err) => {
+					if (err) {throw err}
+					res.end(json + '"result": "Success"}');
+				});
+			}
 		}
 		else
 			res.end(json + '"result": "Failed"}');

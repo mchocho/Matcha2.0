@@ -6,6 +6,7 @@ html
 		title #{title}
 		meta(name='viewport', content='width=device-width, initial-scale=1')
 		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+		link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
 		link(rel='stylesheet', href='/css/style.css', media='all')  
 		link(rel='stylesheet', href='/css/user.css', media='all')       
 		link(rel='stylesheet', href='/css/main.css', media='all')       
@@ -41,7 +42,7 @@ html
 				| #{user.viewcount} views this week
 			form
 				h4#username.value #{user.username}
-				input#username_edit_btn.custom_btn.ib(type='button', value='Edit')
+				input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
 				#username_edit_container.edit.hide
 					span#error_0.error
 					input#username_txt(type='text', placeholder='New username')
@@ -50,7 +51,7 @@ html
 						button#username_confirm.btn.btn-secondary(type='button') Confirm
 						button#username_cancel.btn.btn-secondary(type='button') Cancel
 				h3#fullname.value #{user.first_name} #{user.last_name}
-				input#fullname_edit_btn.custom_btn.ib(type='button', value='Edit')
+				input#fullname_edit_btn.custom_btn.ib(type='button', value='Change fullname')
 				#fullname_edit_container.edit.hide
 					span#error_1.error
 					input#firstname_txt(type='text', placeholder='First name')
@@ -75,14 +76,14 @@ html
 						button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
 				.edit
 					h4
-						img(src='images/icons/bithday.png', alt='email address', class='input_icon')
+						img(src='images/icons/bithday.png', alt='date of birth address', class='input_icon')
 						| #{user.dob}
-					input#email_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
-					#email_edit_container.interest_edit.hide
+					input#dob_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
+					#dob_edit_container.interest_edit.hide
 						span#error_4.error
-						input#email_txt(type='email', placeholder='Date of birth')
+						input#dob_txt(type='text', name='dob', placeholder='Date of birth', required='')
 						br
-						#new-email-confirm.btn-group(role='group', aria-label='Confirm date of birth')
+						#new-dob-confirm.btn-group(role='group', aria-label='Confirm date of birth')
 							button#dob_confirm.btn.btn-secondary(type='button') Confirm
 							button#dob_cancel.btn.btn-secondary(type='button') Cancel
 				.edit
@@ -91,7 +92,7 @@ html
 						| #{user.email}
 					input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
 					#email_edit_container.interest_edit.hide
-						span#error_4.error
+						span#error_5.error
 						input#email_txt(type='email', placeholder='New email')
 						br
 						#new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
@@ -101,7 +102,7 @@ html
 					h4 Password
 					input#password_edit_btn.custom_btn.ib(type='button', value='Change password')
 					#password_edit_container.interest_edit.hide
-						span#error_5.error
+						span#error_6.error
 						input#old_password_txt(type='password', placeholder='Enter current password')
 						br
 						input#new_password_txt(type='password', placeholder='Enter new password')
@@ -114,7 +115,7 @@ html
 					h4 Interests
 					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
 					#interest_edit_container.interest_edit.hide
-						span#error_6.error
+						span#error_7.error
 						input#interest_txt(type='text', placeholder='Add interest')
 						br
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
@@ -125,7 +126,7 @@ html
 							li(id=val.tag_id) #{val.name}
 				.edit
 					h4 Biography
-					span#error_7.error
+					span#error_8.error
 					p#biography.value.bio #{user.biography}
 					input#biography_edit_btn.custom_btn.ib(type='button', value='Edit')
 					#biography_edit_container.biography.hide
@@ -150,8 +151,9 @@ html
 				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
 	//- script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
 	//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+	script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/flatpickr')
 	script(type='text/javascript', src='js/button_groups.js')
 	script(type='text/javascript', src='js/xhr.js')
 	script(type='text/javascript', src='js/map.js')
-	script(type='text/javascript', src='js/reloadCSS.js')
 	script(type='text/javascript', src='js/user.js')
+	script(type='text/javascript', src='js/reloadCSS.js')
