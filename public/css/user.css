@@ -20,7 +20,7 @@ ul li {
 				 cursor: pointer;
 				 margin-left: 20%;
 }
-#password_edit_btn, #email_edit_btn  {
+#password_edit_btn, #email_edit_btn, #dob_edit_btn, .custom_btn {
 	width: unset;
 }
 
