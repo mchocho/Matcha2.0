@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 			sql = "SELECT * from user_tags WHERE user_id = ?";
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) {throw err}
-				ft_util.getTagNames(dbc, tags).then((tags) => {
+				ft_util.getTagNames(dbc, result).then((tags) => {
 					if (ft_util.VERBOSE) {
 						console.log(util.inspect({
 							username: sess.username,
@@ -85,7 +85,8 @@ router.get('/', (req, res) => {
 }).post('/:key.:val.:val2?', (req, res) => {
 	const sess = req.session.user,
 	      key = req.params.key.trim(),
-	      val = decodeURIComponent(req.params.val);
+		  val = (key !== 'email') ? decodeURIComponent(req.params.val) : decodeURIComponent(req.params.val).replace(/\|/g, '.'),
+		  val2 = decodeURIComponent(req.params.val2);
 	let sql,
 	    json = `{"key": "${ft_util.escapeStr(key)}", "value": "${ft_util.escapeStr(val)}", `;
 
@@ -100,7 +101,12 @@ router.get('/', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-  	switch(key) {	//Ajax request will accept these keys only
+	  switch(key) {	//Ajax request will accept these keys only
+		case 'location': {
+			// const 
+			// if (!isstring())
+			return;
+		}
 		case 'interest':
 			ft_util.valueExists(dbc, 'tags', 'name', val.toLowerCase()).then((result) => {
 				if (result.length > 0) {
@@ -175,11 +181,6 @@ router.get('/', (req, res) => {
 				} else res.end(json + '"result": "Incorrect password"}');
 			} else res.end(json + '"result": "Weak password"}');
 			return;
-		case 'fullname':
-			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
-			if (ft_util.isstring(req.params.val2))
-				if (req.params.val2.length > 0)
-					break;
 		case 'DOB':
 			if (!moment(val, "YYYY-MM-DD").isValid()) {
 				res.end(json + '"result": "Invalid date"}');
@@ -195,6 +196,12 @@ router.get('/', (req, res) => {
 					res.end(json + '"result": "Failed"}');
 					return;
 				}
+		case 'fullname':
+			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+			if (val2.length === 0) {
+				res.end(json + '"result": "Failed"}');
+				return;
+			} else break;
 		case 'biography':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
 			break;
@@ -203,16 +210,16 @@ router.get('/', (req, res) => {
 	        return;
 	}
 
-	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, req.param.val2, sess.id], (err, result) => {
+	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, val2, sess.id], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
 			if (key === 'fullname') {
 				sess['first_name'] = val;
-				sess['last_name'] = req.param.val2
+				sess['last_name'] = val2;
 				req.session.user = sess
 				req.session.save((err) => {
 					if (err) {throw err}
-					res.end(json + ' "value_2": "' + req.param.val2 + '", "result": "Success"}');
+					res.end(json + '"value_2": "' + val2 + '", "result": "Success"}');
 				});
 			} else {
 				sess[key] = val;
