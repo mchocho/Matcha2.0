@@ -1,8 +1,9 @@
 const express 		= require('express'),
 	  geo			= require('geolocation-utils'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js'),
-	  sql			= require('./model/sql_statements');
+	  dbc			= require('./model/sql_connect.js');
+
+let sql	= require('./model/sql_statements');
 
 let router = express.Router();
 module.exports = router;
@@ -35,7 +36,7 @@ router.get('/', (req, res) => {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
-			return
+			return;
 		}
 		location = result[0];
 		sql = "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?";
