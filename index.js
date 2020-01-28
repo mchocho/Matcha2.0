@@ -8,17 +8,11 @@ const express = require("express"),
 	uuidv4 = require("uuid/v4"),
 	app = express(),
 	flash = require("connect-flash"),
-	//server = require("http").createServer(app),
-	//io = require("socket.io").listen(server);
+	server = require("http").createServer(app),
+	io = require("socket.io")(server),
 	PORT = process.env.PORT || 3000;
 
-var http = require("http");
-// var socket = require('socket.io');
 
-//Chat socket connection
-const server = http.createServer(app);
-// const io = socket(server);
-var io = require("socket.io")(server);
 
 require("dotenv").config();
 app.use(flash());
@@ -30,7 +24,7 @@ app.use(
 		extended: true
 	})
 );
-//app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/public"));
 
 app.use(express.static("public"));
 // Does the secret not change everytime?
@@ -45,16 +39,104 @@ app.use(
 	})
 );
 
-io.on("connection", (socket) => {
+var users = {};
+
+io.on('connection', (socket) => {
 	console.log("New user connected");
-	socket.on("chat message", (msg) => {
-		console.log(msg);
-		io.emit("chat message", msg);
+
+	socket.on('new user', (data, callback) => {
+		// checking to see if index of nickname given is not equal to -1, 
+		// that means the name exists in the array
+		if (data in users) {
+			callback(false);
+		} else {
+			callback(true);
+
+			// Storing the name in the socket
+			socket.nickname = data;
+			users[socket.nickname] = socket;
+			// nicknames.push(socket.nickname);
+
+			// emit nickname to all users so that it can update their lists
+			updateNicknames();
+		}
 	});
-	socket.on("disconnect", () => {
-		console.log("User disconnected");
+
+	function updateNicknames() {
+		// emit nickname to all users so that it can update their lists
+		io.emit('usernames', Object.keys(users));
+	}
+
+	socket.on("chat message", (data, callback) => {
+		// console.log(data);
+
+		// Trim message to remove any white space at end
+		var msg = data.trim();
+		if (msg.substr(0, 3) === '/w ') {
+
+			// remove the '/w ' at start of the string, we no longer need that
+			msg = msg.substr(3);
+
+			// find the index of the space
+			var ind = msg.indexOf(' ');
+
+			// if there is in fact a space (ie there is a message)
+			if (ind !== -1) {
+
+				// the name is the word following in the space, save that in name
+				var name = msg.substring(0, ind);
+				// the message is then everthing after the users name
+				var msg = msg.substring(ind + 1);
+
+				// check is that user in on the chatroom
+				if (name in users) {
+					users[name].emit("whisper", {
+						msg: msg,
+						nick: socket.nickname
+					});
+					users[socket.nickname].emit("whisper", {
+						msg: msg,
+						nick: socket.nickname
+					});
+					console.log('Whisper!');
+				} else {
+					// else user is not in chat room, cannot chat
+					callback("Error! Enter a valid user.");
+				}
+			} else {
+				// else there is no message / no space / no user ie there is
+				// white space after the '/w '
+				callback("Error! Please enter a message for your whisper.");
+			}
+		} else {
+			// Telling the client to execute 'chat message'
+			io.emit("chat message", {
+				msg: msg,
+				nick: socket.nickname
+			});
+			//socket.broadcast.emit() sends to everyone except the sender
+		}
 	});
+
+	socket.on('disconnect', (data) => {
+
+		// When disconnecting the users list should delete that member
+		// This if not socketname means they came to the page but didnt bother
+		// putting in a nickname, so they woudlnt be on the list, just return
+		if (!socket.nickname) return;
+
+		// else this will happen, splice removes their nickname from the array
+		delete users[socket.nickname];
+		// nicknames.splice(nicknames.indexOf(socket.nickname), 1);
+
+		// then we should update the list of users on the page
+		updateNicknames();
+
+	});
+
 });
+
+
 
 if (app.get("env") === "production") app.set("trust proxy", 1);
 
@@ -71,7 +153,8 @@ app.use("/verify_email", verify_emailRouter);
 let verifyUserEmail = require("./api/verification");
 app.use("/verification", verifyUserEmail);
 
-//Chat route
+//Chat route having problems with socket io throught this routing
+//hence its at below this comment block
 // let chatRouter = require('./chats');
 // app.use('/chats', ());
 
@@ -108,6 +191,8 @@ app.use((req, res) => {
 // 	console.log("Server started on port " + PORT);
 // });
 
+// Socket io created a server calling 'server' (line 11) so we have to listen
+// to that server. I dont know how server 'app' is affected?
 server.listen(PORT, () => {
 	console.log("Socket started on port " + PORT);
 });

@@ -41,3 +41,52 @@ app.get('/', (req, res) => {
 	
 	//middlewares
 	// app.use(express.static("public"));
+
+
+// THIS IS THE SOCKET.IO EXAMPLE I WAS WORKING ON
+// io.on("connection", (socket) => {
+// 	console.log("New user connected");
+// 	var addedUser = false;
+
+// 	// When client emits 'chat message', this listens and executes
+// 	socket.on("chat message", (msg) => {
+// 		console.log(msg);
+// 		// Telling the client to execute 'chat message'
+// 		io.emit("chat message", {
+// 			username: 'toto', // socket.username
+// 			message: msg
+// 		});
+// 	});
+
+// 	// When client emits 'add user', this listens and executes
+// 	socket.on('add user', (username) => {
+// 		if (addedUser) return;
+
+// 		// Store the username in the socket session for this client
+// 		socket.username = username;
+// 		++numUsers;
+// 		addedUser = true;
+// 		socket.emit('login', {
+// 			numUsers: numUsers
+// 		});
+
+// 		// Echo globally (all clients) that new user has connected
+// 		socket.broadcast.emit('user joined', {
+// 			username: socket.username,
+// 			numUsers: numUsers
+// 		});
+// 	});
+
+// 	socket.on("disconnect", () => {
+// 		console.log("User disconnected");
+// 		if (addedUser) {
+// 			--numUsers;
+
+// 			// Echo globally (all clients) that this client has left
+// 			socket.broadcast.emit('user left', {
+// 				username: socket.username,
+// 				numUsers: numUsers
+// 			});
+// 		}
+// 	});
+// });
