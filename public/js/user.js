@@ -17,8 +17,10 @@ function script() {
 		document.getElementById('old_password_txt'),			//11
 		document.getElementById('new_password_txt'),			//12
 		document.getElementById('confirm_password_txt'),			//13
-		document.getElementById('email_txt')					//14
+		document.getElementById('email_txt'),					//14
+		document.getElementById('dob_txt')								//15
 	];
+	flatpickr(inputFields[15], {});
 
 	function isNode(el) {
        	return (el instanceof Element);
@@ -96,9 +98,24 @@ function script() {
 		return true;
 	}
 
-	function validateEmail() {
-		const value = inputFields[14].value.toLowerCase().trim(),
+	function validateDOB() {
+		const value = inputFields[15].value.trim(),
 			  error_node = document.getElementById('error_4');
+
+		if (value.length != 10) {
+			error_node.textContent = "Please enter your date of birth";
+			return false;
+		}
+		error_node.textContent = "";
+		xhr('/user/DOB.' + encodeURIComponent(value), 'POST', null, function(xhr) {
+			//Handle the request
+		});
+		return true;
+	}
+
+	function validateEmail() {
+		const value = inputFields[14].value.trim(),
+			  error_node = document.getElementById('error_5');
 
 		if (!isEmail(value)) {
 			error_node.textContent = "Please enter your new email address";
@@ -108,13 +125,14 @@ function script() {
 		xhr('/user/email.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			//Handle the request
 		});
+		return true;
 	}
 
 	function validatePassword() {
 		const oldpw = inputFields[11].value.trim(),
 			  newpw = inputFields[12].value.trim(),
 			  confirmpw = inputFields[13].value.trim(),
-			  error_node = document.getElementById('error_5');
+			  error_node = document.getElementById('error_6');
 
 		if (oldpw.length === 0) {
 			error_node.textContent = "Please enter your password";
@@ -152,7 +170,7 @@ function script() {
 
 	function validateInterests() {
 		const value = inputFields[9].value.trim(),
-		      error_node = document.getElementById('error_6');
+		      error_node = document.getElementById('error_7');
 
 		if (value.length <= 2) {
 			error_node.textContent = 'Please enter an interest';
@@ -175,14 +193,14 @@ function script() {
 
 	function validateBio() {
 		const value = inputFields[10].value.trim(),
-		      error_node = document.getElementById('error_7');
+		      error_node = document.getElementById('error_8');
 
 		if (value.length == 0) {
 			error_node.textContent = 'Please enter your biography';
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/interest.' + encodeURIComponent(value), 'POST', null, function(xhr) {
+		xhr('/user/biography.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText);
 		});
 		return true;
@@ -203,6 +221,14 @@ function script() {
 		document.getElementById('fullname_confirm'),
 		document.getElementById('fullname_cancel'),
 		validateFullname
+	);
+
+	editActions(
+		document.getElementById('dob_edit_btn'),
+		document.getElementById('dob_edit_container'),
+		document.getElementById('dob_confirm'),
+		document.getElementById('dob_cancel'),
+		validateDOB
 	);
 
 	editActions(

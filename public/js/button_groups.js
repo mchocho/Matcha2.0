@@ -3,7 +3,7 @@ function script() {
 		gender_btns = document.getElementById('gender_group').childNodes,
 		preference_btns = document.getElementById('preference_group').childNodes;
 	
-	if ('flatpickr' in window) flatpickr(dob, {});
+	if ('flatpickr' in window && isNode(dob)) flatpickr(dob, {});
 
 	function isNode(el) {
 		return (el instanceof Element);
