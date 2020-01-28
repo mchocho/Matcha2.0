@@ -14,7 +14,8 @@ let insNewPwToken		= "INSERT INTO `tokens` " +
 							" VALUES (?, ?, ?, ?)";
 let updatePasswd		= "UPDATE `users` SET `password` = ? WHERE `id` = ?";
 let delOldTokens		= "DELETE FROM `tokens` WHERE `user_id` = ? && `request` = ?";
-let selUserLocation		= "SELECT * FROM locations WHERE user_id = ?";
+let selUserLocation		= "SELECT * FROM `locations` WHERE `user_id` = ?";
+let selBlockedUsers		= "SELECT `blocked_user` FROM `blocked_accounts` WHERE `user_id` = ?";
 
 module.exports = {
 	selAllUsers, selAllUsersDesc,
@@ -24,5 +25,6 @@ module.exports = {
 	updateToken, delTokenRow,
 	selUserIdByEmail, insNewPwToken,
 	updateToken, updatePasswd,
-	delOldTokens, selUserLocation
+	delOldTokens, selUserLocation,
+	selBlockedUsers
 }	

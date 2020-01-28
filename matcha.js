@@ -39,19 +39,20 @@ router.get('/', (req, res) => {
 			return;
 		}
 		location = result[0];
-		sql = "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?";
-		dbc.query(sql, [sess.id], (err, result) => {
+		dbc.query(sql.selBlockedUsers, [sess.id], (err, result) => {
 			blacklist = result;
-			if (sess.preferences === 'M')
+			if (sess.preferences === 'M') {
 				sql = "SELECT * FROM users WHERE gender = 'M' AND (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
-			else if (sess.preferences === 'F')
+			} else if (sess.preferences === 'F') {
 				sql = "SELECT * FROM users WHERE gender = 'F' AND (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
-			else
+			} else {
 				sql = "SELECT * FROM users WHERE (preferences = ? OR preferences = 'B') AND verified = 'T' AND NOT id = ?";
+			}
 			dbc.query(sql, [sess.gender, sess.id], (err, result) => {
 				if (err) throw err;
 				ft_util.removeBlockedUsers(result, blacklist)
 				.then(values => {
+					console.log("Values ", values[0]);
 					if (values.length > 0) {
 						for (let i = 0, n = values.length; i < n; i++) {
 							sql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
