@@ -5,8 +5,10 @@ function isFunction(value) {
 function xhr(url, method, body, callback) {
  	const DEVMODE = true;
 
-	if (DEVMODE)
+	if (DEVMODE) {
 		console.log("Beginning XMLHttpRequest");
+		console.log('Sending request to ', url);
+	}
 
   	let xhr = new XMLHttpRequest();
 

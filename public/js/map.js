@@ -29,7 +29,10 @@ function script() {
 			location: pos
 		}, function(results, status) {
 			if (status === google.maps.GeocoderStatus.OK) {
-				const form = new FormData();
+				//DEV
+				console.log(results);
+				//
+				const formData = new FormData();
 				let user = '<h3>Your location</h3>';
 				user += 'Address: ' + results[0].formatted_address;
 				infoWindow.setContent(user);
@@ -37,8 +40,13 @@ function script() {
 				infoWindow.setPosition(pos);
 
 				//Send the data to server
-				formData.append('key', 'user_location');
-				formData.append();
+				formData.append('type', 'user_location');
+				for (let key in results[0]) {
+					formData.append(key, results[0][key]);
+				}
+				xhr('/user/location.true', 'POST', formData, function(xhr) {
+					//Handle request
+				});
 			}
 		});
 	}

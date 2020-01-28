@@ -93,7 +93,14 @@ function script() {
 		}
 		error_node.textContent = "";
 		xhr('/user/fullname.' + encodeURIComponent(firstname) + '.' + encodeURIComponent(lastname), 'POST', null, function(xhr) {
-			//Handle the request
+			const res = JSON.parse(xhr.responseText);
+			if (res.result === 'Success') {
+				document.getElementById('fullname').textContent = firstname + ' ' + lastname;
+				inputFields[1].value = '';
+				inputFields[2].value = '';
+			} else {
+				error_node.textContent = "Please try again.";
+			}
 		});
 		return true;
 	}
@@ -108,7 +115,13 @@ function script() {
 		}
 		error_node.textContent = "";
 		xhr('/user/DOB.' + encodeURIComponent(value), 'POST', null, function(xhr) {
-			//Handle the request
+			const res = JSON.parse(xhr.responseText);
+			if (res.result === 'Success') {
+				document.getElementById('dob').textContent = value;
+				inputFields[15].value = '';
+			} else {
+				error_node.textContent = "Please try again.";
+			}
 		});
 		return true;
 	}
@@ -122,8 +135,13 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/email.' + encodeURIComponent(value), 'POST', null, function(xhr) {
-			//Handle the request
+		xhr('/user/email.' + encodeURIComponent(value.replace(/\./g, '|')), 'POST', null, function(xhr) {
+			const res = JSON.parse(xhr.responseText);
+			if (res.result === 'Success') {
+				document.getElementById('email').textContent = value;
+			} else {
+				error_node.textContent = "Please try again.";
+			}
 		});
 		return true;
 	}
@@ -162,7 +180,7 @@ function script() {
 			} else if (res.result === 'Weak password') {
 				el.textContent = "Please provide a 5 letter password that contains lower and upper cases, as well as numbers";
 			} else {
-
+				
 			}
 		});
 		return true;
@@ -202,6 +220,11 @@ function script() {
 		error_node.textContent = "";
 		xhr('/user/biography.' + encodeURIComponent(value), 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText);
+			if (res.result === 'Success') {
+				document.getElementById('biography').textContent = value;
+			} else {
+				error_node.textContent = '';
+			}
 		});
 		return true;
 	}
