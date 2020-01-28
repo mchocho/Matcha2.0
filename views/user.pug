@@ -77,7 +77,7 @@ html
 				.edit
 					h4
 						img(src='images/icons/bithday.png', alt='date of birth address', class='input_icon')
-						| #{user.dob}
+						p#dob #{user.dob}
 					input#dob_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
 					#dob_edit_container.interest_edit.hide
 						span#error_4.error
@@ -89,7 +89,7 @@ html
 				.edit
 					h4
 						img(src='images/icons/envelope.png', alt='email address', class='input_icon')
-						| #{user.email}
+						p#email #{user.email}
 					input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
 					#email_edit_container.interest_edit.hide
 						span#error_5.error
@@ -149,7 +149,7 @@ html
 				a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons 
 				|  from 
 				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-	//- script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
+	script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
 	//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
 	script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/flatpickr')
 	script(type='text/javascript', src='js/button_groups.js')

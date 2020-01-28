@@ -39,12 +39,13 @@ html
           if (image.profile_pic === 'T')
             img(src=image.name)
       .connection_status
+       input#profile_id(type='hidden', value=user.id)
        if(clientLikesUser === true && userLikesClient === true)
         img(src='/images/icons/connected.png')
-        | You and #{user.username} are connected
+        span#connection_status You and #{user.username} are connected
        else if (userLikesClient === true)
         | #{user.username} likes you
-        button.btn.btn-dark(type='button') Like
+        button#connection_button.btn.btn-dark(type='button') Like
        else if (clientLikesUser)
         | You like #{user.username}
        else
