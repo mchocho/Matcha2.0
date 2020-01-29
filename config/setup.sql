@@ -236,4 +236,11 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications`
 	ON DELETE CASCADE
   ON UPDATE CASCADE , 
 	PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS  `matcha`.`chat_tokens` 	
+( 
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT , 
+	`token` VARCHAR(180) DEFAULT NULL ,
+	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
