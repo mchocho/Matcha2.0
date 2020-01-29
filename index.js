@@ -41,100 +41,123 @@ app.use(
 
 var users = {};
 
-io.on('connection', (socket) => {
-	console.log("New user connected");
+var token = '/custom';
 
-	socket.on('new user', (data, callback) => {
-		// checking to see if index of nickname given is not equal to -1, 
-		// that means the name exists in the array
-		if (data in users) {
-			callback(false);
-		} else {
-			callback(true);
 
-			// Storing the name in the socket
-			socket.nickname = data;
-			users[socket.nickname] = socket;
-			// nicknames.push(socket.nickname);
 
-			// emit nickname to all users so that it can update their lists
-			updateNicknames();
-		}
+
+app.get(`/chat/:id`, (req, res) => {
+	//console.log("CUSTOM CHAT");
+
+	const modo = io.of(`/${req.params.id}`);
+	const route = `/${req.params.id}`;
+	//console.log(req.params.id);
+
+	modo.on('connection', (socket) => {
+		console.log('CUSTOM CHAT new user');
 	});
 
-	function updateNicknames() {
-		// emit nickname to all users so that it can update their lists
-		io.emit('usernames', Object.keys(users));
-	}
-
-	socket.on("chat message", (data, callback) => {
-		// console.log(data);
-
-		// Trim message to remove any white space at end
-		var msg = data.trim();
-		if (msg.substr(0, 3) === '/w ') {
-
-			// remove the '/w ' at start of the string, we no longer need that
-			msg = msg.substr(3);
-
-			// find the index of the space
-			var ind = msg.indexOf(' ');
-
-			// if there is in fact a space (ie there is a message)
-			if (ind !== -1) {
-
-				// the name is the word following in the space, save that in name
-				var name = msg.substring(0, ind);
-				// the message is then everthing after the users name
-				var msg = msg.substring(ind + 1);
-
-				// check is that user in on the chatroom
-				if (name in users) {
-					users[name].emit("whisper", {
-						msg: msg,
-						nick: socket.nickname
-					});
-					users[socket.nickname].emit("whisper", {
-						msg: msg,
-						nick: socket.nickname
-					});
-					console.log('Whisper!');
-				} else {
-					// else user is not in chat room, cannot chat
-					callback("Error! Enter a valid user.");
-				}
-			} else {
-				// else there is no message / no space / no user ie there is
-				// white space after the '/w '
-				callback("Error! Please enter a message for your whisper.");
-			}
-		} else {
-			// Telling the client to execute 'chat message'
-			io.emit("chat message", {
-				msg: msg,
-				nick: socket.nickname
-			});
-			//socket.broadcast.emit() sends to everyone except the sender
-		}
+	res.render("customchat.pug", {
+		chat: route
 	});
-
-	socket.on('disconnect', (data) => {
-
-		// When disconnecting the users list should delete that member
-		// This if not socketname means they came to the page but didnt bother
-		// putting in a nickname, so they woudlnt be on the list, just return
-		if (!socket.nickname) return;
-
-		// else this will happen, splice removes their nickname from the array
-		delete users[socket.nickname];
-		// nicknames.splice(nicknames.indexOf(socket.nickname), 1);
-
-		// then we should update the list of users on the page
-		updateNicknames();
-
-	});
-
 });
+
+
+
+// io.on('connection', (socket) => {
+// 	console.log("New user connected");
+
+// 	socket.on('new user', (data, callback) => {
+// 		// checking to see if index of nickname given is not equal to -1, 
+// 		// that means the name exists in the array
+// 		if (data in users) {
+// 			callback(false);
+// 		} else {
+// 			callback(true);
+
+// 			// Storing the name in the socket
+// 			socket.nickname = data;
+// 			users[socket.nickname] = socket;
+// 			// nicknames.push(socket.nickname);
+
+// 			// emit nickname to all users so that it can update their lists
+// 			updateNicknames();
+// 		}
+// 	});
+
+// 	function updateNicknames() {
+// 		// emit nickname to all users so that it can update their lists
+// 		io.emit('usernames', Object.keys(users));
+// 	}
+
+// 	socket.on("chat message", (data, callback) => {
+// 		// console.log(data);
+
+// 		// Trim message to remove any white space at end
+// 		var msg = data.trim();
+// 		if (msg.substr(0, 3) === '/w ') {
+
+// 			// remove the '/w ' at start of the string, we no longer need that
+// 			msg = msg.substr(3);
+
+// 			// find the index of the space
+// 			var ind = msg.indexOf(' ');
+
+// 			// if there is in fact a space (ie there is a message)
+// 			if (ind !== -1) {
+
+// 				// the name is the word following in the space, save that in name
+// 				var name = msg.substring(0, ind);
+// 				// the message is then everthing after the users name
+// 				var msg = msg.substring(ind + 1);
+
+// 				// check is that user in on the chatroom
+// 				if (name in users) {
+// 					users[name].emit("whisper", {
+// 						msg: msg,
+// 						nick: socket.nickname
+// 					});
+// 					users[socket.nickname].emit("whisper", {
+// 						msg: msg,
+// 						nick: socket.nickname
+// 					});
+// 					console.log('Whisper!');
+// 				} else {
+// 					// else user is not in chat room, cannot chat
+// 					callback("Error! Enter a valid user.");
+// 				}
+// 			} else {
+// 				// else there is no message / no space / no user ie there is
+// 				// white space after the '/w '
+// 				callback("Error! Please enter a message for your whisper.");
+// 			}
+// 		} else {
+// 			// Telling the client to execute 'chat message'
+// 			io.emit("chat message", {
+// 				msg: msg,
+// 				nick: socket.nickname
+// 			});
+// 			//socket.broadcast.emit() sends to everyone except the sender
+// 		}
+// 	});
+
+// 	socket.on('disconnect', (data) => {
+
+// 		// When disconnecting the users list should delete that member
+// 		// This if not socketname means they came to the page but didnt bother
+// 		// putting in a nickname, so they woudlnt be on the list, just return
+// 		if (!socket.nickname) return;
+
+// 		// else this will happen, splice removes their nickname from the array
+// 		delete users[socket.nickname];
+// 		// nicknames.splice(nicknames.indexOf(socket.nickname), 1);
+
+// 		// then we should update the list of users on the page
+// 		updateNicknames();
+
+// 	});
+
+// });
 
 
 
