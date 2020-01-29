@@ -1,9 +1,8 @@
 const express 		= require('express'),
 	  geo			= require('geolocation-utils'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js');
-
-const sql	= require('./model/sql_statements');
+	  dbc			= require('./model/sql_connect.js'),
+		sql	= require('./model/sql_statements');
 
 let router = express.Router();
 module.exports = router;
@@ -60,41 +59,44 @@ router.get('/', (req, res) => {
 	function getMatches(err, result) {
 	if (err) throw err;
 	matches = result;		
-		if (matches.length > 0) {
-			// function getMatchesImages
-			for (let i = 0, n = matches.length; i < n; i++) {
-				let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
-				matches[i]['url'] = '/profile/' + matches[i].id;
-				dbc.query(ssql, [matches[i].id], (err, result) => {
-					if (err) throw err;
-					matches[i].images = result;
-					ssql = "SELECT * FROM locations WHERE user_id = ?";
-					dbc.query(ssql, [matches[i].id], (err, result) => {
-						if (err) throw err;
-						if (result.length === 0) {
-							console.log("VID", matches[i].id);
-							console.log("XXXXXX");
-							matches.splice(i, 1);
-							i--;
-							return;
-						}
-						matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
-						console.log("Here", i, n - 1);
-						if (i === n - 1) {
-							console.log("Hello render");
-							res.render('matcha.pug', {
-								title: "Find your match | Cupid's Arrow",
-								users: matches
-							});
-						}
+	if (matches.length > 0) {
+		getMatchesImages();
+	} else {
+		res.render('matcha.pug', {
+			title: "Find your match | Cupid's Arrow",
+			users: []
+		});
+	} 
+			
+	function getMatchesImages(){
+	for (let i = 0, n = matches.length; i < n; i++) {
+		let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
+		matches[i]['url'] = '/profile/' + matches[i].id;
+		dbc.query(ssql, [matches[i].id], (err, result) => {
+			if (err) throw err;
+			matches[i].images = result;
+			ssql = "SELECT * FROM locations WHERE user_id = ?";
+			dbc.query(ssql, [matches[i].id], (err, result) => {
+				if (err) throw err;
+				if (result.length === 0) {
+					console.log("VID", matches[i].id);
+					console.log("XXXXXX");
+					matches.splice(i, 1);
+					i--;
+					return;
+				}
+				matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+				console.log("Here", i, n - 1);
+				if (i === n - 1) {
+					console.log("Hello render");
+					res.render('matcha.pug', {
+						title: "Find your match | Cupid's Arrow",
+						users: matches
 					});
-				});
-			}
-		} else {
-			res.render('matcha.pug', {
-				title: "Find your match | Cupid's Arrow",
-				users: []
-			}); 
+				}
+			});
+			});
+		}		 
 		}
 	};
 });
