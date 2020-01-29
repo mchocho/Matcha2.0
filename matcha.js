@@ -95,28 +95,28 @@ router.get('/', (req, res) => {
 		}	
 	}
 
-		function nextStep() {
-			console.log("Now in next step");
-			for (let i = 0, n = matches.length; i < n; i++) {
-			let ssql = "SELECT * FROM locations WHERE user_id = ?";
-			dbc.query(ssql, [matches[i].id], (err, result) => {
-				if (err) throw err;
-				if (result.length === 0) {
-					console.log("VID", matches[i].id);
-					console.log("XXXXXX");
-					matches.splice(i, 1);
-					i--;
-					return;
-				}
-				matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
-				console.log("Here", i, n - 1);
-				if (i === n - 1) {
-					console.log("Hello render");
-					res.render('matcha.pug', {
-						title: "Find your match | Cupid's Arrow",
-						users: matches
-					});
-				}
+	function nextStep() {
+		console.log("Now in next step");
+		for (let i = 0, n = matches.length; i < n; i++) {
+		let ssql = "SELECT * FROM locations WHERE user_id = ?";
+		dbc.query(ssql, [matches[i].id], (err, result) => {
+			if (err) throw err;
+			if (result.length === 0) {
+				console.log("VID", matches[i].id);
+				console.log("XXXXXX");
+				matches.splice(i, 1);
+				i--;
+				return;
+			}
+			matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+			console.log("Here", i, n - 1);
+			if (i === n - 1) {
+				console.log("Hello render");
+				res.render('matcha.pug', {
+					title: "Find your match | Cupid's Arrow",
+					users: matches
+				});
+			}
 			});
 		}
 	}	 
