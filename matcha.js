@@ -57,29 +57,48 @@ router.get('/', (req, res) => {
 	}
 
 	function getMatches(err, result) {
-	if (err) throw err;
-	matches = result;		
-	if (matches.length > 0) {
-		createProfileUrls();
-	} else {
-		res.render('matcha.pug', {
-			title: "Find your match | Cupid's Arrow",
-			users: []
-		});
+		if (err) throw err;
+		matches = result;		
+		if (matches.length > 0) {
+			createProfileUrls();
+		} else {
+			res.render('matcha.pug', {
+				title: "Find your match | Cupid's Arrow",
+				users: []
+			});
+		}
 	} 
 			
 	function createProfileUrls() {	
 		for (let i = 0, n = matches.length; i < n; i++) {
 			matches[i]['url'] = '/profile/' + matches[i].id;
 		}
-		nextStep();
+		getMatchesImages();
 	}
+
+	function getMatchesImages() {	
+		let i = 0;
+		let arrLen = matches.length;
+		getEachImage(i);
+		function getEachImage(i) {
+			if (i < arrLen) {
+				dbc.query(sql.selImagePath, [matches[i].id], (err, result) => {
+					if (err) throw err;
+					matches[i].images = result;
+					i++;
+					getEachImage(i);	
+				});
+			} else {
+				console.log("Done, here is i", i);
+				nextStep();
+			}
+		}	
+	}
+
 		function nextStep() {
+			console.log("Now in next step");
 			for (let i = 0, n = matches.length; i < n; i++) {
-			dbc.query(sql.selImagePath, [matches[i].id], (err, result) => {
-				if (err) throw err;
-				matches[i].images = result;
-				let ssql = "SELECT * FROM locations WHERE user_id = ?";
+			let ssql = "SELECT * FROM locations WHERE user_id = ?";
 			dbc.query(ssql, [matches[i].id], (err, result) => {
 				if (err) throw err;
 				if (result.length === 0) {
@@ -99,8 +118,6 @@ router.get('/', (req, res) => {
 					});
 				}
 			});
-		});	
 		}
 	}	 
-	};
 });
