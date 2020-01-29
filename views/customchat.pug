@@ -4,14 +4,14 @@ html
 		title MatchaChat
 		style.
 			//- * { margin: 0; padding: 0; box-sizing: border-box; }
-			//- body { font: 13px Helvetica, Arial; }
+			body { font: 13px Helvetica, Arial; }
 			//- form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
 			//- form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
 			//- form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 			//- #messages { list-style-type: none; margin: 0; padding: 0; }
 			//- #messages li { padding: 5px 10px; }
 			#messages li:nth-child(even) { background: #eee; }
-			//- #nickWrap {float: right}
+			#nickWrap {display: none}
 			.error {color: red}
 			.whisper { color: #53CDE8; font-style: italic}
 		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
@@ -35,29 +35,29 @@ html
 
 	body
 		h1 CUSTOM CHAT
-			div#nickWrap(class='container')
-				h3(class='' style='margin: 30px; text-align: center') Username
-				p#nickError(style='text-align: center; color: red')
-				form#setNick(action='' class='col-sm-12')
-					div(class='input-group mb-3')
-						input#nickname(autocomplete='off' type='text' class='form-control')
-						div(class='input-group-append')
-							input(type='submit' class='btn btn-secondary')
+			//- div#nickWrap(class='container')
+			//- 	h3(class='' style='margin: 30px; text-align: center') Username
+			//- 	p#nickError(style='text-align: center; color: red')
+			//- 	form#setNick(action='' class='col-sm-12')
+			//- 		div(class='input-group mb-3')
+			//- 			input#nickname(autocomplete='off' type='text' class='form-control')
+			//- 			div(class='input-group-append')
+			//- 				input(type='submit' class='btn btn-secondary')
 
-			div#content(style='display: none;')
-				div(class='row')
-					div#chat(class='col-sm-8')
-						h4(class='' style='margin: 30px; text-align: center') Messages
-						ul#messages(class='list-group mt-3' style='')
-					div#usersDiv(class='col-sm-4')
-						h4(class='' style='margin: 30px; text-align: center') Users
-						ul#users(class='list-group mt-3' style='')
+		div#content
+			div(class='row')
+				div#chat(class='col-sm-8')
+					h4(class='' style='margin: 30px; text-align: center') Messages
+					ul#messages(class='list-group mt-3')
+				div#usersDiv(class='col-sm-4')
+					h4(class='' style='margin: 30px; text-align: center') Users
+					ul#users(class='list-group mt-3' style='')
 
-				form#sendMessage(action='' class='col-sm-12' style='position: fixed; bottom: 0;')
-					div(class='input-group mb-3')
-						input#m(autocomplete='off' type='text' class='form-control')
-						div(class='input-group-append')
-							input(type='submit' class='btn btn-primary')
-									//- button(class='btn btn-primary') Send
+			form#sendMessage(action='' class='col-sm-12' style='position: fixed; bottom: 0;')
+				div(class='input-group mb-3')
+					input#m(autocomplete='off' type='text' class='form-control')
+					div(class='input-group-append')
+						input(type='submit' class='btn btn-primary')
+								//- button(class='btn btn-primary') Send
 			script(src='/js/customchat.js')
 

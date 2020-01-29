@@ -1,35 +1,33 @@
 require('dotenv').config();
 
-const express = require("express"),
-	path = require("path"),
-	mysql = require("mysql"),
-	body_p = require("body-parser"),
-	moment = require("moment"),
-	URL = require("url"),
-	session = require("express-session"),
-	uuidv4 = require("uuid/v4"),
+const express = require('express'),
+	path = require('path'),
+	mysql = require('mysql'),
+	body_p = require('body-parser'),
+	moment = require('moment'),
+	URL = require('url'),
+	session = require('express-session'),
+	uuidv4 = require('uuid/v4'),
 	app = express(),
-	flash = require("connect-flash"),
-	server = require("http").createServer(app),
-	io = require("socket.io")(server),
-	dbc	= require('./model/sql_connect.js'),
+	flash = require('connect-flash'),
+	server = require('http').createServer(app),
+	io = require('socket.io')(server),
+	dbc = require('./model/sql_connect.js'),
 	PORT = process.env.PORT || 3000;
 
-
-
-require("dotenv").config();
+require('dotenv').config();
 app.use(flash());
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 app.use(
 	body_p.urlencoded({
 		extended: true
 	})
 );
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + '/public'));
 
-app.use(express.static("public"));
+app.use(express.static('public'));
 // Does the secret not change everytime?
 app.use(
 	session({
@@ -46,42 +44,78 @@ var users = {};
 
 var token = '/custom';
 
-
 app.get('/startchat', (req, res) => {
-	let statement = "SELECT * FROM chat_tokens";
+	let statement = 'SELECT * FROM chat_tokens';
 	let token;
 	dbc.query(statement, getChatTokens);
 
 	function getChatTokens(err, result) {
-		if (err) {throw err}
+		if (err) {
+			throw err;
+		}
 		token = result[0].token;
+
+		// i was getting '%0D%0A' after the route when testing so trimming 
+		token = token.trim(); 
 		res.redirect('/chat/' + token);
 	}
 });
 
-app.get(`/chat/:id`, (req, res) => {
+app.get('/chat/:id', (req, res) => {
 	//console.log("CUSTOM CHAT");
+	var users = {};
 
-	const modo = io.of(`/${req.params.id}`);
+	const name = io.of(`/${req.params.id}`);
 	const route = `/${req.params.id}`;
 	//console.log(req.params.id);
 
-	modo.on('connection', (socket) => {
+	name.on('connection', socket => {
 		console.log('CUSTOM CHAT new user');
+
+		socket.on('new user', (data, callback) => {
+			// checking to see if index of nickname given is not equal to -1,
+			// that means the name exists in the array
+			if (data in users) {
+				callback(false);
+			} else {
+				callback(true);
+
+				// Storing the name in the socket
+				socket.nickname = data;
+				users[socket.nickname] = socket;
+				// nicknames.push(socket.nickname);
+
+				// emit nickname to all users so that it can update their lists
+				updateNicknames();
+			}
+		});
+
+		socket.on('chat message', (data, callback) => {
+			console.log(data);
+
+			// Telling the client to execute 'chat message'
+			socket.emit('chat message', {
+				msg: data,
+				nick: 'socket.nickname'
+			});
+			//socket.broadcast.emit() sends to everyone except the sender
+		});
+
+		socket.on('disconnect', data => {
+			console.log('User have left the chat');
+		});
 	});
 
-	res.render("customchat.pug", {
+	res.render('customchat.pug', {
 		chat: route
 	});
 });
-
-
 
 // io.on('connection', (socket) => {
 // 	console.log("New user connected");
 
 // 	socket.on('new user', (data, callback) => {
-// 		// checking to see if index of nickname given is not equal to -1, 
+// 		// checking to see if index of nickname given is not equal to -1,
 // 		// that means the name exists in the array
 // 		if (data in users) {
 // 			callback(false);
@@ -172,54 +206,52 @@ app.get(`/chat/:id`, (req, res) => {
 
 // });
 
+if (app.get('env') === 'production') app.set('trust proxy', 1);
 
+let signinRouter = require('./signin');
+app.use('/', signinRouter);
 
-if (app.get("env") === "production") app.set("trust proxy", 1);
+let signupRouter = require('./signup');
+app.use('/signup', signupRouter);
 
-let signinRouter = require("./signin");
-app.use("/", signinRouter);
-
-let signupRouter = require("./signup");
-app.use("/signup", signupRouter);
-
-let verify_emailRouter = require("./verify_email");
-app.use("/verify_email", verify_emailRouter);
+let verify_emailRouter = require('./verify_email');
+app.use('/verify_email', verify_emailRouter);
 
 // This route will do the actual email verification step
-let verifyUserEmail = require("./api/verification");
-app.use("/verification", verifyUserEmail);
+let verifyUserEmail = require('./api/verification');
+app.use('/verification', verifyUserEmail);
 
 //Chat route having problems with socket io throught this routing
 //hence its at below this comment block
 // let chatRouter = require('./chats');
 // app.use('/chats', ());
 
-app.get("/chat", (req, res) => {
-	console.log("Hello chat.js");
-	res.render("chat.pug");
+app.get('/chat', (req, res) => {
+	console.log('Hello chat.js');
+	res.render('chat.pug');
 });
 
-let forgotPassword = require("./forgot_password");
-app.use("/forgot_password", forgotPassword);
+let forgotPassword = require('./forgot_password');
+app.use('/forgot_password', forgotPassword);
 
-let userRouter = require("./user");
-app.use("/user", userRouter);
+let userRouter = require('./user');
+app.use('/user', userRouter);
 
-let matchaRouter = require("./matcha");
-app.use("/matcha", matchaRouter);
+let matchaRouter = require('./matcha');
+app.use('/matcha', matchaRouter);
 
-let profileRouter = require("./profile");
-app.use("/profile", profileRouter);
+let profileRouter = require('./profile');
+app.use('/profile', profileRouter);
 
-let adminRouter = require("./admin");
-app.use("/admin", adminRouter);
+let adminRouter = require('./admin');
+app.use('/admin', adminRouter);
 
-let logoutRouter = require("./logout");
-app.use("/logout", logoutRouter);
+let logoutRouter = require('./logout');
+app.use('/logout', logoutRouter);
 
 app.use((req, res) => {
-	res.render("404", {
-		title: "404"
+	res.render('404', {
+		title: '404'
 	});
 });
 
@@ -230,5 +262,5 @@ app.use((req, res) => {
 // Socket io created a server calling 'server' (line 11) so we have to listen
 // to that server. I dont know how server 'app' is affected?
 server.listen(PORT, () => {
-	console.log("Socket started on port " + PORT);
+	console.log('Socket started on port ' + PORT);
 });
