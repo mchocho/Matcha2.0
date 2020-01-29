@@ -30,6 +30,8 @@ let selAllBoth			= "SELECT * FROM users " +
 							"WHERE (preferences = ? OR preferences = 'B') " + 
 							"AND verified = 'T' " + 
 							"AND NOT id = ?";
+let selImagePath		= "SELECT `name` FROM `images` " + 
+							"WHERE `user_id` = ? AND profile_pic = 'T'";
 
 module.exports = {
 	selAllUsers, selAllUsersDesc,
@@ -41,5 +43,6 @@ module.exports = {
 	updateToken, updatePasswd,
 	delOldTokens, selUserLocation,
 	selBlockedUsers, selAllMale,
-	selAllFemale, selAllBoth
+	selAllFemale, selAllBoth,
+	selImagePath
 }	

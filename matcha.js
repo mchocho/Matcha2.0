@@ -60,7 +60,7 @@ router.get('/', (req, res) => {
 	if (err) throw err;
 	matches = result;		
 	if (matches.length > 0) {
-		getMatchesImages();
+		createProfileUrls();
 	} else {
 		res.render('matcha.pug', {
 			title: "Find your match | Cupid's Arrow",
@@ -68,14 +68,13 @@ router.get('/', (req, res) => {
 		});
 	} 
 			
-	function getMatchesImages(){
-	for (let i = 0, n = matches.length; i < n; i++) {
-		let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
-		matches[i]['url'] = '/profile/' + matches[i].id;
-		dbc.query(ssql, [matches[i].id], (err, result) => {
-			if (err) throw err;
-			matches[i].images = result;
-			ssql = "SELECT * FROM locations WHERE user_id = ?";
+	function createProfileUrls() {	
+		for (let i = 0, n = matches.length; i < n; i++) {
+			matches[i]['url'] = '/profile/' + matches[i].id;
+			dbc.query(sql.selImagePath, [matches[i].id], (err, result) => {
+				if (err) throw err;
+				matches[i].images = result;
+				let ssql = "SELECT * FROM locations WHERE user_id = ?";
 			dbc.query(ssql, [matches[i].id], (err, result) => {
 				if (err) throw err;
 				if (result.length === 0) {
