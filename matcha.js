@@ -59,9 +59,7 @@ router.get('/', (req, res) => {
 
 	function getMatches(err, result) {
 	if (err) throw err;
-	matches = result;
-	ft_util.removeBlockedUsers(result, blacklist)
-	.then(values => {		
+	matches = result;		
 		if (matches.length > 0) {
 			for (let i = 0, n = matches.length; i < n; i++) {
 				let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
@@ -97,8 +95,5 @@ router.get('/', (req, res) => {
 				users: []
 			}); 
 		}
-		}).catch(err => {
-			throw err;
-		});
 	};
 });
