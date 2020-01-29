@@ -1,4 +1,5 @@
 const http = require('https');
+let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
@@ -73,20 +74,54 @@ function init_errorlist() {
 	};
 }
 
-function ft_hasuppercase(value) {
-	if (!ft_isstring(value)) return false;
-	return (value.toLowerCase() != value);
+// function ft_hasuppercase(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return (value.toLowerCase() != value);
+// }
+
+// Returns true on first occurence of uppercase char 
+function ft_hasuppercase(str) {
+	let char;
+	for (let i = 0; i < str.length; i++) {
+		char = str[i];
+		if (isNaN(char) && !char.match(format) && char == char.toUpperCase()) {
+			return true;
+		}
+	}
+	return false;
 }
 
-function ft_haslowercase(value) {
-	if (!ft_isstring(value)) return false;
-	return (value.toUpperCase() != value);
+// Returns true on first occurrence of lowercase char
+function ft_haslowercase(str) {
+	let char;
+	for (let i = 0; i < str.length; i++) {
+		char = str[i];
+		if (isNaN(char) && !char.match(format) && char == char.toLowerCase()) {
+			return true;
+		}
+	}
+	return false;
 }
 
+// function ft_haslowercase(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return (value.toUpperCase() != value);
+// }
 
+
+// function ft_hasNumber(value) {
+// 	if (!ft_isstring(value)) return false;
+// 	return /\d/.test(value);
+// }
+
+// Returns true on first occurrence of digit
 function ft_hasNumber(value) {
-	if (!ft_isstring(value)) return false;
-	return /\d/.test(value);
+	for (let i = 0; i < value.length; i++) {
+		if (isNaN(value[i]) === false) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function validateUser(res, sess) {
@@ -176,20 +211,15 @@ function ft_getTagNames(dbc, tags) {
 	});
 }
 
-function ft_passwd_check(passwd) {
-	// Password Checker only checks if password is long enough and not only numbers
-	let numCheck = 0;
-	if (passwd.length < 6) {
+function ft_passwd_check(passwd)
+{
+	// Should we handle special chars specifically?
+	if (passwd.length < 5) {
 		return false;
-	}
-	for (let i = 0; i < passwd.length; i++) {
-		if (isNaN(passwd[i]) === false) {
-			numCheck++;
-		}
-	}
-	if (numCheck === passwd.length) {
+	} 
+	if (!ft_haslowercase(passwd) || !ft_hasuppercase(passwd) || !ft_hasNumber(passwd)) {
 		return false;
-	}
+	} 
 	return true;
 }
 
@@ -214,4 +244,4 @@ module.exports.escape = ft_escape;
 module.exports.locateUser = ft_locateUser;
 module.exports.valueExists = ft_valueExists;
 module.exports.getTagNames = ft_getTagNames;
-module.exports.passwdCheck = ft_passwd_check;
+module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now

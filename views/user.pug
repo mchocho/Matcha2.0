@@ -100,7 +100,7 @@ html
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
 							button#interests_confirm.btn.btn-secondary(type='button', name='tag_save') Confirm
 							button#interests_cancel.btn.btn-secondary(type='button', name='tag_cancel') Cancel
-					ul.interests_list.list.multi-column
+					ul#interests_list.list.multi-column
 						each val, index in user.tags
 							li #{val.tagname}
 				.edit

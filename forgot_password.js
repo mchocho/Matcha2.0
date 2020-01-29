@@ -22,6 +22,7 @@ router.route('/')
 	let url = "http://localhost:3000/verification/" + token;
 	let vals = [req.body.email];
 
+	// We need to handle white space input and XSS
 	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
 		errs.push("Feilds can't be empty");
 	}
@@ -29,7 +30,7 @@ router.route('/')
 	if (req.body.newPassword !== req.body.confPassword) {
 		errs.push("Passwords don't match");
 	} else if (ft_util.passwdCheck(req.body.newPassword) === false) {
-		errs.push("Password must be 6 characters or more and not a number");
+		errs.push("Provide a valid password of 5 characters or more, with special cases, uppercase and lowercase letters");
 	}
 
 	if (errs.length > 0) {
@@ -52,7 +53,8 @@ router.route('/')
 	}
 
 	function checkOldTokens(user) {
-		dbc.query(sql.delOldTokens, [user.id], (err, result) => {
+		let vals = [user.id, "password_reset"];
+		dbc.query(sql.delOldTokens, vals, (err, result) => {
 			if (err) {throw err}
 			createToken(user);
 		});

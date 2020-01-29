@@ -62,7 +62,7 @@ function script() {
 		xhr('/user/username.' + value, 'POST', null, function(xhr) {
 			const res = JSON.parse(xhr.responseText);
 			if (res.result === 'Success') {
-				document.getElementById('username').textContent = xhr.value;
+				document.getElementById('username').textContent = res.value;
 			} else {
 				error_node.textContent = "Please try again.";
 			}
@@ -133,6 +133,15 @@ function script() {
 			return false;
 		}
 		error_node.textContent = "";
+		xhr('/user/interest.' + value, 'POST', null, function(xhr) {
+			const result = JSON.parse(xhr.responseText);
+
+			if (result.result === 'Sucess') {
+				const li = document.createElement('li');
+				li.textContent = result.value;
+				document.getElementById('interests_list').appendChild(li);
+			}
+		});
 		return true;
 	}
 

@@ -1,4 +1,3 @@
-const util = require('util');
 require('dotenv').config({
 	path: '../.env'
 });
