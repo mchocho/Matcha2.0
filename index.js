@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express"),
 	path = require("path"),
 	mysql = require("mysql"),
@@ -10,6 +12,7 @@ const express = require("express"),
 	flash = require("connect-flash"),
 	server = require("http").createServer(app),
 	io = require("socket.io")(server),
+	dbc	= require('./model/sql_connect.js'),
 	PORT = process.env.PORT || 3000;
 
 
@@ -44,7 +47,17 @@ var users = {};
 var token = '/custom';
 
 
+app.get('/startchat', (req, res) => {
+	let statement = "SELECT * FROM chat_tokens";
+	let token;
+	dbc.query(statement, getChatTokens);
 
+	function getChatTokens(err, result) {
+		if (err) {throw err}
+		token = result[0].token;
+		res.redirect(`/chat/${token}`);
+	}
+});
 
 app.get(`/chat/:id`, (req, res) => {
 	//console.log("CUSTOM CHAT");

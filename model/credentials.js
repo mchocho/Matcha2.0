@@ -1,6 +1,4 @@
-require('dotenv').config({
-	path: '../.env'
-});
+require('dotenv').config({path: '../.env'});
 
 let setupCred;
 let connCred;
@@ -34,9 +32,6 @@ if (process.env.OS == 'mac') {
 		database: process.env.DB_NAME,
 	};
 }
-
-
-
 
 module.exports = {
 	setupCred,
