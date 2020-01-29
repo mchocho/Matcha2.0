@@ -55,7 +55,7 @@ app.get('/startchat', (req, res) => {
 	function getChatTokens(err, result) {
 		if (err) {throw err}
 		token = result[0].token;
-		res.redirect(`/chat/${token}`);
+		res.redirect('/chat/' + token);
 	}
 });
 
