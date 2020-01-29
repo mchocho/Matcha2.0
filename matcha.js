@@ -71,6 +71,11 @@ router.get('/', (req, res) => {
 	function createProfileUrls() {	
 		for (let i = 0, n = matches.length; i < n; i++) {
 			matches[i]['url'] = '/profile/' + matches[i].id;
+		}
+		nextStep();
+	}
+		function nextStep() {
+			for (let i = 0, n = matches.length; i < n; i++) {
 			dbc.query(sql.selImagePath, [matches[i].id], (err, result) => {
 				if (err) throw err;
 				matches[i].images = result;
@@ -94,8 +99,8 @@ router.get('/', (req, res) => {
 					});
 				}
 			});
-			});
-		}		 
+		});	
 		}
+	}	 
 	};
 });
