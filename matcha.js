@@ -59,32 +59,33 @@ router.get('/', (req, res) => {
 
 	function getMatches(err, result) {
 	if (err) throw err;
+	matches = result;
 	ft_util.removeBlockedUsers(result, blacklist)
-	.then(values => {
-		if (values.length > 0) {
-			for (let i = 0, n = values.length; i < n; i++) {
+	.then(values => {		
+		if (matches.length > 0) {
+			for (let i = 0, n = matches.length; i < n; i++) {
 				let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
-				values[i]['url'] = '/profile/' + values[i].id;
-				dbc.query(ssql, [values[i].id], (err, result) => {
+				matches[i]['url'] = '/profile/' + matches[i].id;
+				dbc.query(ssql, [matches[i].id], (err, result) => {
 					if (err) throw err;
-					values[i].images = result;
+					matches[i].images = result;
 					ssql = "SELECT * FROM locations WHERE user_id = ?";
-					dbc.query(ssql, [values[i].id], (err, result) => {
+					dbc.query(ssql, [matches[i].id], (err, result) => {
 						if (err) throw err;
 						if (result.length === 0) {
-							console.log("VID", values[i].id);
+							console.log("VID", matches[i].id);
 							console.log("XXXXXX");
-							values.splice(i, 1);
+							matches.splice(i, 1);
 							i--;
 							return;
 						}
-						values[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+						matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
 						console.log("Here", i, n - 1);
 						if (i === n - 1) {
 							console.log("Hello render");
 							res.render('matcha.pug', {
 								title: "Find your match | Cupid's Arrow",
-								users: values
+								users: matches
 							});
 						}
 					});
