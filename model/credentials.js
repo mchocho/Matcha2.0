@@ -3,6 +3,8 @@ require('dotenv').config({path: '../.env'});
 let setupCred;
 let connCred;
 
+console.log("ENV", process.env.OS);
+
 if (process.env.OS == 'mac') {
 	setupCred = {
 		host		: process.env.HOST,

@@ -61,6 +61,7 @@ router.get('/', (req, res) => {
 	if (err) throw err;
 	matches = result;		
 		if (matches.length > 0) {
+			// function getMatchesImages
 			for (let i = 0, n = matches.length; i < n; i++) {
 				let ssql ="SELECT name FROM images WHERE user_id = ? AND profile_pic = 'T'";
 				matches[i]['url'] = '/profile/' + matches[i].id;
