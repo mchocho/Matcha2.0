@@ -89,22 +89,21 @@ router.get('/', (req, res) => {
 					getEachImage(i);	
 				});
 			} else {
-				console.log("Done, here is i", i);
-				nextStep();
+				getMatchesLocations();
 			}
 		}	
 	}
 
-	function nextStep() {
-		console.log("Now in next step");
-		for (let i = 0, n = matches.length; i < n; i++) {
-		let ssql = "SELECT * FROM locations WHERE user_id = ?";
-		dbc.query(ssql, [matches[i].id], (err, result) => {
+	function getMatchesLocations() {
+		let arrLen = matches.length;
+		for (let i = 0; i < arrLen; i++) {
+		dbc.query(sql.selUserLocation, [matches[i].id], (err, result) => {
 			if (err) throw err;
 			if (result.length === 0) {
 				console.log("If you can see this something went wrong in matcha.js");
 				matches.splice(i, 1);
 				i--;
+				arrLen--;
 				return;
 			}
 			matches[i]['distance'] = geo.distanceTo({
@@ -115,9 +114,9 @@ router.get('/', (req, res) => {
 											lat: result[0]['lat'], 
 											lon: result[0]['lng']
 										}).toFixed(2);
-			console.log("Here", i, n - 1);
-			if (i === n - 1) {
-				console.log("Hello render");
+			// console.log("Here", i, n - 1);
+			if (i === arrLen - 1) {
+				// console.log("Hello render");
 				res.render('matcha.pug', {
 					title: "Find your match | Cupid's Arrow",
 					users: matches
