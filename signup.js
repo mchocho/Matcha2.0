@@ -64,16 +64,14 @@ router.get('/', (req, res) => {
 		}
 
 		if (result === true) {
-			let sql = "SELECT id FROM users WHERE (username = ?)";
-			dbc.query(sql, [user.username], (err, result) => {
+			dbc.query("SELECT id FROM users WHERE (username = ?)", [user.username], (err, result) => {
 				if (err) {throw err}
 				if (result.length !== 0) {
 					result = false;
 					errors['error_0'] = 'Username already exists';
 				}
 
-				sql = "SELECT id FROM users WHERE (email = ?)";
-				dbc.query(sql, [user.email], (err, result) => {
+				dbc.query("SELECT id FROM users WHERE (email = ?)", [user.email], (err, result) => {
 					if (err) {throw err}
 					if (result.length !== 0) {
 						result = false;
@@ -86,14 +84,12 @@ router.get('/', (req, res) => {
 					}
 
 					let hash = bcrypt.hashSync(user.password, ft_util.SALT);
-					sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES ?",  //Only one "?"
 					values = [[ user.username, user.f_name, user.l_name, user.gender.charAt(0), user.preference.charAt(0), user.dob, user.email, hash]]; //What is charAt? where is values declared?
-					dbc.query(sql, [values], (err, result) => {
+					dbc.query("INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES (?)", [values], (err, result) => {
 						if (err) {throw err}
 						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url)).catch(console.error); // What do these emailmethods do?
-						sql = "INSERT INTO tokens (user_id, token, request) VALUES ?";
 						values = [[result.insertId, token, 'registration']];
-						dbc.query(sql, [values], (err, result) => {
+						dbc.query("INSERT INTO tokens (user_id, token, request) VALUES (?)", [values], (err, result) => {
 							if (err) {throw err}
 							ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 								const geo = JSON.parse(userLocation),
