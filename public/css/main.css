@@ -53,6 +53,9 @@
   position: relative;
   left: 2%;
 }
+#profile .profile_actions {
+  margin: 2% 0%;
+}
 #profile .details_container {
   margin: auto;
 }
