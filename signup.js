@@ -4,6 +4,7 @@ const 	  express 		= require('express'),
 	  bcrypt		= require('bcryptjs');
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
+	  sql 			= require('./model/sql_statements.js'),
 	  email			= require('./includes/mail_client.js'),
 	  msgTemplates 	= require('./includes/email_templates.js');
 
@@ -95,7 +96,19 @@ router.get('/', (req, res) => {
 						values = [[result.insertId, token, 'registration']];
 						dbc.query(sql, [values], (err, result) => {
 							if (err) {throw err}
-							res.redirect('/verify_email');
+							ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
+								const geo = JSON.parse(userLocation),
+								      values = [];
+								ft_util.updateUserLocation(dbc, geo, result.length === 0, ft_util.VERBOSE).then((result) => {
+									res.redirect('/verify_email');
+								}).catch((err) => {
+									if (ft_util.VERBOSE)
+										console.log("Failed to update user location to db");
+								});
+							}).catch((err) => {
+								if (ft_util.VERBOSE)
+										console.log("Failed to retreive user location");
+							});
 						});
 					});
 				});

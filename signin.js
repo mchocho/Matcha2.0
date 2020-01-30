@@ -7,7 +7,7 @@ const express 			= require('express'),
 	  bcrypt		= require('bcryptjs'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
-	  googleMapsClient  = require('@google/maps').createClient({key: 'AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q'});
+	  sql			= require('./model/sql_statements.js');
 
 let router = express.Router();
 module.exports = router;
@@ -62,31 +62,27 @@ router.get('/', (req, res) => {
 						ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 							const geo = JSON.parse(userLocation),
 							      values = [];
-							if (result.length === 0) {
-								sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
-								values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
-							}
-							else {
-								sql = "UPDATE locations SET lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ? WHERE user_id = ?";
-								values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id);
-							}
-							dbc.query(sql, values, (err, result) => {
-								if (err) {throw err}
-								if (ft_util.VERBOSE) {
-									console.log("Updated location data for user!!");
-									console.log("Session object --> " + util.inspect(req.session));
-								}
+							ft_util.updateUserLocation(dbc, geo, result.length === 0, ft_util.VERBOSE).then((result) => {
 								req.session.save((err) => {
 									if (err) {throw err}
 									res.redirect('/matcha');
 								});
+							}).catch((err) => {
+									if (ft_util.VERBOSE) {
+										console.log("Failed to update user location to db");
+									}
+									req.session.save((err) => {
+										if (err) {throw err}
+										res.redirect('/matcha');
+									});
 							});
 						}).catch((err) => {
 							if (ft_util.VERBOSE === true) {
-								console.log('Failed to locate user');
+								console.log("Failed to retreive user location");
 							}
 							req.session.save((err) => {
-								res.redirect('/user');
+								if (err) {throw err}
+								res.redirect('/matcha');
 							});
 						});
 					});
