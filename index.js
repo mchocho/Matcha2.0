@@ -1,13 +1,10 @@
 const express 		= require('express'),
 	  	path		= require('path'),
-	  	mysql		= require('mysql'),
 	  	body_p		= require('body-parser'),
-	  	moment		= require('moment'),
-	  	URL			= require('url'),
 	  	session 	= require('express-session'),
 	  	uuidv4 		= require('uuid/v4'),
 	  	app 		= express(),
-	  	flash		= require('connect-flash'),
+		flash		= require('connect-flash'),
 	  	PORT 		= 3000;
 
 require('dotenv').config();

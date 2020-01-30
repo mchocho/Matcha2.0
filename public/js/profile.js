@@ -34,6 +34,15 @@ function script() {
     block_btn.addEventListener('click', function(e) {
     	xhr('/profile/block.' + parseInt(profile_id), 'POST', null, function(xhr) {
     		const res = JSON.parse(xhr.responseText);
+    		if (res.result === 'Success') {
+    			if (res.profileBlocked === 'true') {
+    				connection_btn.classList.add('hide');
+    			} else {
+    				connection_btn.classList.remove('hide');
+    			}
+    		} else {
+
+    		}
     	});
     });
 

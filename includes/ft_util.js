@@ -1,5 +1,5 @@
 const http = require('https'),
-
+	  sql  = require('../model/sql_statements.js');
 let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
@@ -232,16 +232,16 @@ function ft_escapeStr(str) {
 function ft_updateUserLocation(dbc, geo, rowExists, VERBOSE) {
 	return new Promise((resolve, reject) => {
 		const values = [];
-		let sql;
+		let stm;
 
 		if (rowExists === false) {
-			sql = sql.insUserLocation;
+			stm = sql.insUserLocation;
 			values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
 		} else {
-			sql = sql.updateUserLocation;
+			stm = sql.updateUserLocation;
 			values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id);
 		}
-		dbc.query(sql, values, (err, result) => {
+		dbc.query(stm, values, (err, result) => {
 			if (err) {throw err}
 			if (VERBOSE) {
 				console.log("Updated location data for user!!");
@@ -252,6 +252,20 @@ function ft_updateUserLocation(dbc, geo, rowExists, VERBOSE) {
 	});
 }
 
+
+var tagsToReplace = {
+    '&': '&amp;',
+    '<': '&lt;',
+	'>': '&gt;',
+};
+
+function replaceTag(tag) {
+    return tagsToReplace[tag] || tag;
+}
+
+function ft_escapeHtmlTags(str) {
+    return str.replace(/[&<>]/g, replaceTag);
+}
 
 module.exports.VERBOSE = true;
 module.exports.SALT = 10;
@@ -277,3 +291,5 @@ module.exports.getTagNames = ft_getTagNames;
 module.exports.passwdCheck = ft_passwd_check;
 module.exports.escapeStr = ft_escapeStr;
 module.exports.updateUserLocation = ft_updateUserLocation;
+module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now
+module.exports.escapeHtmlTags = ft_escapeHtmlTags;

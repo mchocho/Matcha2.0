@@ -1,21 +1,18 @@
 const express 			= require('express'),
-	  session	    	= require('express-session'),
-	  path			= require('path'),
-	  mysql			= require('mysql'),
-	  body_p		= require('body-parser'),
 	  util 			= require('util'),
 	  bcrypt		= require('bcryptjs'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js'),
-	  sql			= require('./model/sql_statements.js');
+	  dbc			= require('./model/sql_connect.js');
+	//   sql			= require('./model/sql_statements.js');
 
 let router = express.Router();
 module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
-	if (ft_util.isobject(sess)) { // Why the isObject func?
-		res.redirect('/matcha'); // What does this actaully do
+	if (ft_util.isobject(sess)) {
+		res.redirect('/matcha');
+		return;
 	}
 	let message = req.flash('message');
 	res.render('signin.pug', {message: message[0]});
@@ -66,6 +63,7 @@ router.get('/', (req, res) => {
 								req.session.save((err) => {
 									if (err) {throw err}
 									res.redirect('/matcha');
+									return;
 								});
 							}).catch((err) => {
 									if (ft_util.VERBOSE) {
@@ -79,10 +77,14 @@ router.get('/', (req, res) => {
 						}).catch((err) => {
 							if (ft_util.VERBOSE === true) {
 								console.log("Failed to retreive user location");
+								req.session.save((err) => {
+									res.redirect('/matcha');
+									return;
+								});
 							}
 							req.session.save((err) => {
-								if (err) {throw err}
 								res.redirect('/matcha');
+								return;
 							});
 						});
 					});

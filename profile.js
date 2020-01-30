@@ -22,6 +22,7 @@ router.get('/:id?', (req, res) => {
 	const sess = req.session.user,
 		  id = Number(req.params.id);
 	let   location,
+		  sql,
 		  user;
 
 	if (!ft_util.isobject(sess)) {
@@ -41,29 +42,29 @@ router.get('/:id?', (req, res) => {
 		res.redirect('/matcha');
 		return;
 	}
-	dbc.query("SELECT * from users WHERE id = ?", [id], (err, result) => {
+	dbc.query(sql.selUserById, [id], (err, result) => {
 		if (err) throw err;
 		if (result.length === 0) {
 				res.redirect('/matcha');
 				return;
 		}
 		user = result[0];
-		dbc.query("SELECT * FROM locations WHERE user_id = ?", [sess.id], (err, result) => {
+		dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
 			if (err) throw err;
 			
 			location = result[0];
-			dbc.query("SELECT * from images WHERE user_id = ?", [id], (err, result) => {
+			dbc.query(sql.selUserImages, [id], (err, result) => {
 				if (err) throw err;
 				user.images = result;
-				dbc.query("SELECT * from user_tags WHERE user_id = ?", [id], (err, result) => {
+				dbc.query(sql.selUserTags, [id], (err, result) => {
 					if (err) throw err;
 					for (let i = 0, n = result.length; i < n; i++) {
-						dbc.query("SELECT name from tags WHERE id = ?", result[i].tag_id, (err, result) => {
+						dbc.query(sql.selTagName, result[i].tag_id, (err, result) => {
 							if (err) throw err;
 							result[i]['name'] = result[0].name;
 						});
 					}
-					dbc.query("SELECT * from locations WHERE user_id = ?", [id], (err, result) => {
+					dbc.query(sql.selUserLocation, [id], (err, result) => {
 						if (err) throw err;
 						if (result.length === 0) {
 							res.redirect('/matcha');
@@ -183,4 +184,44 @@ router.get('/:id?', (req, res) => {
 			res.end(json + '"result": "Failed"}');
 		}
 	});
+}).post('/block:profile?', (req, res) => {
+	const sess = req.session.user,
+	      profile = req.params.profile.replace(/\./g, ''),
+	      values = [];
+	let   json = `{"service": "block", "profile": "${profile}", `,
+		  profileBlocked,
+		  query;
+
+	res.writeHead(200, {"Content-Type": "text/plain"});	//Allows us to respond to the client
+	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || isNaN(profile)) {
+		res.end(json + '"result": "Failed"}');
+        return;
+	}
+	if (ft_util.VERBOSE) {
+		console.log('STATUS: ' + res.statusCode);
+  		console.log('HEADERS: ' + JSON.stringify(res.headers));
+	}
+
+	dbc.query(sql.selBlockedUser, [sess.id, Number(profile)], (err, result) => {
+		if (err) {throw err}
+		profileBlocked = result.length > 0;
+		if (profileBlocked === true) {
+			query = sql.delBlockedUser;
+			values.push(sess.id, Number(profile));
+		} else {
+			query = sql.insBlockedUser;
+			values.push([sess.id, Number(profile)]);
+		}
+
+		dbc.query(query, values, (err, result) => {
+			if (err) {throw err}
+			if (result.affectedRows === 1) {
+				res.end(json + `"result": "Success", "profileBlocked"="${!profileBlocked}"}`);
+			} else {
+				res.end(json + `"result": "Failed", "profileBlocked"="${profileBlocked}"}`);
+			}
+		});
+
+	});
+
 });
