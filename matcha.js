@@ -97,31 +97,29 @@ router.get('/', (req, res) => {
 	function getMatchesLocations() {
 		let arrLen = matches.length;
 		for (let i = 0; i < arrLen; i++) {
-		dbc.query(sql.selUserLocation, [matches[i].id], (err, result) => {
-			if (err) throw err;
-			if (result.length === 0) {
-				console.log("If you can see this something went wrong in matcha.js");
-				matches.splice(i, 1);
-				i--;
-				arrLen--;
-				return;
-			}
-			matches[i]['distance'] = geo.distanceTo({
-											lat: location.lat, 
-											lon: location.lng
-										}, 	
-										{
-											lat: result[0]['lat'], 
-											lon: result[0]['lng']
-										}).toFixed(2);
-			// console.log("Here", i, n - 1);
-			if (i === arrLen - 1) {
-				// console.log("Hello render");
-				res.render('matcha.pug', {
-					title: "Find your match | Cupid's Arrow",
-					users: matches
-				});
-			}
+			dbc.query(sql.selUserLocation, [matches[i].id], (err, result) => {
+				if (err) throw err;
+				if (result.length === 0) {
+					console.log("!!!If you can see this something went wrong in matcha.js!!!");
+					matches.splice(i, 1);
+					i--;
+					return;
+				}
+				matches[i]['distance'] = geo.distanceTo({
+												lat: location.lat, 
+												lon: location.lng
+											}, 	
+											{
+												lat: result[0]['lat'], 
+												lon: result[0]['lng']
+											}).toFixed(2);
+				
+				if (i === arrLen - 1) {
+					res.render('matcha.pug', {
+						title: "Find your match | Cupid's Arrow",
+						users: matches
+					});
+				}
 			});
 		}
 	}	 
