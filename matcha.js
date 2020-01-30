@@ -30,9 +30,9 @@ router.get('/', (req, res) => {
 		return;
 	}
 
-	dbc.query(sql.selUserLocation, [sess.id], addUserLocation);
+	dbc.query(sql.selUserLocation, [sess.id], getUserLocation);
 
-	function addUserLocation(err, result) {
+	function getUserLocation(err, result) {
 		if (err) throw err;
 		if (result.length === 0) {
 			res.redirect('/user');
@@ -102,13 +102,19 @@ router.get('/', (req, res) => {
 		dbc.query(ssql, [matches[i].id], (err, result) => {
 			if (err) throw err;
 			if (result.length === 0) {
-				console.log("VID", matches[i].id);
-				console.log("XXXXXX");
+				console.log("If you can see this something went wrong in matcha.js");
 				matches.splice(i, 1);
 				i--;
 				return;
 			}
-			matches[i]['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+			matches[i]['distance'] = geo.distanceTo({
+											lat: location.lat, 
+											lon: location.lng
+										}, 	
+										{
+											lat: result[0]['lat'], 
+											lon: result[0]['lng']
+										}).toFixed(2);
 			console.log("Here", i, n - 1);
 			if (i === n - 1) {
 				console.log("Hello render");
