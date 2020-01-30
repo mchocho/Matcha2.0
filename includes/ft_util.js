@@ -234,7 +234,7 @@ function ft_escapeHtmlTags(str) {
     return str.replace(/[&<>]/g, replaceTag);
 }
 
-module.exports.VERBOSE = false;
+module.exports.VERBOSE = true;
 module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
