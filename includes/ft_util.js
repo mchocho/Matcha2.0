@@ -1,4 +1,5 @@
-const http = require('https');
+const http = require('https'),
+
 let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
@@ -196,7 +197,7 @@ function ft_getTagNames(dbc, tags) {
 		if (tags.length === 0)
 			resolve([]);
 		for(let i = 0, n = tags.length; i < n; i++) {
-			dbc.query("SELECT name FROM tags WHERE id = ?", [tags[i].tag_id], (err, result) => {
+			dbc.query(sql.selTagName, [tags[i].tag_id], (err, result) => {
 				if (err) {throw err}
 				if (result.length > 0) {
 					tags[i]['name'] = result[0].name;
@@ -228,6 +229,29 @@ function ft_escapeStr(str) {
    .replace(/"/g, "\\\"");
 }
 
+function ft_updateUserLocation(dbc, geo, rowExists, VERBOSE) {
+	return new Promise((resolve, reject) => {
+		const values = [];
+		let sql;
+
+		if (rowExists === false) {
+			sql = sql.insUserLocation;
+			values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
+		} else {
+			sql = sql.updateUserLocation;
+			values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id);
+		}
+		dbc.query(sql, values, (err, result) => {
+			if (err) {throw err}
+			if (VERBOSE) {
+				console.log("Updated location data for user!!");
+				console.log("Session object --> " + util.inspect(req.session));
+			}
+			resolve(result);
+		});
+	});
+}
+
 
 module.exports.VERBOSE = true;
 module.exports.SALT = 10;
@@ -252,3 +276,4 @@ module.exports.valueExists = ft_valueExists;
 module.exports.getTagNames = ft_getTagNames;
 module.exports.passwdCheck = ft_passwd_check;
 module.exports.escapeStr = ft_escapeStr;
+module.exports.updateUserLocation = ft_updateUserLocation;
