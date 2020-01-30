@@ -27,7 +27,7 @@ html
           a(href='/logout') Logout
     br
     .content
-      h2 #{user.username}
+      h2#username #{user.username}
       .available(align='center')
        .status(class=user.online)
        if (user.online == 'F')
@@ -40,16 +40,18 @@ html
             img(src=image.name)
       .connection_status
        input#profile_id(type='hidden', value=user.id)
-       if(clientLikesUser === true && userLikesClient === true)
+       if(user.clientLikesUser === true && user.userLikesClient === true)
         img(src='/images/icons/connected.png')
-        span#connection_status You and #{user.username} are connected
-       else if (userLikesClient === true)
-        | #{user.username} likes you
+        span#connection_status You and #{user.username} are both connected
+        button#connection_btn.btn.btn-dark(type='button') Disconnect
+       else if (user.userLikesClient === true)
+        span#connection_status #{user.username} now likes you, like them back to get to know more about them.
         button#connection_btn.btn.btn-dark(type='button') Connect
-       else if (clientLikesUser)
-        | You like #{user.username}
+       else if (user.clientLikesUser === true)
+        span#connection_status It seems like #{user.username} hasn't liked you back, hang in there.
+        button#connection_btn.btn.btn-dark(type='button') Disconnect
        else
-        | You and #{user.username} are not connected
+        span#connection_status You and #{user.username} are not connected
         button#connection_btn.btn.btn-dark(type='button') Connect
       .details_container(align='center')
         .gender
@@ -60,6 +62,10 @@ html
         span.pipe | 
         .dob
           time #{user.age} old
+      .profile_actions(align='center')
+        button#blockuser_btn.btn.btn-dark(type='button') Block user
+        | &emsp; &emsp; &emsp;
+        button#reportuser_btn.btn.btn-dark(type='button') Report account
       .location_container
         h3 Location
         img(src='/images/icons/distance.png')
