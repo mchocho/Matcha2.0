@@ -56,7 +56,7 @@ app.get('/startchat', (req, res) => {
 		token = result[0].token;
 
 		// i was getting '%0D%0A' after the route when testing so trimming 
-		token = token.trim(); 
+		token = token.trim();
 		res.redirect('/chat/' + token);
 	}
 });
@@ -124,6 +124,7 @@ app.get('/chat/:id', (req, res) => {
 
 // 			// Storing the name in the socket
 // 			socket.nickname = data;
+// 			// console.log('socket----->', socket.nickname);
 // 			users[socket.nickname] = socket;
 // 			// nicknames.push(socket.nickname);
 
@@ -204,6 +205,7 @@ app.get('/chat/:id', (req, res) => {
 
 // 	});
 
+// 	// console.log(users[socket]);
 // });
 
 if (app.get('env') === 'production') app.set('trust proxy', 1);
