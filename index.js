@@ -42,8 +42,6 @@ app.use(
 
 var users = {};
 
-var token = '/custom';
-
 app.get('/startchat', (req, res) => {
 	let statement = 'SELECT * FROM chat_tokens';
 	let token;
