@@ -4,7 +4,8 @@ function script() {
             connect_status = document.getElementById('connection_status'),
             connection_btn = document.getElementById('connection_btn'),
             block_btn = document.getElementById('blockuser_btn'),
-            reportuser_btn = document.getElementById('reportuser_btn');
+			reportuser_btn = document.getElementById('reportuser_btn'),
+			fameRating = document.getElementById('rating');
           
     connection_btn.addEventListener('click', function(e) {
         xhr('/profile/connect.' + parseInt(profile_id), 'POST', null, function(xhr) {
@@ -28,6 +29,8 @@ function script() {
 					}
 				}
 			}
+			if (!isNaN(res['userRating']))
+				fameRating.textContent = res['userRating'];
         });
     }, true);
 

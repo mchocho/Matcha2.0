@@ -1,4 +1,4 @@
-const 	  express 		= require('express'),
+const express 		= require('express'),
 	  moment		= require('moment'),
 	  uuidv4 		= require('uuid/v4'),
 	  bcrypt		= require('bcryptjs');

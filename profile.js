@@ -22,7 +22,6 @@ router.get('/:id?', (req, res) => {
 	const sess = req.session.user,
 		  id = Number(req.params.id);
 	let   location,
-		  sql,
 		  user;
 
 	if (!ft_util.isobject(sess)) {
@@ -59,9 +58,11 @@ router.get('/:id?', (req, res) => {
 				dbc.query(sql.selUserTags, [id], (err, result) => {
 					if (err) throw err;
 					for (let i = 0, n = result.length; i < n; i++) {
-						dbc.query(sql.selTagName, result[i].tag_id, (err, result) => {
+						console.log("iteration #", i+1);
+						dbc.query(sql.selTagName, result[i].tag_id, (err, t_name) => {
 							if (err) throw err;
-							result[i]['name'] = result[0].name;
+							console.log("Found tag: ", result[0].name);
+							result[i]['name'] = t_name.name;
 						});
 					}
 					dbc.query(sql.selUserLocation, [id], (err, result) => {
@@ -72,36 +73,36 @@ router.get('/:id?', (req, res) => {
 						}
 						user['location'] = result[0];
 						user['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
-						dbc.query("SELECT id FROM likes WHERE liker = ? AND liked = ?", [sess.id, id], (err, result) => {
-							if (err) throw err;
-							user['clientLikesUser'] = result.length > 0;
-							dbc.query("SELECT id FROM likes WHERE liker = ? AND liked = ?", [id, sess.id], (err, result) => {
+						
+						dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
+							if (err) {throw err}
+							for (let i = 0, n = result.length; i < n; i++) {
+								if (result[i].liker === id)
+									user['userLikesClient'] = true;
+								if (result[i].liker === Number(sess.id))
+									user['clientLikesUser'] = true;
+							}
+							dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
 								if (err) throw err;
-								user['userLikesClient'] = result.length > 0;
-								dbc.query("INSERT INTO views (user_id, viewer) VALUES (?)", [[id, sess.id]], (err, result) => {
+								dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
 									if (err) throw err;
-									sql = "INSERT INTO notifications (user_id, service_id, type) VALUES (?)";
-									dbc.query(sql, [[id, result.insertId, 'views']], (err, result) => {
-										if (err) throw err;
-										user['age'] = moment(user.DOB).fromNow(true);
-										if (ft_util.VERBOSE) {
-											console.log('Profile object --> ' + util.inspect({
-												title: user.username,
-												notifications: req.session.notifications,
-												chats: req.session.chats,
-												user: user
-											}));
-										}
-										res.render('profile.pug', {
+									user['age'] = moment(user.DOB).fromNow(true);
+									if (ft_util.VERBOSE) {
+										console.log('Profile object --> ' + util.inspect({
 											title: user.username,
 											notifications: req.session.notifications,
 											chats: req.session.chats,
 											user: user
-										});
+										}));
+									}
+									res.render('profile.pug', {
+										title: user.username,
+										notifications: req.session.notifications,
+										chats: req.session.chats,
+										user: user
 									});
 								});
 							});
-
 						});
 					});
 				});
@@ -110,8 +111,9 @@ router.get('/:id?', (req, res) => {
 	});
 }).post('/connect:profile?', (req, res) => {
 	const sess = req.session.user,
-	      profile = req.params.profile.replace(/\./g, '');
-	let sql = "SELECT * FROM likes WHERE ((liker = ? AND liked = ?) OR (liker = ? AND liked = ?))",
+		  profile = Number(req.params.profile.replace(/\./g, '')),
+		  xoxo = "&#9829";
+	let ssql,
 	    userLikesYou = false,
 	    youLikeUser = false,
 	    json = `{"service": "connect", "profile": "${profile}", `;
@@ -127,26 +129,37 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	dbc.query(sql, [sess.id, profile, profile, sess.id, 'T'], (err, result) => {
+	dbc.query(sql.getConnectionStatus, [sess.id, profile, profile, sess.id, 'T'], (err, result) => {
 		if (err) {throw err}
 		for (let i = 0, n = result.length; i < n; i++) {
-			if (result[i].liker === Number(profile))
+			if (result[i].liker === profile)
 				userLikesYou = true;
 			if (result[i].liker === Number(sess.id))
 				youLikeUser = true;
 		}
-		if (youLikeUser === true)
-			sql = "DELETE FROM likes WHERE liker = ? AND liked = ?";
-		else
-			sql = "INSERT INTO likes (liker, liked) VALUES (?)";
 
-		dbc.query(sql, (youLikeUser === true ) ? [sess.id, Number(profile)] : [[sess.id, Number(profile)]], (err, result) => {
+		dbc.query(
+			(youLikeUser) ? sql.delLike : sql.insLike,
+			(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
+			(err, result) => {
 			if (err) {throw err}
 			if (result.affectedRows === 1) {
-				sql = "INSERT INTO notifications (user_id, service_id, type) VALUES (?)";
-				dbc.query(sql, [[Number(profile), result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
+				dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
 					if (err) {throw err}
-					res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}" }`);
+					//Email the user
+					dbc.query(sql.selUserById, [profile], (err, result) => {
+						if (err) {throw err}
+						if (youLikeUser)
+							email.main(result.email, `${result.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result.username, sess.username)).catch(console.error);
+						else if (userLikesYou)
+							email.main(result.email, `${result.username} liked you back ${xoxo}${xoxo}${xoxo}! | Cupid's Arrow`, msgTemplates.connectedUserLiked(result.username, sess.username)).catch(console.error);
+						else
+							email.main(result.email, `${result.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result.username, sess.username)).catch(console.error);
+						ft_util.updateFameRating(dbc, profile).then(rating => {
+							res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
+							return;
+						});
+					});
 				});
 			} else {
 				res.end(json + '"result": "Failed"}');
@@ -158,8 +171,7 @@ router.get('/:id?', (req, res) => {
 	      profile = req.params.profile.replace(/\./g, ''),
 	      token = uuidv4(),
 	      url = "http://localhost:3000/verification/?key=" + token;
-	let sql = "UPDATE users SET valid = 'F' WHERE id = ?",
-	    json = `{"service": "report_profile", "profile": "${profile}", `;
+	let	  json = `{"service": "report_profile", "profile": "${profile}", `;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});	//Allows us to respond to the client
 	if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || isNaN(profile)) {
@@ -171,11 +183,10 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	dbc.query(sql, [Number(profile)], (err, result) => {
+	dbc.query(sql.reportUser, [Number(profile)], (err, result) => {
 		if (err) throw err;
 		if (result.affectedRows === 1) {
-			sql = "SELECT email FROM users WHERE id = ?";
-			dbc.query(sql, [sess.id], (err, result) => {
+			dbc.query(sql.selUserEmail, [Number(profile)], (err, result) => {
 				if (err) throw err;
 				email.main(result.email, "Your profile has been reported | Cupid's Arrow", msgTemplates.report_account(url)).catch(console.error);
 				res.end(json + '"result": "Success"}');

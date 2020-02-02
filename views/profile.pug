@@ -57,7 +57,8 @@ html
         .gender
           img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
         span.pipe | 
-        .rating #{user.rating}
+        .rating
+          span#rating #{user.rating}
           img(src='/images/icons/star.png')
         span.pipe | 
         .dob

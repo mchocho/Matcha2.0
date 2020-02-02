@@ -1,5 +1,6 @@
 const http = require('https'),
-	  sql  = require('../model/sql_statements.js');
+	  sql  = require('../model/sql_statements.js'),
+	  errs = require('../model/error_messages.js');
 let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 
 function ft_isstring() {
@@ -267,10 +268,38 @@ function ft_escapeHtmlTags(str) {
     return str.replace(/[&<>]/g, replaceTag);
 }
 
-function ft_updateFameRating(dbc, req, profile) {
-		if (isNaN(profile))
-			return;
+function ft_totalUsers(dbc) {
+	return new Promise((resolve, reject) => {
+		dbc.query(sql.selAllUserIds, (err, result) => {
+			if (err) {reject(err)}
+			resolve(result.length);
+		});
+	});
+}
 
+function ft_totalUserLikes(dbc, profile) {
+	return new Promise((resolve, reject) => {
+		if (!isNaN(profile)) {
+			dbc.query(sql.getUserLikes, [Number(profile)], (err, result) => {
+				if (err) {reject(err)}
+				resolve(result.length);
+			});
+		} else {reject(new Error(errs.invalidID));}
+	});
+}
+
+function ft_updateFameRating(dbc, profile) {
+		return new Promise((resolve, reject) => {
+			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+
+			Promise.all([ft_totalUsers(dbc), ft_totalUserLikes(dbc, profile)]).then(values => {
+				const rating = parseInt((values[1] / values[0]) * 10);
+				dbc.query(sql.updateFameRating, [rating, Number(profile)], (err, result) => {
+					if (err) {reject(new Error(errs.invalidID))}
+					resolve(rating);
+				});
+			}).catch(e => {throw new Error(errs.fameRatingErr)});
+		});
 }
 
 module.exports.VERBOSE = true;
@@ -299,3 +328,6 @@ module.exports.escapeStr = ft_escapeStr;
 module.exports.updateUserLocation = ft_updateUserLocation;
 module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now
 module.exports.escapeHtmlTags = ft_escapeHtmlTags;
+module.exports.totalUsers = ft_totalUsers;
+module.exports.totalUsersLikes = ft_totalUserLikes;
+module.exports.updateFameRating = ft_updateFameRating;
