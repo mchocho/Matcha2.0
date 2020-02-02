@@ -45,7 +45,7 @@ module.exports = {
 	},
 	userUnliked(username, profile) {
 		return `<h1>Hi ${username}</h1>
-		<p>${profile} decided to let go of you & unlike you.</p>
+		<p>${profile} decided to let go & unlike you.</p>
 		<p>Don't give up.</p>
 		<footer align="center">&copy Cupid's Arrow | ${getYear()}</footer>`;
 	}	

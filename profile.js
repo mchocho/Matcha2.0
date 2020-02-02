@@ -87,6 +87,7 @@ router.get('/:id?', (req, res) => {
 								dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
 									if (err) throw err;
 									user['age'] = moment(user.DOB).fromNow(true);
+									user['last_seen'] = moment(user['last_seen']).fromNow();
 									if (ft_util.VERBOSE) {
 										console.log('Profile object --> ' + util.inspect({
 											title: user.username,
@@ -111,8 +112,7 @@ router.get('/:id?', (req, res) => {
 	});
 }).post('/connect:profile?', (req, res) => {
 	const sess = req.session.user,
-		  profile = Number(req.params.profile.replace(/\./g, '')),
-		  xoxo = "&#9829";
+		  profile = Number(req.params.profile.replace(/\./g, ''));
 	let ssql,
 	    userLikesYou = false,
 	    youLikeUser = false,
@@ -150,11 +150,11 @@ router.get('/:id?', (req, res) => {
 					dbc.query(sql.selUserById, [profile], (err, result) => {
 						if (err) {throw err}
 						if (youLikeUser)
-							email.main(result.email, `${result.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result.username, sess.username)).catch(console.error);
+							email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
 						else if (userLikesYou)
-							email.main(result.email, `${result.username} liked you back ${xoxo}${xoxo}${xoxo}! | Cupid's Arrow`, msgTemplates.connectedUserLiked(result.username, sess.username)).catch(console.error);
+							email.main(result[0].email, `${sess.username} liked you back ❤️❤️❤️! | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
 						else
-							email.main(result.email, `${result.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result.username, sess.username)).catch(console.error);
+							email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
 						ft_util.updateFameRating(dbc, profile).then(rating => {
 							res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
 							return;

@@ -31,7 +31,7 @@ html
       .available(align='center')
        .status(class=user.online)
        if (user.online == 'F')
-        .last_seen Last seen: ${user.last_seen}
+        .last_seen Last seen: #{user.last_seen}
        else
         .last_seen Online
       .images
@@ -77,4 +77,5 @@ html
       script(src='/js/alertify.min.js')
       script(src='/js/xhr.js')
       script(src='/js/profile.js')
+      script(src='/js/clearStorage.js')
       script(src='/js/reloadCSS.js')
