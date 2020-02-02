@@ -267,6 +267,12 @@ function ft_escapeHtmlTags(str) {
     return str.replace(/[&<>]/g, replaceTag);
 }
 
+function ft_updateFameRating(dbc, req, profile) {
+		if (isNaN(profile))
+			return;
+
+}
+
 module.exports.VERBOSE = true;
 module.exports.SALT = 10;
 module.exports.isstring = ft_isstring;
