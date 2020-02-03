@@ -113,7 +113,7 @@ router.get('/:id?', (req, res) => {
 }).post('/connect:profile?', (req, res) => {
 	const sess = req.session.user,
 		  profile = Number(req.params.profile.replace(/\./g, ''));
-	let ssql,
+	let rowExists,
 	    userLikesYou = false,
 	    youLikeUser = false,
 	    json = `{"service": "connect", "profile": "${profile}", `;
@@ -123,13 +123,12 @@ router.get('/:id?', (req, res) => {
 		res.end(json + '"result": "Failed"}');
         return;
 	}
-		
 	if (ft_util.VERBOSE) {
 		console.log('STATUS: ' + res.statusCode);
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	dbc.query(sql.getConnectionStatus, [sess.id, profile, profile, sess.id, 'T'], (err, result) => {
+	dbc.query(sql.getConnectionStatus, [sess.id, profile, profile, sess.id], (err, result) => {
 		if (err) {throw err}
 		for (let i = 0, n = result.length; i < n; i++) {
 			if (result[i].liker === profile)
@@ -138,32 +137,36 @@ router.get('/:id?', (req, res) => {
 				youLikeUser = true;
 		}
 
-		dbc.query(
-			(youLikeUser) ? sql.delLike : sql.insLike,
-			(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
-			(err, result) => {
+		dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
 			if (err) {throw err}
-			if (result.affectedRows === 1) {
-				dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
-					if (err) {throw err}
-					//Email the user
-					dbc.query(sql.selUserById, [profile], (err, result) => {
+			rowExists = result.length > 0;
+			dbc.query(
+				(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
+				(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
+				(err, result) => {
+				if (err) {throw err}
+				if (result.affectedRows === 1) {
+					dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
 						if (err) {throw err}
-						if (youLikeUser)
-							email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
-						else if (userLikesYou)
-							email.main(result[0].email, `${sess.username} liked you back ❤️❤️❤️! | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
-						else
-							email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
-						ft_util.updateFameRating(dbc, profile).then(rating => {
-							res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
-							return;
+						//Email the user
+						dbc.query(sql.selUserById, [profile], (err, result) => {
+							if (err) {throw err}
+							if (youLikeUser)
+								email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
+							else if (userLikesYou)
+								email.main(result[0].email, `${sess.username} liked you back!❤️❤️❤️ | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
+							else
+								email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
+							ft_util.updateFameRating(dbc, profile).then(rating => {
+								res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
+								return;
+							});
 						});
 					});
-				});
-			} else {
-				res.end(json + '"result": "Failed"}');
-			}
+				} else {
+					res.end(json + '"result": "Failed"}');
+				}
+			});
 		});
 	});
 }).post('/report:profile?', (req, res) => {

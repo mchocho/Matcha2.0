@@ -42,7 +42,7 @@ module.exports = {
 	selUserTags				: "SELECT * from user_tags WHERE user_id = ?",
 	selTagName				: "SELECT name FROM tags WHERE id = ?",
 	insNewRegToken			: "INSERT INTO tokens (user_id, token, request) VALUES ?",
-	getConnectionStatus		: "SELECT * FROM likes WHERE (liker = ? AND liked = ?) OR (liker = ? AND liked = ?)",
+	getConnectionStatus		: "SELECT * FROM likes WHERE (liker = ? AND liked = ? AND unliked = 'F') OR (liker = ? AND liked = ? AND unliked = 'F')",
 	reportUser				: "UPDATE users SET valid = 'F' WHERE id = ?",
 	selBlockedUser 	   		: "SELECT id FROM `blocked_accounts` WHERE `user_id` = ? AND `blocked_user` = ?",
 	insBlockedUser			: "INSERT INTO `blocked_accounts` (user_id, blocked_user) VALUES (?)",
@@ -50,7 +50,15 @@ module.exports = {
 	updateFameRating		: "UPDATE `users` SET `rating` = ? WHERE `id` = ?",
 	insNewView				: "INSERT INTO views (user_id, viewer) VALUES (?)",
 	insNewNotification		: "INSERT INTO notifications (user_id, service_id, type) VALUES (?)",
-	getUserLikes			: "SELECT id FROM likes WHERE liked = ?",
-	delLike 				: "DELETE FROM likes WHERE liker = ? AND liked = ?",
-	insLike					: "INSERT INTO likes (liker, liked) VALUES (?)"
+	getUserLikes			: "SELECT id FROM likes WHERE liked = ? AND unliked = 'F'",
+	checkUserLikeExists		: "SELECT id FROM likes WHERE `liker` = ? AND `liked` = ? AND unliked = 'F'",
+	unlikeUser				: "UPDATE `likes` SET `unliked` = 'T' WHERE `liker` = ? AND `liked` = ?",
+	likeUnlikedUser			: "UPDATE `likes` SET `unliked` = 'F' WHERE `liker` = ? AND `liked` = ?",
+	delLike 				: "DELETE FROM likes WHERE `liker` = ? AND `liked` = ?",
+	insLike					: "INSERT INTO likes (liker, liked) VALUES (?)",
+	selUserNotifications	: "SELECT * FROM notifications WHERE user_id = ?",
+	checkNotifications		: "SELECT id FROM notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1",
+	checkChats				: "SELECT id FROM chat_notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1",
+	selUserLike				: "SELECT * FROM likes WHERE id = ?",
+	selUserView				: "SELECT viewer FROM views WHERE id = ?"
 }

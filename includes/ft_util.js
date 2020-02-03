@@ -1,7 +1,12 @@
 const http = require('https'),
 	  sql  = require('../model/sql_statements.js'),
-	  errs = require('../model/error_messages.js');
-let format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+	  errs = require('../model/error_messages.js'),
+	  format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
+	  tagsToReplace = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+		};
 
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
@@ -253,13 +258,6 @@ function ft_updateUserLocation(dbc, geo, rowExists, VERBOSE) {
 	});
 }
 
-
-var tagsToReplace = {
-    '&': '&amp;',
-    '<': '&lt;',
-	'>': '&gt;',
-};
-
 function replaceTag(tag) {
     return tagsToReplace[tag] || tag;
 }
@@ -277,29 +275,107 @@ function ft_totalUsers(dbc) {
 	});
 }
 
+function ft_getUser(dbc, profile) {
+	return new Promise((resolve, reject) => {
+		if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+		dbc.query(sql.selUserById, [Number(profile)], (err, result) => {
+			if (err) {reject(err)}
+			resolve(result[0]);
+		})
+	});
+}
+
 function ft_totalUserLikes(dbc, profile) {
 	return new Promise((resolve, reject) => {
-		if (!isNaN(profile)) {
-			dbc.query(sql.getUserLikes, [Number(profile)], (err, result) => {
-				if (err) {reject(err)}
-				resolve(result.length);
-			});
-		} else {reject(new Error(errs.invalidID));}
+		if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+		dbc.query(sql.getUserLikes, [Number(profile)], (err, result) => {
+			if (err) {reject(err)}
+			resolve(result.length);
+		});
 	});
 }
 
 function ft_updateFameRating(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+	return new Promise((resolve, reject) => {
+		if (isNaN(profile)) {reject(new Error(errs.invalidID))}
 
-			Promise.all([ft_totalUsers(dbc), ft_totalUserLikes(dbc, profile)]).then(values => {
-				const rating = parseInt((values[1] / values[0]) * 10);
-				dbc.query(sql.updateFameRating, [rating, Number(profile)], (err, result) => {
-					if (err) {reject(new Error(errs.invalidID))}
-					resolve(rating);
-				});
-			}).catch(e => {throw new Error(errs.fameRatingErr)});
+		Promise.all([ft_totalUsers(dbc), ft_totalUserLikes(dbc, profile)]).then(values => {
+			const rating = parseInt(Math.ceil((values[1] / values[0]) * 10));
+			dbc.query(sql.updateFameRating, [rating, Number(profile)], (err, result) => {
+				if (err) {reject(new Error(errs.invalidID))}
+				resolve(rating);
+			});
+		}).catch(e => {throw new Error(errs.fameRatingErr)});
+	});
+}
+
+function ft_userNotificationStatus(dbc, profile) {
+	return new Promise((resolve, reject) => {
+		if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+
+		dbc.query(sql.checkNotifications, [profile], (err, notifications) => {
+			if (err) {reject(err)}
+			dbc.query(sql.checkChats, [profile], (err, chats) => {
+				if (err) {reject(err)}
+				resolve({notifications: (notifications > 0), chats: (chats > 0)});
+			});
 		});
+	});
+}
+
+function ft_getConnectionStatus(dbc, client, profile) {
+	return new Promise((resolve, reject) => {
+		if (isNaN(client) || isNaN(profile)) {reject(new Error(errs.invalidID))}
+		const status = {userLikesYou: false, youLikeUser: false};
+
+		dbc.query(sql.getConnectionStatus, [client, profile, profile, client], (err, result) => {
+			if (err) {reject(err)}
+			for (let i = 0, n = result.length; i < n; i++) {
+				if (result[i].liker === profile)
+					status.userLikesYou = true;
+				if (result[i].liker === client)
+					status.youLikeUser = true;
+			}
+			resolve(status);
+		});
+	});
+}
+
+function ft_getUserNotifications(dbc, profile) {
+	return new Promise((resolve, reject) => {
+		let notifications,
+			user;
+
+		if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+		dbc.query(sql.selUserNotifications, [profile], (err, result) => {
+			if (err) {reject(err)}
+			notifications = result;
+			if (notifications.length === 0) resolve([]);
+			
+			result.forEach((value, i , array) => {
+				let type = value.type;
+
+				dbc.query(
+					(type === 'views') ? sql.selUserView : sql.selUserLike, 
+					[value['service_id']], 
+					(err, result) => {
+						if (err) {reject(err)}
+						user = (type === 'views') ? result[0].viewer : result[0].liker;
+
+						ft_getUser(dbc, user).then((source) => {
+							if (!ft_isobject(source)) {reject(new Error(err.invalidID))}
+							value['source'] = source;
+							ft_getConnectionStatus(dbc, profile, source.id).then((status) => {
+								Object.assign(value, status);
+								if (i === array.length - 1)
+									resolve(array);
+							}).catch(err => reject(err));
+						}).catch(err => {reject(err)});
+				});
+			});
+		});
+
+	});
 }
 
 module.exports.VERBOSE = true;
@@ -328,6 +404,9 @@ module.exports.escapeStr = ft_escapeStr;
 module.exports.updateUserLocation = ft_updateUserLocation;
 module.exports.passwdCheck = ft_passwd_check; // This is for forgot password, don't remove for now
 module.exports.escapeHtmlTags = ft_escapeHtmlTags;
+module.exports.getUser = ft_getUser;
 module.exports.totalUsers = ft_totalUsers;
 module.exports.totalUsersLikes = ft_totalUserLikes;
 module.exports.updateFameRating = ft_updateFameRating;
+module.exports.userNotificationStatus = ft_userNotificationStatus;
+module.exports.getUserNotifications = ft_getUserNotifications;

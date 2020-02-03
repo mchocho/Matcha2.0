@@ -29,7 +29,6 @@ app.use('/signup', signupRouter);
 let verify_emailRouter = require('./verify_email');
 app.use('/verify_email', verify_emailRouter);
 
-// This route will do the actual email verification step
 let verifyUserEmail = require('./api/verification');
 app.use('/verification', verifyUserEmail);
 
@@ -45,8 +44,8 @@ app.use('/matcha', matchaRouter);
 let profileRouter = require('./profile');
 app.use('/profile', profileRouter);
 
-let adminRouter = require('./admin');
-app.use('/admin', adminRouter);
+let notificationsRouter = require('./notifications');
+app.use('/notifications', notificationsRouter);
 
 let logoutRouter = require('./logout');
 app.use('/logout', logoutRouter);

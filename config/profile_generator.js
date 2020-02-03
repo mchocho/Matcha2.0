@@ -3,7 +3,7 @@ const faker 		= require('faker'),
 	  bcrypt		= require('bcryptjs');
 	  dbc 			= require('../model/sql_connect.js'),
 	  ft_util 		= require('../includes/ft_util.js'),
-	  count 		= 5;
+	  count 		= 500;
 
 function generate_user(i) {
 	if (i === count) {

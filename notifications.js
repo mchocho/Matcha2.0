@@ -1,5 +1,5 @@
-const 	  express 		= require('express'),
-	  session	    	= require('express-session'),
+const express 		= require('express'),
+	  session	    = require('express-session'),
 	  path			= require('path'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
@@ -7,15 +7,19 @@ const 	  express 		= require('express'),
 	  os			= require('os'),
 	  util			= require('util'),
 	  dbc			= require('./model/sql_connect.js'),
+	  sql			= require('./model/sql_statements.js'),
 	  ft_util		= require('./includes/ft_util.js');
 
 let router = express.Router();
 module.exports = router;
 
-router.all('/:redirectTo.:arg?', (req, res) => {
+router.get('/', (req, res) => {
 	const sess = req.session.user;
-	let sql = "SELECT valid FROM users WHERE id = ?";
-	
+
+	let sql = "SELECT * FROM notifications WHERE user_id = ?";
+		//notifications;
+		
+
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
 		return;
@@ -28,43 +32,32 @@ router.all('/:redirectTo.:arg?', (req, res) => {
 		res.redirect('/reported_account');
 		return;
 	}
-	dbc.query(sql, [sess.id], (err, result) => {
-		if (err) throw err;
-		if (result.valid === 'T') {
-			res.render('account_reported');
-			return;
-		}
-		sql = "SELECT id FROM notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1";
-		dbc.query(sql, [sess.id], (err, result) => {
-			if (err) throw err;
-			req.session.notifications = result.length > 0;
-			sql = "SELECT id FROM chat_notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1";
-			dbc.query(sql, [sess.id], (err, result) => {
-				if (err) throw err;
-				req.session.chats = result.length > 0;
-				if (req.method != 'GET')
-					switch (req.params.redirectTo) {
-						case 'chats':
-							res.redirect('/chats');
-							break;
-						case 'profile':
-							if (ft_util.isstring(req.params.arg)) {
-								res.redirect('/profile/' + req.params.arg);
-								break;
-							}
-						default:
-							res.redirect('/matcha');
-					}
-			});
+
+	
+	Promise.all(
+		[ft_util.userNotificationStatus(dbc, Number(sess.id)),
+		ft_util.getUserNotifications(dbc, sess.id)
+		]
+	).then((values) => {
+		console.log("Here's our notification values: ", values);
+
+		res.render('notifications.pug', {
+			title: "Your Notifications | Cupid's Arrow",
+			notifications: req.session.notifications,
+			chats: values[0].chats,
+			notifications: values[1].notifications
 		});
+	}).catch(e => {
+		throw (e);
 	});
-}).get('/notifications', (req, res) => {
-	const sess = req.session[0];
-	let sql = "SELECT * FROM notifications WHERE user_id = ?",
-	    notifications;
-	dbc.query(sql, [sess.id], (err, result) => {
+
+	/*dbc.query(sql.selUserNotifications, [sess.id], (err, result) => {
     		if (err) throw err;
 			notifications = result;
+			if (ft_util.VERBOSE) {
+				console.log("Notification object:\n ", notifications);
+			}
+
 			if (notifications.length > 0) {
     			for (let i = 0, n = notifications.length; i < n; i++) {
     				let type = notifications[i].type;
@@ -92,7 +85,7 @@ router.all('/:redirectTo.:arg?', (req, res) => {
     									title: "Your Notifications | Cupid's Arrow",
     									notifications: req.session.notifications,
 										chats: req.session.chats,
-					    				notifications: result
+					    				notifications: notifications
 					    			});
 	    					});
 	    				});
@@ -103,7 +96,7 @@ router.all('/:redirectTo.:arg?', (req, res) => {
     				title: "Your Notifications | Cupid's Arrow",
     				notifications: req.session.notifications,
 					chats: req.session.chats,
-    				notifications: result
+    				notifications: notifications
     			});
-    });
+    });*/
 });
