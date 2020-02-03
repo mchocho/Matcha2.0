@@ -1,12 +1,12 @@
 const fs 			= require('fs'),
       util 			= require('util'),
       mysql 		= require("mysql"),
-      credentials 	= require('../model/credentials.js'),
-      //credentials 	= require('../model/users.js'),
+      // credentials 	= require('../model/credentials.js'),
+      credentials 	= require('../model/users.js'),
       ft_util 		= require('../includes/ft_util.js');
 
-dbc = mysql.createConnection(credentials.setupCred);
-//dbc = mysql.createConnection(credentials.users.Titan_setup);
+// dbc = mysql.createConnection(credentials.setupCred);
+dbc = mysql.createConnection(credentials.users.Titan_setup);
 
 dbc.connect((err) => {
 	if (err) throw err;

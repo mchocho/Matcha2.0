@@ -7,9 +7,9 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/user.css', media='all')       
-    link(rel='stylesheet', href='/css/matcha.css', media='all')       
-  body
+    link(rel='stylesheet', href='/css/user.css', media='all')
+    link(rel='stylesheet', href='/css/main.css', media='all')   
+  body#matcha
     header
       a(href='/')
         div
@@ -24,12 +24,18 @@ html
     h2(align='center') Your matches
     .filter_container(align='center')
       .content
-        img(src='/images/icons/filter.png')
-        .btn-group#filter_group(role='group' aria-label='Filter content')
-          button.btn.btn-secondary.option(type='button', value='none') None
-          button.btn.btn-secondary(type='button', value='age') Age
-          button.btn.btn-secondary(type='button', value='location') Location
-          button.btn.btn-secondary(type='button', value='tags') Tags
+        .sort_container
+          img.sort_icon(src='/images/icons/sort.png')
+          .btn-group#sort_group(role='group' aria-label='Filter content')
+            button.btn.btn-secondary.option(type='button', value='asc') Asending
+            button.btn.btn-secondary(type='button', value='desc') Descending
+        .filter_content_container
+          img(src='/images/icons/filter.png')
+          .btn-group#filter_group(role='group' aria-label='Filter content')
+            button.btn.btn-secondary.option(type='button', value='none') None
+            button.btn.btn-secondary(type='button', value='age') Age
+            button.btn.btn-secondary(type='button', value='location') Location
+            button.btn.btn-secondary(type='button', value='tags') Tags
       #slider_container.age-slider.hide
         label Min Age:
           span#age_1 18
@@ -44,7 +50,7 @@ html
           img(src='images/icons/broken_heart.png', class='icon')
           h3.no_results It seems there are no results. Don't give up
       else
-        .row
+        #matches.row
           each user, index in users
             a.col-sm.profile(class='', href=user.url)
               if (user.images.length === 0)
@@ -66,8 +72,11 @@ html
       |  | 
       a(href='https://www.flaticon.com/authors/bqlqn', title='bqlqn') bqlqn
       |  | 
+      a(href='https://www.flaticon.com/authors/smashicons' title='Smashicons') Smashicons
+      |  | 
       a(href='https://www.flaticon.com/authors/good-ware', title='Good Ware') Good Ware
       |  from 
       a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
   script(src='js/matcha.js')
+  script(src='js/reloadCSS.js')
 

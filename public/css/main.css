@@ -3,6 +3,81 @@
   visibility: hidden;
 }
 
+#matcha .profile, #matcha .profile:hover {
+  text-decoration: none;
+  color: #111111;
+}
+#matcha .profile {
+  margin-bottom: 3%;
+}
+#matcha .profile img {
+  width: 350px;
+  height: 300px;
+}
+#matcha .filter_container {
+  margin-left: 55%;
+  margin-bottom: 1%;
+}
+#matcha .filter_container .sort_container {
+  padding-bottom: 1.5%;
+  margin-right: -10%;
+}
+#matcha .filter_container .sort_container img {
+  width: 40px;
+  height: 40px;
+}
+#matcha .filter_container img {
+  width: 70px;
+  height: 70px;
+  margin-right: 10px;
+}
+#matcha .age-slider label {
+  display: inline-block;
+}
+#matcha .age-slider label:first-of-type {
+  margin-right: 3%;
+  margin-left: -8%;
+}
+#matcha .age-slider label input {
+  display: block;
+}
+#matcha .age-slider span {
+  display: inline-block;
+  margin-left: 9px;
+  transition-duration: 6s;
+  color: #AAAAAA;
+}
+#matcha .info_container {
+  width: 350px;
+  background: #DDDDDD;
+  text-align: right;
+  padding: 12px;
+}
+#matcha .info_container img {
+  width: 35px;
+  height: 35px;
+  float: left;
+}
+#matcha .info_container span {
+  padding-right: 6px;
+}
+#matcha .info_container span.name {
+  padding-bottom: 7px;
+}
+#matcha .match_container {
+  padding-bottom: 30px;
+}
+#matcha .match_container .icon {
+  margin: auto;
+  display: inline;
+  margin-right: 3%;
+}
+#matcha .no_results {
+  display: inline;
+  text-align: center;
+  width: 100%;
+}
+
 /*
 
 	#profile

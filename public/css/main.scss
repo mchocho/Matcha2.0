@@ -25,6 +25,103 @@ $grey: #DDDDDD;
 }
 
 
+#matcha {
+	.profile, .profile:hover  {
+		text-decoration: none;
+		color: #111111;
+	}
+
+	.profile {
+		margin-bottom: 3%;
+
+		img {
+			width: 350px;
+			height: 300px;
+		}
+	}
+
+	.filter_container {
+		margin-left: 55%;
+		margin-bottom: 1%;
+
+		.sort_container {
+			padding-bottom: 1.5%;
+			margin-right: -10%;
+
+			img {
+				width: 40px;
+				height: 40px;
+			}
+		}
+
+		img {
+			width: 70px;
+			height: 70px;
+			margin-right: 10px;
+		}
+	}
+
+	.age-slider {
+		label {
+			display: inline-block;
+		}
+
+		label:first-of-type {
+			margin-right: 3%;
+			margin-left: -8%;
+		}
+
+		label input {
+			display: block;
+		}
+
+		span {
+			display: inline-block;
+			margin-left: 9px;
+			transition-duration: 6s;
+			color: #AAAAAA;
+		}
+	}
+
+	.info_container {
+		width: 350px;
+		background: #DDDDDD;
+		text-align: right;
+		padding: 12px;
+
+		img {
+			width: 35px;
+			height: 35px;
+			float: left;
+		}
+
+		span {
+			padding-right: 6px;
+		}
+
+		span.name {
+			padding-bottom: 7px;
+		}
+	}
+
+	.match_container {
+		padding-bottom: 30px;
+
+		.icon {
+			margin: auto;
+			display: inline;
+			margin-right: 3%;
+		}
+	}
+
+	.no_results {
+		display: inline;
+		text-align: center;
+		width: 100%;
+	}
+}
+
+
 /*
 	
 	#profile
