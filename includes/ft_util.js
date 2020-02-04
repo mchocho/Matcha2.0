@@ -1,12 +1,16 @@
-const http = require('https'),
-	  sql  = require('../model/sql_statements.js'),
-	  errs = require('../model/error_messages.js'),
-	  format = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
+const http 		= require('https'),
+	  sql 	 	= require('../model/sql_statements.js'),
+	  moment	= require('moment'),
+	  errs 		= require('../model/error_messages.js'),
+	  format 	= /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
 	  tagsToReplace = {
 			'&': '&amp;',
 			'<': '&lt;',
 			'>': '&gt;',
 		};
+
+module.exports.VERBOSE = true;
+module.exports.SALT = 10;
 
 function ft_isstring() {
 	for (let i = 0, n = arguments.length; i < n; i++)
@@ -235,17 +239,17 @@ function ft_escapeStr(str) {
    .replace(/"/g, "\\\"");
 }
 
-function ft_updateUserLocation(dbc, geo, rowExists, VERBOSE) {
+function ft_updateUserLocation(dbc, geo, rowExists, id, VERBOSE) {
 	return new Promise((resolve, reject) => {
 		const values = [];
 		let stm;
 
 		if (rowExists === false) {
 			stm = sql.insUserLocation;
-			values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id]);
+			values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, id]);
 		} else {
 			stm = sql.updateUserLocation;
-			values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, profile.id);
+			values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, id);
 		}
 		dbc.query(stm, values, (err, result) => {
 			if (err) {throw err}
@@ -352,7 +356,7 @@ function ft_getUserNotifications(dbc, profile) {
 			notifications = result;
 			if (notifications.length === 0) resolve([]);
 			
-			result.forEach((value, i , array) => {
+			result.forEach((value, i , arr) => {
 				let type = value.type;
 
 				dbc.query(
@@ -367,8 +371,8 @@ function ft_getUserNotifications(dbc, profile) {
 							value['source'] = source;
 							ft_getConnectionStatus(dbc, profile, source.id).then((status) => {
 								Object.assign(value, status);
-								if (i === array.length - 1)
-									resolve(array);
+								if (i === arr.length - 1)
+									resolve(arr);
 							}).catch(err => reject(err));
 						}).catch(err => {reject(err)});
 				});
@@ -378,8 +382,56 @@ function ft_getUserNotifications(dbc, profile) {
 	});
 }
 
-module.exports.VERBOSE = true;
-module.exports.SALT = 10;
+function ft_filterMatchesByAge(list, minAge, maxAge) {
+	return new Promise((resolve, reject) => {
+		if (list.length === 0 || isNaN(minAge) || isNaN(maxAge))
+			resolve(list);
+		
+		const min = moment().subtract(Number(minAge), 'years'),
+			  max = moment().subtract(Number(maxAge), 'years'),
+			  filtered = [];
+
+		for (let i = 0, n = list.length; i < n; i++) {
+			if (moment(list[i]['DOB']).isBetween(max, min))
+				filtered.push(list[i]);
+		};
+		resolve(filtered);
+	});
+}
+
+function ft_filterMatchesByGeo(list) {
+	return new Promise((resolve, reject) => {
+		if (list.length === 0)
+			resolve(list);
+
+		let temp;
+		for (let i = 0, n = list.length; i < n; i++) {
+			let current = list[i];
+			if (i + 1 < n) {
+				if (current.distance > list[i + 1]['distance']) {
+					temp = list[i + 1];
+					list[i + 1] = current;
+					list[i] = temp;
+					i = 0;
+				}
+			}
+		}
+		resolve(list);
+	});
+}
+
+function ft_filterMatchesByTags(dbc, list, profile) {
+	return new Promise((resolve, reject) => {
+		if (list.length === 0 || isNaN(profile))
+			resolve(list);
+
+		dbc.query(sql.selUserTags, [profile], (err, result) => {
+
+		});
+	});
+}
+
+
 module.exports.isstring = ft_isstring;
 module.exports.isnumber = ft_isnumber;
 module.exports.isfunction = ft_isfunction;

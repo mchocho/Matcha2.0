@@ -59,7 +59,7 @@ router.get('/', (req, res) => {
 						ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 							const geo = JSON.parse(userLocation),
 							      values = [];
-							ft_util.updateUserLocation(dbc, geo, result.length === 0, ft_util.VERBOSE).then((result) => {
+							ft_util.updateUserLocation(dbc, geo, result.length === 0, profile.id, ft_util.VERBOSE).then((result) => {
 								req.session.save((err) => {
 									if (err) {throw err}
 									res.redirect('/matcha');
