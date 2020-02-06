@@ -6,7 +6,8 @@ html
 		title #{title}
 		meta(name='viewport', content='width=device-width, initial-scale=1')
 		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-		link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
+		link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
+		link(rel='stylesheet', href='/css/alertify.min.css')
 		link(rel='stylesheet', href='/css/style.css', media='all')  
 		link(rel='stylesheet', href='/css/user.css', media='all')       
 		link(rel='stylesheet', href='/css/main.css', media='all')       
@@ -19,27 +20,43 @@ html
 					h1 Cupid's Arrow
 			.profile_container
 				a(href='/notifications')
-					img.notifications.icons(src='images/icons/bell_0.png')
-				a(href='/messages')
-					img.messages.icons(src='images/icons/envelope.png')
+					img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
+				a(href='/chats')
+					img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
+				.user
+					a(href='/user')
+						if (!profile_pic)
+							img#avatar(src='/images/icons/user.png')
+						else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
+							img#avatar(src=profile_pic.name)
+						else
+							img#avatar(src='/images/uploads/' + profile_pic.name)
+					a.logout(href='/logout') Logout
 		.profile_content(align='center')
 			.profile_pic_content.slider
 				if (user.images.length === 0)
 					div
-						img(src='images/placeholder.png')
+						img#profile_pic(src='/images/placeholder.png')
 				else
 					each image, index in user.images
 						if (image.profile_pic === 'T')
 							div
-								if (image.name.startsWith('http://'))
-									img.profile_pic(src=image.name, alt='User\'s profile pic')
-						else
-							img.profile_pic(src='images/users/' + image.name, alt='User\'s profile pic') 
+								if (image.name.startsWith('http://') || image.name.startsWith('https://'))
+									img#profile_pic(src=image.name, alt='User\'s profile pic')
+								else
+									img#profile_pic(src='/images/uploads/' + image.name, alt='User\'s profile pic') 
 				span.user_rating
 					| #{user.rating} 
 					img(src='/images/icons/star.png')
+			form#profile_picture_form(enctype='multipart/form-data' action='/user/image.null', method='post')
+				button#image_input_container.custom_btn.ib(type='button')
+					input#image.image.hide(type='file', name='image', accept='image/*')
+					| Change picture
+				#new-image-confirm.btn-group(role='group', aria-label='Change profile picture')
+					button#image_confirm.btn.btn-secondary(type='button') Confirm
+					button#image_cancel.btn.btn-secondary(type='button') Cancel
 			.views_container
-				| #{user.viewcount} views this week
+				| #{user.viewcount} views
 			form
 				h4#username.value #{user.username}
 				input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
@@ -152,8 +169,9 @@ html
 	script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
 	//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
 	script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/flatpickr')
-	script(type='text/javascript', src='js/button_groups.js')
-	script(type='text/javascript', src='js/xhr.js')
-	script(type='text/javascript', src='js/map.js')
-	script(type='text/javascript', src='js/user.js')
-	script(type='text/javascript', src='js/reloadCSS.js')
+	script(type='text/javascript', src='/js/alertify.min.js')
+	script(type='text/javascript', src='/js/button_groups.js')
+	script(type='text/javascript', src='/js/xhr.js')
+	script(type='text/javascript', src='/js/map.js')
+	script(type='text/javascript', src='/js/user.js')
+	script(type='text/javascript', src='/js/reloadCSS.js')

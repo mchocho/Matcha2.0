@@ -4,12 +4,12 @@ $black: #111111;
 $white: #eeeeee;
 $grey: #DDDDDD;
 
-@mixin multi-column-list {
+/* @mixin multi-column-list {
 	padding-left: 0;
 	-webkit-columns: 2;
      -moz-columns: 2;
           columns: 2;
-}
+} */
 
 @mixin setup-column {
 	width: 50%;
@@ -19,9 +19,31 @@ $grey: #DDDDDD;
  	-webkit-column-break-inside: avoid;
 }
 
+ul.multi-column {
+	-webkit-columns: 2;
+     -moz-columns: 2;
+          columns: 2;
+  	padding-left: 0;
+}
+
+ul li {
+  list-style-position: inside;
+  -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+                 break-inside: avoid;
+				 width: 40%;
+				 text-align: left;
+				 cursor: pointer;
+				 margin-left: 20%;
+}
+
 .hide {
 	display: none;
 	visibility: hidden;
+}
+
+footer {
+	text-align: center;
 }
 
 
@@ -59,6 +81,15 @@ $grey: #DDDDDD;
 			height: 70px;
 			margin-right: 10px;
 		}
+
+		.filter_content_container button a {
+			color: unset;
+			// display: block;
+			width: 100px;
+			height: 100px;
+			z-index: 9999999;
+			text-decoration: unset;
+		}
 	}
 
 	.age-slider {
@@ -80,6 +111,11 @@ $grey: #DDDDDD;
 			margin-left: 9px;
 			transition-duration: 6s;
 			color: #AAAAAA;
+		}
+
+		#age {
+			display: block;
+			margin-right: -15%;
 		}
 	}
 
@@ -254,6 +290,15 @@ $grey: #DDDDDD;
 			}
 		}
 	}
+
+	li {
+		img {
+			display: inline-block;
+			padding-left: 2%;
+			width: 40px;
+			height: 40px;
+		}
+	}
 }
 
 /*
@@ -263,6 +308,14 @@ $grey: #DDDDDD;
 */
 
 #user {
+	#profile_picture_form {
+		background: unset;
+
+		#new-image-confirm {
+			display: block;
+		}
+	}
+
 	.user_rating {
 		width: 30%;
 		font-size: 90%;
@@ -297,5 +350,44 @@ $grey: #DDDDDD;
 	h4 {
 		margin: 4% 0% 1% 0%;
 	}
+}
 
+#notifications {
+	h2 {
+		text-align: center;
+	}
+
+	.list-group {
+		width: 80%;
+		margin: auto;
+	}
+
+	.list-group-item {
+		img {
+			width: 70px;
+			display: inline-block;
+			padding-right: 2%;
+		}
+
+		h5 {
+			// width: 800%;
+			display: inline-block;
+			vertical-align: bottom;
+
+			.time {
+				position: relative;
+				right: -3%;
+				font-size: 60%;
+				display: inline-block;
+				text-align: right !important;
+				// float: right;
+			}
+
+			.badge {
+				position: relative;
+				right: -3px;
+				vertical-align: top;
+			}
+		}
+	}
 }

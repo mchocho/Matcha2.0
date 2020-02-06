@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`notifications`
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT , 
 	`user_id` INT UNSIGNED NOT NULL , 
 	`service_id` INT UNSIGNED NOT NULL , 
-	`type` ENUM('like','unlike','views') NOT NULL , 
+	`type` ENUM('like','unlike','views','block') NOT NULL , 
 	`viewed` ENUM('T','F') NOT NULL DEFAULT 'F' , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	CONSTRAINT `notif_id_constraint`

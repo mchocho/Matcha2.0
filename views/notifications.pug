@@ -7,8 +7,8 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/notifications.css', media='all')       
-  body
+    link(rel='stylesheet', href='/css/main.css', media='all')       
+  body#notifications
     header
       a(href='/')
         div
@@ -17,38 +17,52 @@ html
           h1 Cupid's Arrow
       .profile_container
         a(href='/notifications')
-          img.notifications.icons(src='images/icons/bell_0.png')
-        a(href='/messages')
-          img.messages.icons(src='images/icons/envelope.png')
+          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
+        a(href='/chats')
+          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
+        .user
+          a(href='/user')
+            if (!profile_pic)
+              img#avatar(src='/images/icons/user.png')
+            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
+              img#avatar(src=profile_pic.name)
+            else
+              img#avatar(src='/images/uploads/' + profile_pic.name)
+          a.logout(href='/logout') Logout
     h2 Notifications
      .list-group
-      each val, index in notifications
-        if (val.type === 'unlike' || val.type === 'like')
-          a.list-group-item.list-group-item-action.flex-column.align-items-start(href='profile/id/' + val.service.liker.id )
-        else ()
+      each val, index in userNotifications
+        a.list-group-item.list-group-item-action.flex-column.align-items-start(href='profile/' + val.source.id)
           .d-flex.w-100.justify-content-between
-            span
+            div
               if (val.type === 'unlike')
-                img(src='images/icons/unlike.png')
+                img(src='/images/icons/unlike.png')
               if (val.type === 'views')
-                img(src='images/icons/views.png')
+                img(src='/images/icons/views.png')
               if (val.type === 'like')
-                if (val.connection === true)
-                  img(src='images/icons/heart.png')
-                else
-                  img(src='images/icons/like.png')
+                img(src='/images/icons/like.png')
+              if (val.type === 'block')
+                img(src='/images/icons/block.png')
               h5.mb-1
+                if (val.type === 'block')
+                  | #{val.source.username} blocked you
                 if (val.type === 'unlike')
-                  | {val.service.liker.username} unliked you.
-                if (val.type === 'viewed')
+                  | #{val.source.username} unliked you.
+                if (val.type === 'views')
                   | Someone viewed your profile. Click here to see who it was.
                 if (val.type === 'like')
                   if (val.connection === true)
-                    | {val.service.liker.username} now likes you. It seems like there's a connection between the 2 of you.
+                    | #{val.source.username} now likes you. It seems like there's a connection between the 2 of you.
                   else
-                    | {val.service.liker.username} now likes you.
-                small
-                  time(datetime=val.date_created) val.date_created
+                    | #{val.source.username} now likes you.
+                .time
+                  time(datetime=val.date_created)
+                if (val.viewed === 'F')
+                  span.badge.badge-secondary New
+      if (userNotifications.length === 0)
+        .all_clear
+          img(href='images/icons/bell_0.png')
+          | No notification. It's time to get noticed!
     footer
       div
         | Icons made by
@@ -57,6 +71,8 @@ html
         a(href='https://www.flaticon.com/authors/gregor-cresnar' title='Gregor Cresnar') Gregor Cresnar
         |             from 
         a(href='https://www.flaticon.com/' title='Flaticon') www.flaticon.com
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js')
+    script(src='/js/time_placeholders.js')
 
 
 

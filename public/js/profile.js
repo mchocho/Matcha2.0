@@ -28,31 +28,47 @@ function script() {
 						connection_status.textContent = 'You and ' + profile_name + ' are not connected';
 					}
 				}
-			}
+			} else if (res.result === 'Blocked') {
+                alertify.success('You can\'t connect with a blocked user. Sorry.');
+            }
 			if (!isNaN(res['userRating']))
 				fameRating.textContent = res['userRating'];
         });
     }, true);
 
     block_btn.addEventListener('click', function(e) {
-    	xhr('/profile/block.' + parseInt(profile_id), 'POST', null, function(xhr) {
-    		const res = JSON.parse(xhr.responseText);
-    		if (res.result === 'Success') {
-    			if (res.profileBlocked === 'true') {
-    				connection_btn.classList.add('hide');
-    			} else {
-    				connection_btn.classList.remove('hide');
-    			}
-    		} else {
-
-    		}
+    	alertify.confirm("You are about to block " + profile_name + " from your preference list. Are you sure?", function() {
+            xhr('/profile/block.' + parseInt(profile_id), 'POST', null, function(xhr) {
+            const res = JSON.parse(xhr.responseText);
+            if (res.result === 'Success') {
+                if (res.profileBlocked === 'true') {
+                    connection_btn.classList.add('hide');
+                    block_btn.classList.add('hide');
+                    alertify.success('You have succefully blocked ' + profile_name + '.');
+                }
+            } else {
+                alertify.error('Something went wrong. Please try again.');
+            }
+          });        
     	});
     });
 
     reportuser_btn.addEventListener('click', function(e) {
-    	xhr('/profile/report.' + parseInt(profile_id), 'POST', null, function(xhr) {
-    		const res = JSON.parse(xhr.responseText);
-    	});
+        alertify.confirm("You are about to report " + profile_name + ". There are other ways to settle disputes. Are you sure?", function() {
+        	xhr('/profile/report.' + parseInt(profile_id), 'POST', null, function(xhr) {
+        		const res = JSON.parse(xhr.responseText);
+
+                if (res.result === 'Success') {
+                    alertify.success(profile_name + ' \'s account has been reported.');
+                } else {
+                    alertify.error('Something went wrong. Please try again.');   
+                }
+        	});
+        },
+        function(){
+            alertify.success('Maybe, you & ' + profile_name + ' should talk more.');
+        })
+
     });
 
 

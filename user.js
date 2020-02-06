@@ -4,8 +4,11 @@ const express 		= require('express'),
 	  mysql			= require('mysql'),
 	  body_p		= require('body-parser'),
 	  bcrypt		= require('bcryptjs'),
+	  uuidv4 		= require('uuid/v4'),
 	  moment        = require('moment'),
+	  formidable 	= require('formidable'), 
 	  os			= require('os'),
+	  fs 			= require('fs'),
 	  util			= require('util'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js');
@@ -42,9 +45,16 @@ router.get('/', (req, res) => {
 			sql = "SELECT * from user_tags WHERE user_id = ?";
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) {throw err}
-				ft_util.getTagNames(dbc, result).then((tags) => {
+				Promise.all([
+					ft_util.userNotificationStatus(dbc, Number(sess.id)),
+					ft_util.getUserImages(dbc, sess.id),
+					ft_util.getTagNames(dbc, result)
+				]).then((values) => {
 					if (ft_util.VERBOSE) {
 						console.log(util.inspect({
+							notifications: values[0].notifications,
+							chats: values[0].chats,
+							profile_pic: values[1][0],
 							username: sess.username,
 							sex: sess.gender,
 							email: sess.email,
@@ -55,14 +65,15 @@ router.get('/', (req, res) => {
 							biography: sess.biography,
 							rating: sess.rating,
 							images: images,
-							tags: tags,
+							tags: values[2],
 							viewcount: views
 						}));
 					}
 					res.render('user.pug', {
 						title: 'Your profile!',
-						notifications: req.session.notifications,
-						chats: req.session.chats,
+						notifications: values[0].notifications,
+						chats: values[0].chats,
+						profile_pic: values[1][0],
 						user: {
 							username: sess.username,
 							sex: sess.gender,
@@ -74,7 +85,7 @@ router.get('/', (req, res) => {
 							biography: sess.biography,
 							rating: sess.rating,
 							images: images,
-							tags: tags,
+							tags: values[2],
 							viewcount: views
 						}
 					});
@@ -105,6 +116,37 @@ router.get('/', (req, res) => {
 		case 'location': {
 			// const 
 			// if (!isstring())
+			return;
+		}
+		case 'image': {
+			const form = new formidable.IncomingForm();
+		    form.parse(req, function (err, fields, files) {
+		    	if (!files.image) {
+		    		res.end(json + '"result": "No file"}');
+		    		return;
+		    	}
+		    	if (files.image.type.indexOf('image') === -1) {
+		    		res.end(json + '"result": "Invalid type"}');
+		    		return;
+		    	}
+				const filename = uuidv4().replace(/\.|\//g, '').replace('\\', '') + '.' + files.image.type.split('/')[1],
+					  oldpath = files.image.path,
+					  newpath = path.join(__dirname, 'public/images/uploads/' + filename);
+
+				if (ft_util.VERBOSE) {
+					console.log(util.inspect({fields: fields, files: files, newpath: newpath, oldpath: oldpath}));
+				}
+				fs.rename(oldpath, newpath, function (err) {
+					if (err) {throw err}
+					dbc.query("DELETE FROM `images` WHERE `user_id` = ?", [sess.id], (err, result) => {
+						if (err) {throw err}
+						dbc.query("INSERT INTO `images` (name, user_id, profile_pic) VALUES (?)", [[filename, sess.id, 'T']], (err, result) => {
+							if (err) {throw err}
+							res.end(json + '"result": "Success", "filename": "' + filename + '"}');
+						});
+					});
+				});
+			});
 			return;
 		}
 		case 'interest':

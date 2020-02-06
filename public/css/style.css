@@ -6,6 +6,19 @@ body {
 .profile_container img {
 	width: 95px;
 	height: 95px;
+	transform: unset;
+}
+
+.profile_container .icons {
+	margin-top: -35%;
+}
+
+a.logout {
+	font-size: 130%;
+	display: block;
+	text-align: center;
+	/*position: relative;*/
+	margin-right: -65px;
 }
 
 h2 {
@@ -53,8 +66,8 @@ header h1 {
 }
 
 .profile_container .user img {
-	width: 120px;
-	height: 120px;
+	width: 140px;
+	height: 140px;
 }
 
 .profile_container .user a {

@@ -42,69 +42,111 @@ router.get('/:id?', (req, res) => {
 		return;
 	}
 	dbc.query(sql.selUserById, [id], (err, result) => {
-		if (err) throw err;
+		if (err) {throw err}
 		if (result.length === 0) {
 				res.redirect('/matcha');
 				return;
 		}
 		user = result[0];
 		dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
-			if (err) throw err;
+			if (err) {throw err}
 			
 			location = result[0];
 			dbc.query(sql.selUserImages, [id], (err, result) => {
-				if (err) throw err;
+				if (err) {throw err}
 				user.images = result;
 				dbc.query(sql.selUserTags, [id], (err, result) => {
 					if (err) throw err;
-					for (let i = 0, n = result.length; i < n; i++) {
-						console.log("iteration #", i+1);
-						dbc.query(sql.selTagName, result[i].tag_id, (err, t_name) => {
-							if (err) throw err;
-							console.log("Found tag: ", result[0].name);
-							result[i]['name'] = t_name.name;
-						});
-					}
-					dbc.query(sql.selUserLocation, [id], (err, result) => {
-						if (err) throw err;
-						if (result.length === 0) {
-							res.redirect('/matcha');
-							return;
-						}
-						user['location'] = result[0];
-						user['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
-						
-						dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
-							if (err) {throw err}
-							for (let i = 0, n = result.length; i < n; i++) {
-								if (result[i].liker === id)
-									user['userLikesClient'] = true;
-								if (result[i].liker === Number(sess.id))
-									user['clientLikesUser'] = true;
+					ft_util.getTagNames(dbc, result).then(nTags => {
+						user.tags = nTags;
+						ft_util.similarInterests(dbc, sess.id, id).then(tags => {
+							for (let i = 0, n = tags.length; i < n; i++) {
+								for (let j = 0, m = user.tags.length; j < m; j++) {
+									if (tags[i] === user.tags[j].id) {
+										user.tags[j]['similar'] = true;
+									}
+								}
 							}
-							dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
+
+							dbc.query(sql.selUserLocation, [id], (err, result) => {
 								if (err) throw err;
-								dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
-									if (err) throw err;
+								if (result.length === 0) {
+									res.redirect('/matcha');
+									return;
+								}
+								user['location'] = result[0];
+								user['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+								
+								dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
+									if (err) {throw err}
+									for (let i = 0, n = result.length; i < n; i++) {
+										if (result[i].liker === id)
+											user['userLikesClient'] = true;
+										if (result[i].liker === Number(sess.id))
+											user['clientLikesUser'] = true;
+									}
 									user['age'] = moment(user.DOB).fromNow(true);
 									user['last_seen'] = moment(user['last_seen']).fromNow();
-									if (ft_util.VERBOSE) {
-										console.log('Profile object --> ' + util.inspect({
-											title: user.username,
-											notifications: req.session.notifications,
-											chats: req.session.chats,
-											user: user
-										}));
-									}
-									res.render('profile.pug', {
-										title: user.username,
-										notifications: req.session.notifications,
-										chats: req.session.chats,
-										user: user
+
+									dbc.query(sql.selBlockedUser, [sess.id, id], (err, result) => {
+										Promise.all([
+											ft_util.userNotificationStatus(dbc, sess.id),
+											ft_util.getUserImages(dbc, sess.id)
+										]).then((values) => {
+											if (result === 0) {
+												dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
+													if (err) throw err;
+													dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
+														if (err) throw err;
+														if (ft_util.VERBOSE) {
+															console.log('Notification status: ', values[0]);
+
+															console.log('Profile object --> ' + util.inspect({
+																title: user.username,
+																notifications: values[0].notifications,
+																chats: values[0].chats,
+																profile_pic: values[1][0],
+																user: user
+															}));
+														}
+														res.render('profile.pug', {
+															title: user.username,
+															notifications: values[0].notifications,
+															chats: values[0].chats,
+															profile_pic: values[1][0],
+															user: user
+														});
+													});
+												});
+											} else {
+												if (ft_util.VERBOSE) {
+													console.log('Profile object --> ' + util.inspect({
+														title: user.username,
+														notifications: values[0].notifications,
+														chats: values[0].chats,
+														profile_pic: values[1][0],
+														user: user
+													}));
+												}
+												res.render('profile.pug', {
+													title: user.username,
+													notifications: values[0].notifications,
+													chats: values[0].chats,
+													profile_pic: values[1][0],
+													user: user
+												});
+											}
+										}).catch(e => {
+											throw (e)
+										});
 									});
 								});
 							});
+						}).catch(e => {
+							throw (e)
 						});
+					}).catch(e => {
+						throw (e);
 					});
 				});
 			});
@@ -137,36 +179,42 @@ router.get('/:id?', (req, res) => {
 				youLikeUser = true;
 		}
 
-		dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
-			if (err) {throw err}
-			rowExists = result.length > 0;
-			dbc.query(
-				(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
-				(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
-				(err, result) => {
-				if (err) {throw err}
-				if (result.affectedRows === 1) {
-					dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
+		dbc.query(sql.selBlockedUser, [sess.id, profile], (err, result) => {
+			if (result === 0) {
+				dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
+					if (err) {throw err}
+					rowExists = result.length > 0;
+					dbc.query(
+						(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
+						(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
+						(err, result) => {
 						if (err) {throw err}
-						//Email the user
-						dbc.query(sql.selUserById, [profile], (err, result) => {
-							if (err) {throw err}
-							if (youLikeUser)
-								email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
-							else if (userLikesYou)
-								email.main(result[0].email, `${sess.username} liked you back!❤️❤️❤️ | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
-							else
-								email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
-							ft_util.updateFameRating(dbc, profile).then(rating => {
-								res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
-								return;
+						if (result.affectedRows === 1) {
+							dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
+								if (err) {throw err}
+								//Email the user
+								dbc.query(sql.selUserById, [profile], (err, result) => {
+									if (err) {throw err}
+									if (youLikeUser)
+										email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
+									else if (userLikesYou)
+										email.main(result[0].email, `${sess.username} liked you back!❤️❤️❤️ | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
+									else
+										email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
+									ft_util.updateFameRating(dbc, profile).then(rating => {
+										res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
+										return;
+									});
+								});
 							});
-						});
+						} else {
+							res.end(json + '"result": "Failed"}');
+						}
 					});
-				} else {
-					res.end(json + '"result": "Failed"}');
-				}
-			});
+				});
+			} else {
+				res.end(json + `"result": "Blocked", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}"}`);
+			}
 		});
 	});
 }).post('/report:profile?', (req, res) => {
@@ -230,12 +278,24 @@ router.get('/:id?', (req, res) => {
 		dbc.query(query, values, (err, result) => {
 			if (err) {throw err}
 			if (result.affectedRows === 1) {
-				res.end(json + `"result": "Success", "profileBlocked"="${!profileBlocked}"}`);
+				res.end(json + `"result": "Success", "profileBlocked":"${!profileBlocked}"}`);
 			} else {
-				res.end(json + `"result": "Failed", "profileBlocked"="${profileBlocked}"}`);
+				res.end(json + `"result": "Failed", "profileBlocked":"${profileBlocked}"}`);
 			}
+			/*if (profileBlocked === false) {
+				dbc.query(sql.insNewNotification, [[Number(profile), result.insertId, 'block']], (err, result) => {
+					if (err) {throw err}
+					ft_util.getConnectionStatus(dbc, sess.id, profile).then((status) => {
+						if (status.youLikeUser === true) {
+							dbc.query(sql.unlikeUser, [sess.id, profile], (err, result) => {
+								if (err) {throw err}
+								return;
+							});
+						}
+					});
+				});
+			}*/
 		});
-
 	});
-
+	return;
 });

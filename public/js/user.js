@@ -3,24 +3,29 @@ function script() {
 	const DEVMODE = true,
 	interests = document.getElementById('interests_list').childNodes,
 	inputFields = [
-		document.getElementById('username_txt'),			//0
-		document.getElementById('firstname_txt'),			//1
-		document.getElementById('lastname_txt'),			//2
+		document.getElementById('username_txt'),				//0
+		document.getElementById('firstname_txt'),				//1
+		document.getElementById('lastname_txt'),				//2
 		document.getElementById('gender_female_btn'),			//3
-		document.getElementById('gender_male_btn'),			//4
+		document.getElementById('gender_male_btn'),				//4
 		document.getElementById('preference_female_btn'),		//5
 		document.getElementById('preference_male_btn'),			//6
 		document.getElementById('preference_both_btn'),			//7
 		document.getElementById('preference_both_btn'),			//8
-		document.getElementById('interest_txt'),			//9
-		document.getElementById('biography_txt'),			//10
+		document.getElementById('interest_txt'),				//9
+		document.getElementById('biography_txt'),				//10
 		document.getElementById('old_password_txt'),			//11
 		document.getElementById('new_password_txt'),			//12
-		document.getElementById('confirm_password_txt'),			//13
+		document.getElementById('confirm_password_txt'),		//13
 		document.getElementById('email_txt'),					//14
-		document.getElementById('dob_txt')								//15
+		document.getElementById('dob_txt'),						//15
+		document.getElementById('image'),						//16
+		document.getElementById('image_input_container'),		//17
+		document.getElementById('profile_picture_form'),		//18
 	];
-	flatpickr(inputFields[15], {});
+
+	// if ('flatpickr' in Window)
+		flatpickr(inputFields[15], {});
 
 	function isNode(el) {
        	return (el instanceof Element);
@@ -343,7 +348,31 @@ function script() {
 	});
 
 
+	//Image field controls
+	inputFields[16].value = null;
 
+	inputFields[17].addEventListener('click', function(e) {
+		inputFields[16].click();
+	}, true);
+
+	document.getElementById('image_confirm').addEventListener('click', function(e) {
+		if (inputFields[16].files.length === 0) {
+			alertify.alert('Please choose a file to upload.');
+		} else {
+			const form = new FormData(inputFields[18]);
+			xhr('/user/image.1', 'POST', form, function(xhr) {
+				const res = JSON.parse(xhr.responseText);
+				if (res.result === 'Success') {
+					document.getElementById('profile_pic').src = '/images/uploads/' + res.filename;
+					document.getElementById('avatar').src = '/images/uploads/' + res.filename;
+				} else if (res.result === 'No file' || res.result === 'Invalid type') {
+					alertify.alert('Please insert an image file.');
+				} else {
+					alertify.alert('Please try again.');
+				}
+			});
+		}
+	}, true);
 
 }
 

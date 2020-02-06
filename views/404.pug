@@ -18,9 +18,18 @@ html
           h1 Cupid's Arrow
       .profile_container
         a(href='/notifications')
-          img.notifications.icons(src='images/icons/bell_0.png')
-        a(href='/messages')
-          img.messages.icons(src='images/icons/envelope.png')
+          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
+        a(href='/chats')
+          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
+        .user
+          a(href='/user')
+            if (!profile_pic)
+              img#avatar(src='/images/icons/user.png')
+            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
+              img#avatar(src=profile_pic.name)
+            else
+              img#avatar(src='/images/uploads/' + profile_pic.name)
+          a.logout(href='/logout') Logout
     .error_container(align='center')
       img(src='images/error.JPG')
       h2 404

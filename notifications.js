@@ -15,8 +15,8 @@ module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
-
-	let sql = "SELECT * FROM notifications WHERE user_id = ?";
+	let notifications
+	// let sql = "SELECT * FROM notifications WHERE user_id = ?";
 		//notifications;
 		
 
@@ -36,16 +36,25 @@ router.get('/', (req, res) => {
 	
 	Promise.all(
 		[ft_util.userNotificationStatus(dbc, Number(sess.id)),
+		ft_util.getUserImages(dbc, sess.id),
 		ft_util.getUserNotifications(dbc, sess.id)
 		]
 	).then((values) => {
-		console.log("Here's our notification values: ", values);
+		if (ft_util.VERBOSE) {
+			console.log("Here's our notification values: ", values);
+			for (let i = 0; i < values[1].length; i++)
+				console.log('Heres the notification sources:', values[1][i].source);
+		}
 
-		res.render('notifications.pug', {
-			title: "Your Notifications | Cupid's Arrow",
-			notifications: req.session.notifications,
-			chats: values[0].chats,
-			notifications: values[1].notifications
+		dbc.query(sql.updateUserNotifications, [sess.id], (err, result) => {
+			if (err) {throw err}
+			res.render('notifications.pug', {
+				title: "Your Notifications | Cupid's Arrow",
+				notifications: values[0].notifications,
+				chats: values[0].chats,
+				profile_pic: values[1][0],
+				userNotifications: values[2].reverse()
+			});
 		});
 	}).catch(e => {
 		throw (e);

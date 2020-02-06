@@ -2,7 +2,8 @@ const express 			= require('express'),
 	  util 			= require('util'),
 	  bcrypt		= require('bcryptjs'),
 	  ft_util		= require('./includes/ft_util.js'),
-	  dbc			= require('./model/sql_connect.js');
+	  dbc			= require('./model/sql_connect.js'),
+	  redirect		= '/matcha'
 	//   sql			= require('./model/sql_statements.js');
 
 let router = express.Router();
@@ -59,10 +60,10 @@ router.get('/', (req, res) => {
 						ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 							const geo = JSON.parse(userLocation),
 							      values = [];
-							ft_util.updateUserLocation(dbc, geo, result.length === 0, profile.id, ft_util.VERBOSE).then((result) => {
+							ft_util.updateUserLocation(dbc, geo, result.length > 0, profile.id, ft_util.VERBOSE).then((result) => {
 								req.session.save((err) => {
 									if (err) {throw err}
-									res.redirect('/matcha');
+									res.redirect(redirect);
 									return;
 								});
 							}).catch((err) => {
@@ -71,19 +72,15 @@ router.get('/', (req, res) => {
 									}
 									req.session.save((err) => {
 										if (err) {throw err}
-										res.redirect('/matcha');
+										res.redirect(redirect);
 									});
 							});
 						}).catch((err) => {
 							if (ft_util.VERBOSE === true) {
 								console.log("Failed to retreive user location");
-								req.session.save((err) => {
-									res.redirect('/matcha');
-									return;
-								});
 							}
 							req.session.save((err) => {
-								res.redirect('/matcha');
+								res.redirect(redirect);
 								return;
 							});
 						});

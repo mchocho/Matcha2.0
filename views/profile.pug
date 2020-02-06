@@ -6,6 +6,7 @@ html
     title #{title} | Cupid's Arrow
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='/css/alertify.min.css')
     link(rel='stylesheet', href='/css/style.css', media='all')
     link(rel='stylesheet', href='/css/main.css', media='all')
     link(rel='stylesheet', href='/css/user.css', media='all')
@@ -18,13 +19,18 @@ html
           h1 Cupid's Arrow
       .profile_container
         a(href='/notifications')
-          img.notifications.icons(src='/images/icons/bell_0.png')
+          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
         a(href='/chats')
-          img.messages.icons(src='/images/icons/envelope.png')
+          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
         .user
           a(href='/user')
-           img(src='/images/wallpaper_2.jpg')
-          a(href='/logout') Logout
+            if (!profile_pic)
+              img#avatar(src='/images/icons/user.png')
+            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
+              img#avatar(src=profile_pic.name)
+            else
+              img#avatar(src='/images/uploads/' + profile_pic.name)
+          a.logout(href='/logout') Logout
     br
     .content
       h2#username #{user.username}
@@ -74,6 +80,15 @@ html
          span #{user.location.area}
          span #{user.location.country}
          span #{user.distance} km away
+      .interests(align='center')
+        br
+        h4 Interests
+        ul#interests_list.list.multi-column
+          each val, index in user.tags
+            li #{val.name}
+              if (val.similar === true)
+                img(src='/images/icons/cupid.png')
+
       script(src='/js/alertify.min.js')
       script(src='/js/xhr.js')
       script(src='/js/profile.js')

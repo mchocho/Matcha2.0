@@ -19,7 +19,11 @@ module.exports = {
 	updatePasswd			: "UPDATE `users` SET `password` = ? WHERE `id` = ?",
 	delOldTokens			: "DELETE FROM `tokens` WHERE `user_id` = ? && `request` = ?",
 	selUserLocation			: "SELECT * FROM `locations` WHERE `user_id` = ?",
+	selBlockedUser 	   		: "SELECT id FROM `blocked_accounts` WHERE `user_id` = ? AND `blocked_user` = ?",
 	selBlockedUsers			: "SELECT `blocked_user` FROM `blocked_accounts` WHERE `user_id` = ?",
+	selBlockedUserById 		: "SELECT * FROM `blocked_accounts` WHERE `id` = ?",
+	insBlockedUser			: "INSERT INTO `blocked_accounts` (user_id, blocked_user) VALUES (?)",
+	delBlockedUser			: "DELETE FROM `blocked_accounts` WHERE `user_id` = ? AND `blocked_user` = ?",
 	selAllMale				: "SELECT * FROM users " + 
 							"WHERE gender = 'M' " +
 							"AND (preferences = ? OR preferences = 'B') " + 
@@ -37,6 +41,8 @@ module.exports = {
 	selImagePath			: "SELECT `name` FROM `images` " + 
 							"WHERE `user_id` = ? AND profile_pic = 'T'",
 	selUserImages			: "SELECT * from images WHERE user_id = ?",
+	delUserImages			: "DELETE FROM `images` WHERE `user_id` = ?",
+	insImage				: "INSERT INTO `images` (name, user_id, profile_pic = 'T') VALUES (?)",
 	insUserLocation			: "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)",
 	updateUserLocation		: "UPDATE locations SET lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ? WHERE user_id = ?",
 	selUserTags				: "SELECT * from user_tags WHERE user_id = ?",
@@ -44,9 +50,6 @@ module.exports = {
 	insNewRegToken			: "INSERT INTO tokens (user_id, token, request) VALUES ?",
 	getConnectionStatus		: "SELECT * FROM likes WHERE (liker = ? AND liked = ? AND unliked = 'F') OR (liker = ? AND liked = ? AND unliked = 'F')",
 	reportUser				: "UPDATE users SET valid = 'F' WHERE id = ?",
-	selBlockedUser 	   		: "SELECT id FROM `blocked_accounts` WHERE `user_id` = ? AND `blocked_user` = ?",
-	insBlockedUser			: "INSERT INTO `blocked_accounts` (user_id, blocked_user) VALUES (?)",
-	delBlockedUser			: "DELETE FROM `blocked_accounts` WHERE `user_id` = ? AND `blocked_user` = ?",
 	updateFameRating		: "UPDATE `users` SET `rating` = ? WHERE `id` = ?",
 	insNewView				: "INSERT INTO views (user_id, viewer) VALUES (?)",
 	insNewNotification		: "INSERT INTO notifications (user_id, service_id, type) VALUES (?)",
@@ -57,8 +60,10 @@ module.exports = {
 	delLike 				: "DELETE FROM likes WHERE `liker` = ? AND `liked` = ?",
 	insLike					: "INSERT INTO likes (liker, liked) VALUES (?)",
 	selUserNotifications	: "SELECT * FROM notifications WHERE user_id = ?",
-	checkNotifications		: "SELECT id FROM notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1",
+	checkNotifications		: "SELECT `id` FROM `notifications` WHERE `user_id` = ? AND `viewed` = 'F' LIMIT 1",
+	updateUserNotifications : "UPDATE `notifications` SET `viewed` = 'T' WHERE `user_id` = ?",
 	checkChats				: "SELECT id FROM chat_notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1",
 	selUserLike				: "SELECT * FROM likes WHERE id = ?",
-	selUserView				: "SELECT viewer FROM views WHERE id = ?"
+	selUserView				: "SELECT viewer FROM views WHERE id = ?",
+	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?"
 }

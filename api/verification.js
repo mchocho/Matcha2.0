@@ -12,7 +12,9 @@ module.exports = router;
 
 router.get('/:id', (req, res) => {
 	let tokenRow;
-	const token = [req.params.id];
+	const token = [req.params.id],
+		  sess = req.session.user;
+
 	dbc.query(sql.findByToken, token, getUserIdFromToken);
 
 	function getUserIdFromToken(err, result) {

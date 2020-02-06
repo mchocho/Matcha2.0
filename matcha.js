@@ -2,13 +2,16 @@ const express 		= require('express'),
 	  geo			= require('geolocation-utils'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
-		sql	= require('./model/sql_statements');
+	  sql			= require('./model/sql_statements'),
+	  app 			= express();
 
+app.use(express.static(__dirname + '/public'));
 let router = express.Router();
 module.exports = router;
 
-router.get('/', (req, res) => {
-	const sess = req.session.user;
+router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
+	const sess = req.session.user,
+		  filterType = req.params.filter;
 	let	blacklist;
 	let	location;
 	let	matches;
@@ -29,6 +32,10 @@ router.get('/', (req, res) => {
 		});
 		return;
 	}
+
+	//Declare params here because sess.id might not exist
+	const arg1 = (filterType === 'tags') ? sess.id : req.params.arg1,
+		  arg2 = req.params.arg2;
 
 	dbc.query(sql.selUserLocation, [sess.id], getUserLocation);
 
@@ -53,11 +60,19 @@ router.get('/', (req, res) => {
 		} else {
 			prefSql = sql.selAllBoth;
 		}
-		dbc.query(prefSql, [sess.gender, sess.id], getMatches);
+		dbc.query(prefSql, [sess.gender, sess.id], (err, result) => {
+			if (err) {throw err}
+				// console.log('Preferences: ', result);
+				ft_util.removeBlockedUsers(result, blacklist).then(matches => {
+					getMatches(false, matches);
+				}).catch(e => {
+					getMatches(false, result);
+				});
+		});
 	}
 
 	function getMatches(err, result) {
-		if (err) throw err;
+		if (err) {throw err}
 		matches = result;		
 		if (matches.length > 0) {
 			createProfileUrls();
@@ -100,7 +115,6 @@ router.get('/', (req, res) => {
 			dbc.query(sql.selUserLocation, [matches[i].id], (err, result) => {
 				if (err) throw err;
 				if (result.length === 0) {
-					console.log("!!!If you can see this something went wrong in matcha.js!!!");
 					matches.splice(i, 1);
 					i--;
 					return;
@@ -113,12 +127,21 @@ router.get('/', (req, res) => {
 												lat: result[0]['lat'], 
 												lon: result[0]['lng']
 											}).toFixed(2);
-				
 				if (i === arrLen - 1) {
-					res.render('matcha.pug', {
-						title: "Find your match | Cupid's Arrow",
-						users: matches
-					});
+					Promise.all([
+						ft_util.userNotificationStatus(dbc, Number(sess.id)),
+						ft_util.getUserImages(dbc, sess.id),
+						ft_util.filterMatches(dbc, matches, filterType, arg1, arg2)
+					]).then((values) => {
+						res.render('matcha.pug', {
+							title: "Find your match | Cupid's Arrow",
+							notifications: values[0].notifications,
+							chats: values[0].chats,
+							profile_pic: values[1][0],
+							filter: (filterType === 'age' || filterType === 'location' || filterType === 'tags') ? filterType : 'none',
+							users: values[2]
+						});
+					}).catch(e => {throw e});
 				}
 			});
 		}

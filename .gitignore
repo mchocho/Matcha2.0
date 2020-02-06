@@ -8,3 +8,4 @@ node_modules
 package-lock.json
 .env
 ./model/users.js
+./public/images/uploads/*

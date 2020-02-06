@@ -20,7 +20,7 @@ router.get('/:id', (req, res) => {
 	const sess = req.session.user,
 		id = Number(req.params.id),
 		token = uuidv4(),
-		url = "http://localhost:3000/verification/?key=" + token;
+		url = "http://localhost:3000/api/verification/?key=" + token;
 	let    sql = "UPDATE users SET valid = 'F' WHERE id = ?";
 
 	if (!ft_util.isobject(sess)) {
@@ -36,14 +36,14 @@ router.get('/:id', (req, res) => {
 		return;
 	}
 	else if (isNaN(id))
-        {
-                res.redirect('/matcha');
-                return;
-        }
+    {
+            res.redirect('/matcha');
+            return;
+    }
 
 	dbc.query(sql, [id], (err, result) => {
 		if (err) throw err;
-		if (1) { // The row was updated
+		if (result.affectedRows === 1) {
 			sql = "SELECT email FROM users WHERE id = ?";
 			dbc.query(sql, [sess.id], (err, result) => {
 				if (err) throw err;
