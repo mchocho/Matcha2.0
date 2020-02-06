@@ -1,4 +1,5 @@
-var nodemailer = require('nodemailer');
+const 	nodemailer  = require('nodemailer'),
+		ft_util		= require('./ft_util.js');
 
 async function main(to, subject, message) {
   	let testAccount = await nodemailer.createTestAccount(); // What's this for?
@@ -18,8 +19,10 @@ async function main(to, subject, message) {
 		html: message
  	});
 
-  	console.log("Message sent: %s", info.messageId);
-  	console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+	if (ft_util.VERBOSE) { 
+		console.log("Message sent: %s", info.messageId);
+		console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+	}
 }
 
 module.exports = {

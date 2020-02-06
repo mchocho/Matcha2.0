@@ -138,7 +138,7 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 							notifications: values[0].notifications,
 							chats: values[0].chats,
 							profile_pic: values[1][0],
-							filter: (filterType === 'age' || filterType === 'location' || filterType === 'tags') ? filterType : 'none',
+							filter: (filterType === 'age' || filterType === 'location' || filterType === 'tags' || filterType === 'rating') ? filterType : 'none',
 							users: values[2]
 						});
 					}).catch(e => {throw e});

@@ -33,7 +33,7 @@ router.get('/', (req, res) => {
 		if (result === true) {
 			let sql = "SELECT * FROM users WHERE (username = ? OR email = ?)";
 			
-			dbc.query(sql, [user.username, user.username], (err, result) => { // username twice?
+			dbc.query(sql, [user.username, user.username], (err, result) => { // username could be email
 				if (err) {throw err}
 				if (result.length == 0) {
 					res.render('signin', {error_2: 'Sorry, your email/username or password was incorrect.'});

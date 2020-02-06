@@ -3,7 +3,7 @@ function isFunction(value) {
 }
 
 function xhr(url, method, body, callback) {
- 	const DEVMODE = true;
+ 	const DEVMODE = false;
 
 	if (DEVMODE) {
 		console.log("Beginning XMLHttpRequest");

@@ -1,6 +1,6 @@
 function script() {
 	// $('.slider').bxSlider();
-	const DEVMODE = true,
+	const DEVMODE = false,
 	interests = document.getElementById('interests_list').childNodes,
 	inputFields = [
 		document.getElementById('username_txt'),				//0

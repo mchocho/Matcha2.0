@@ -1,4 +1,6 @@
 function script() {
+	if (true) return;
+
 	function reloadCSS() {
 		const links = document.getElementsByTagName('link');
 		console.log('Refreshing CSS');

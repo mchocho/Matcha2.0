@@ -29,9 +29,6 @@ function script() {
 			location: pos
 		}, function(results, status) {
 			if (status === google.maps.GeocoderStatus.OK) {
-				//DEV
-				console.log(results);
-				//
 				const formData = new FormData();
 				let user = '<h3>Your location</h3>';
 				user += 'Address: ' + results[0].formatted_address;

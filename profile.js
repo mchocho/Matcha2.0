@@ -170,7 +170,7 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	Promise.all([getUserImages(dbc, sess.id), getUserImages(dbc, profile)]).then((images) => {
+	Promise.all([ft_util.getUserImages(dbc, sess.id), ft_util.getUserImages(dbc, profile)]).then((images) => {
 		if (images[0].length === 0) {
 			//you has no profile pic
 			res.end(json + '"result": "No image client"}');
@@ -190,7 +190,7 @@ router.get('/:id?', (req, res) => {
 			}
 
 			dbc.query(sql.selBlockedUser, [sess.id, profile], (err, result) => {
-				if (result === 0) {
+				if (result.length === 0) {
 					dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
 						if (err) {throw err}
 						rowExists = result.length > 0;
@@ -232,7 +232,7 @@ router.get('/:id?', (req, res) => {
 	const sess = req.session.user,
 	      profile = req.params.profile.replace(/\./g, ''),
 	      token = uuidv4(),
-	      url = "http://localhost:3000/verification/?key=" + token;
+	      url = "http://localhost:3000/api/verification/?key=" + token;
 	let	  json = `{"service": "report_profile", "profile": "${profile}", `;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});	//Allows us to respond to the client
@@ -245,17 +245,20 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	dbc.query(sql.reportUser, [Number(profile)], (err, result) => {
+	dbc.query(sql.insNewToken, [[Number(profile), token, 'verification']], (err, result) => {
 		if (err) throw err;
-		if (result.affectedRows === 1) {
-			dbc.query(sql.selUserEmail, [Number(profile)], (err, result) => {
-				if (err) throw err;
-				email.main(result.email, "Your profile has been reported | Cupid's Arrow", msgTemplates.report_account(url)).catch(console.error);
-				res.end(json + '"result": "Success"}');
-			});
-		} else {
-			res.end(json + '"result": "Failed"}');
-		}
+		dbc.query(sql.reportUser, [Number(profile)], (err, result) => {
+			if (err) throw err;
+			if (result.affectedRows === 1) {
+				dbc.query(sql.selUserEmail, [Number(profile)], (err, result) => {
+					if (err) throw err;
+					email.main(result.email, "Your profile has been reported | Cupid's Arrow", msgTemplates.report_account(url)).catch(console.error);
+					res.end(json + '"result": "Success"}');
+				});
+			} else {
+				res.end(json + '"result": "Failed"}');
+			}
+		});
 	});
 }).post('/block:profile?', (req, res) => {
 	const sess = req.session.user,

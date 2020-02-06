@@ -12,7 +12,7 @@ const http 		= require('https'),
 
 
 module.exports = {
-	VERBOSE: true,
+	VERBOSE: false,
 	SALT: 10,
 	isstring() {
 		for (let i = 0, n = arguments.length; i < n; i++)
@@ -394,7 +394,7 @@ module.exports = {
 				let current = list[i];
 				if (i + 1 < n) {
 					let temp;
-					if (parseInt(current.rating) > parseInt(list[i + 1]['rating'])) {
+					if (parseInt(current.rating) < parseInt(list[i + 1]['rating'])) {
 						temp = list[i + 1];
 						list[i + 1] = current;
 						list[i] = temp;
@@ -513,7 +513,7 @@ module.exports = {
 					resolve(results);
 				}).catch(e => {reject(e)});
 			} else if (type === 'rating') {
-				this.filterMatchesByTags(dbc, list).then(results => {
+				this.filterMatchesByRating(list).then(results => {
 					resolve(results);
 				}).catch(e => {reject(e)});
 			} else {resolve(list)}

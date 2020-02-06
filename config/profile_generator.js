@@ -1,9 +1,9 @@
-const faker 		= require('faker'),
+const faker 		= require('faker/locale/en_GB'),
 	  util 			= require('util'),
 	  bcrypt		= require('bcryptjs');
 	  dbc 			= require('../model/sql_connect.js'),
 	  ft_util 		= require('../includes/ft_util.js'),
-	  count 		= 50;
+	  count 		= 500;
 
 function generate_user(i) {
 	if (i === count) {

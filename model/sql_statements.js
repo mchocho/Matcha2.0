@@ -7,6 +7,7 @@ module.exports = {
 	selUserById 			: "SELECT * FROM `users` WHERE `id` = ?",
 	selUserByUname 			: "SELECT * FROM `users` WHERE `username` = ?",
 	selUserByEmail 			: "SELECT * FROM `users` WHERE `email` = ?",
+	insNewToken 			: "INSERT INTO `tokens` (`user_id`, `token`,`request`) VALUES (?)",
 	findByToken				: "SELECT * FROM `tokens` WHERE `token` = ?",
 	setUserVerification		: "UPDATE `users` SET `verified` = ? WHERE `id` = ?",
 	updateToken				: "UPDATE `tokens` SET `token` = ? WHERE `id` = ?",
