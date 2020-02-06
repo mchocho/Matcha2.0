@@ -170,53 +170,64 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	dbc.query(sql.getConnectionStatus, [sess.id, profile, profile, sess.id], (err, result) => {
-		if (err) {throw err}
-		for (let i = 0, n = result.length; i < n; i++) {
-			if (result[i].liker === profile)
-				userLikesYou = true;
-			if (result[i].liker === Number(sess.id))
-				youLikeUser = true;
+	Promise.all([getUserImages(dbc, sess.id), getUserImages(dbc, profile)]).then((images))
+		if (images[0].length === 0) {
+			//you has no profile pic
+			res.end(json + '"result": "No image client"}');
+			return;
+		} else if (images[1].length === 0) {
+			//user has no profile pic
+			res.end(json + '"result": "No image profile"}');
+			return;
 		}
+		dbc.query(sql.getConnectionStatus, [sess.id, profile, profile, sess.id], (err, result) => {
+			if (err) {throw err}
+			for (let i = 0, n = result.length; i < n; i++) {
+				if (result[i].liker === profile)
+					userLikesYou = true;
+				if (result[i].liker === Number(sess.id))
+					youLikeUser = true;
+			}
 
-		dbc.query(sql.selBlockedUser, [sess.id, profile], (err, result) => {
-			if (result === 0) {
-				dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
-					if (err) {throw err}
-					rowExists = result.length > 0;
-					dbc.query(
-						(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
-						(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
-						(err, result) => {
+			dbc.query(sql.selBlockedUser, [sess.id, profile], (err, result) => {
+				if (result === 0) {
+					dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
 						if (err) {throw err}
-						if (result.affectedRows === 1) {
-							dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
-								if (err) {throw err}
-								//Email the user
-								dbc.query(sql.selUserById, [profile], (err, result) => {
+						rowExists = result.length > 0;
+						dbc.query(
+							(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
+							(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
+							(err, result) => {
+							if (err) {throw err}
+							if (result.affectedRows === 1) {
+								dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
 									if (err) {throw err}
-									if (youLikeUser)
-										email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
-									else if (userLikesYou)
-										email.main(result[0].email, `${sess.username} liked you back!❤️❤️❤️ | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
-									else
-										email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
-									ft_util.updateFameRating(dbc, profile).then(rating => {
-										res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
-										return;
+									//Email the user
+									dbc.query(sql.selUserById, [profile], (err, result) => {
+										if (err) {throw err}
+										if (youLikeUser)
+											email.main(result[0].email, `${sess.username} unliked you... | Cupid's Arrow`, msgTemplates.userUnliked(result[0].username, sess.username)).catch(console.error);
+										else if (userLikesYou)
+											email.main(result[0].email, `${sess.username} liked you back!❤️❤️❤️ | Cupid's Arrow`, msgTemplates.connectedUserLiked(result[0].username, sess.username)).catch(console.error);
+										else
+											email.main(result[0].email, `${sess.username} likes you! | Cupid's Arrow`, msgTemplates.userLiked(result[0].username, sess.username)).catch(console.error);
+										ft_util.updateFameRating(dbc, profile).then(rating => {
+											res.end(json + `"result": "Success", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}", "userRating": "${rating}"}`);
+											return;
+										});
 									});
 								});
-							});
-						} else {
-							res.end(json + '"result": "Failed"}');
-						}
+							} else {
+								res.end(json + '"result": "Failed"}');
+							}
+						});
 					});
-				});
-			} else {
-				res.end(json + `"result": "Blocked", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}"}`);
-			}
+				} else {
+					res.end(json + `"result": "Blocked", "youLikeUser": "${!youLikeUser}", "userLikesYou": "${userLikesYou}"}`);
+				}
+			});
 		});
-	});
+	}).catch(e => {throw e});
 }).post('/report:profile?', (req, res) => {
 	const sess = req.session.user,
 	      profile = req.params.profile.replace(/\./g, ''),

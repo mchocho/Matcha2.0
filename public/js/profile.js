@@ -30,6 +30,10 @@ function script() {
 				}
 			} else if (res.result === 'Blocked') {
                 alertify.success('You can\'t connect with a blocked user. Sorry.');
+            } else if (res.result === 'No image client') {
+                alertify.alert('To connect with users you need a profile picture');
+            } else if (res.result === 'No image profile') {
+                alertify.alert('You can\'t connect with a user who doesn\'t have a profile picture');
             }
 			if (!isNaN(res['userRating']))
 				fameRating.textContent = res['userRating'];

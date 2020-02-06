@@ -48,6 +48,8 @@ html
               a#location(href='/matcha/location') Location
             button.btn.btn-secondary(class=((filter === 'tags')     ? 'option' : ''), type='button', value='tags')
               a#tags(href='/matcha/tags') Tags
+            button.btn.btn-secondary(class=((filter === 'rating')   ? 'option' : ''), type='button', value='rating')
+              a#tags(href='/matcha/rating') Rating
       #slider_container.age-slider(class=(filter === 'age') ? '' : 'hide')
         label Min Age:
           span#age_1

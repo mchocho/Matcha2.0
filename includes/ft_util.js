@@ -384,6 +384,27 @@ module.exports = {
 			resolve(list);
 		});
 	},
+	filterMatchesByRating(list) {
+		return new Promise((resolve, reject) => {
+			if (list.length === 0)
+				resolve(list);
+
+			//No async, no worry
+			for (let i = 0, n = list.length; i < n; i++) {
+				let current = list[i];
+				if (i + 1 < n) {
+					let temp;
+					if (parseInt(current.rating) > parseInt(list[i + 1]['rating'])) {
+						temp = list[i + 1];
+						list[i + 1] = current;
+						list[i] = temp;
+						i = -1;
+					}
+				}
+			}
+			resolve(list);
+		});
+	},
 	similarInterests(dbc, user1, user2) {
 		return new Promise((resolve, reject) => {
 			if (isNaN(user1) || isNaN(user2)) {reject(new Error(errs.invalidID))}
@@ -489,6 +510,10 @@ module.exports = {
 				}).catch(e => {reject(e)});
 			} else if (type === 'tags') {
 				this.filterMatchesByTags(dbc, list, arg1).then(results => {
+					resolve(results);
+				}).catch(e => {reject(e)});
+			} else if (type === 'rating') {
+				this.filterMatchesByTags(dbc, list).then(results => {
 					resolve(results);
 				}).catch(e => {reject(e)});
 			} else {resolve(list)}
