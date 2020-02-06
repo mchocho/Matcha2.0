@@ -7,7 +7,7 @@ const mysql = require("mysql"),
 
 dbc = mysql.createConnection(credentials.connCred);
 
-dbc = mysql.createConnection(credentials.users.Titan);
+// dbc = mysql.createConnection(credentials.users.Titan);
 
 dbc.connect((err) => {
     if (err){

@@ -170,7 +170,7 @@ router.get('/:id?', (req, res) => {
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
 	}
 
-	Promise.all([getUserImages(dbc, sess.id), getUserImages(dbc, profile)]).then((images))
+	Promise.all([getUserImages(dbc, sess.id), getUserImages(dbc, profile)]).then((images) => {
 		if (images[0].length === 0) {
 			//you has no profile pic
 			res.end(json + '"result": "No image client"}');
