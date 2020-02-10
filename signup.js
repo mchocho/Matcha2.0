@@ -85,12 +85,12 @@ router.get('/', (req, res) => {
 
 					let hash = bcrypt.hashSync(user.password, ft_util.SALT);
 					values = [[ user.username, user.f_name, user.l_name, user.gender.charAt(0), user.preference.charAt(0), user.dob, user.email, hash]]; //What is charAt? where is values declared?
-					dbc.query("INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES (?)", [values], (err, result) => {
+					dbc.query("INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password) VALUES (?)", values, (err, result) => {
 						if (err) {throw err}
 						let userId = result.insertId
 						email.main(user.email, "Email verification | Cupid's Arrow", msgTemplates.verify_signup(url)).catch(console.error); // What do these emailmethods do?
 						values = [[userId, token, 'registration']];
-						dbc.query("INSERT INTO tokens (user_id, token, request) VALUES (?)", [values], (err, result) => {
+						dbc.query("INSERT INTO tokens (user_id, token, request) VALUES (?)", values, (err, result) => {
 							if (err) {throw err}
 							ft_util.locateUser(ft_util.VERBOSE).then(userLocation => {
 								const geo = JSON.parse(userLocation),
