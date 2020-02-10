@@ -193,14 +193,19 @@ router.get('/:id?', (req, res) => {
 				if (result.length === 0) {
 					dbc.query(sql.checkUserLikeExists, [sess.id, profile], (err, result) => {
 						if (err) {throw err}
+						let notificationId;
+
 						rowExists = result.length > 0;
+						notificationId = (rowExists) ? result[0]['id'] : null;
 						dbc.query(
 							(youLikeUser) ? sql.unlikeUser : (rowExists) ? sql.likeUnlikedUser :sql.insLike,
 							(youLikeUser) ? [sess.id, profile] : [[sess.id, profile]],
 							(err, result) => {
 							if (err) {throw err}
 							if (result.affectedRows === 1) {
-								dbc.query(sql.insNewNotification, [[profile, result.insertId, (youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
+								dbc.query(sql.insNewNotification, [[profile,
+									(youLikeUser && notificationId !== null) ? newId : result.insertId,
+									(youLikeUser === true) ? 'unlike' : 'like']], (err, result) => {
 									if (err) {throw err}
 									//Email the user
 									dbc.query(sql.selUserById, [profile], (err, result) => {
