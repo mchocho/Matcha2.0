@@ -110,6 +110,7 @@ router.get('/', (req, res) => {
 	if (ft_util.VERBOSE) {
 		console.log('STATUS: ' + res.statusCode);
   		console.log('HEADERS: ' + JSON.stringify(res.headers));
+  		console.log("Value of key: ", key);
 	}
 
 	  switch(key) {	//Ajax request will accept these keys only
@@ -224,32 +225,42 @@ router.get('/', (req, res) => {
 			} else res.end(json + '"result": "Weak password"}');
 			return;
 		case 'DOB':
-			if (!moment(val, "YYYY-MM-DD").isValid()) {
-				res.end(json + '"result": "Invalid date"}');
-				return;
-			} else if (!moment(val).isBefore(moment().subtract(18, 'years'))) {
-				res.end(json + '"result": "Too young"}');
-				return;
+			if (key === 'DOB') {
+				if (!moment(val, "YYYY-MM-DD").isValid()) {
+					res.end(json + '"result": "Invalid date"}');
+					return;
+				} else if (!moment(val).isBefore(moment().subtract(18, 'years'))) {
+					res.end(json + '"result": "Too young"}');
+					return;
+				}
 			}
 		case 'preferences':
 		case 'gender':
-			if (key === 'preferences' || key === 'gender')
+			if (key === 'preferences' || key === 'gender') {
 				if (val !== 'M' && val !== 'F' && val !== 'B') {
 					res.end(json + '"result": "Failed"}');
 					return;
 				}
+			}
 		case 'fullname':
-			sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
-			if (val2.length === 0) {
-				res.end(json + '"result": "Failed"}');
-				return;
-			} else break;
+			if (key === 'fullname') {
+				sql = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?";
+				if (val2.length === 0) {
+					res.end(json + '"result": "Failed"}');
+					return;
+				} else break;
+			}
 		case 'biography':
 			sql = "UPDATE users SET " + key + " = ? WHERE id = ?";
 			break;
 		default:
 			res.end(json + '"result": "Failed"}');
 	        return;
+	}
+
+	if (ft_util.VERBOSE) {
+		console.log('Running query: ', sql);
+		console.log('Using value: ', val);
 	}
 
 	dbc.query(sql, (key !== 'fullname') ? [val, sess.id] : [val, val2, sess.id], (err, result) => {
