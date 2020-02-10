@@ -4,8 +4,8 @@ function script() {
 		preference_btns = document.getElementById('preference_group').childNodes,
 		storage = storageAvailable('session'),
 		formIds = ['username', 'f_name', 'l_name', 'gender', 'preference', 'dob', 'email'];
-	if ('flatpickr' in Window)
-		flatpickr(dob, {});
+
+	flatpickr(dob, {});
 	function isNode(el) {
 		return (el instanceof Element);
 	}
