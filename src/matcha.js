@@ -12,7 +12,8 @@ app.use(express.static(__dirname + "/public"));
 let router = express.Router();
 module.exports = router;
 
-router.get("/:filter?.:arg1?.:arg2?", (req, res) => {
+router.get("/:filter?.:arg1?.:arg2?", (req, res) =>
+{
 	const sess 			= req.session.user;
 	const renderOptions = {
 		title: "Find your match | Cupid's Arrow",
@@ -41,7 +42,8 @@ router.get("/:filter?.:arg1?.:arg2?", (req, res) => {
 		return;
 	}
 
-	dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
+	dbc.query(sql.selUserLocation, [sess.id], (err, result) =>
+	{
 		if (err) {throw err};
 
 		getUserLocation(result)
@@ -56,7 +58,8 @@ router.get("/:filter?.:arg1?.:arg2?", (req, res) => {
 		location = result[0];
 		sess.location = location;
 
-		dbc.query(sql.selBlockedUsers, [sess.id], (err, result) => {
+		dbc.query(sql.selBlockedUsers, [sess.id], (err, result) =>
+		{
 			if (err) {throw err}
 
 			getUserPreferences(result)

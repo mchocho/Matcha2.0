@@ -60,7 +60,7 @@ module.exports = {
 	selCheckTagExists 		: "SELECT `id` FROM `tags` WHERE `name` = ? LIMIT 1",
 	insNewRegToken			: "INSERT INTO `tokens` (`user_id`, `token`, `request`) VALUES ?",
 	getConnectionStatus		: "SELECT * FROM `likes` WHERE (liker = ? AND liked = ? AND unliked = 'F') OR (liker = ? AND liked = ? AND unliked = 'F')",
-	reportUser				: "UPDATE `users` SET `valid` = 'F' WHERE `id` = ?",
+	updateUserReported		: "UPDATE `users` SET `valid` = 'F' WHERE `id` = ?",
 	updateFameRating		: "UPDATE `users` SET `rating` = ? WHERE `id` = ?",
 	insNewView				: "INSERT INTO `views` (`user_id`, `viewer`) VALUES (?)",
 	insNewNotification		: "INSERT INTO `notifications` (`user_id`, `service_id`, `type`) VALUES (?)",

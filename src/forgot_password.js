@@ -12,8 +12,8 @@ let router = express.Router();
 
 module.exports = router;
 
-router.route("/")
-.get((req, res) => {
+router.get("/", (req, res) =>
+{
 	const sess = req.session.user;
 
 	//User already logged in
@@ -22,22 +22,29 @@ router.route("/")
 		res.redirect(redirect);
 		return;
 	}
+
 	res.render("forgot_password");
-}).post((req, res) => {
-	let user;
-	let errs 	= [];
-	let token 	= uuidv4();
-	let url 	= "http://localhost:3000/verification/" + token;
-	let vals 	= [req.body.email];
+});
+
+router.post((req, res) =>
+{
+	const 	token 		= uuidv4();
+	const 	url 		= "http://localhost:3000/verification/" + token;
+	const 	errs 		= [];
+	const 	selValues 	= [req.body.email];
 
 	// We need to handle white space input and XSS
-	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
+	if (!req.body.newPassword || !req.body.email || !req.body.confPassword)
+	{
 		errs.push("Fiilds can't be empty");
 	}
 
-	if (req.body.newPassword !== req.body.confPassword) {
+	if (req.body.newPassword !== req.body.confPassword)
+	{
 		errs.push("Passwords don't match");
-	} else if (ft_util.passwdCheck(req.body.newPassword) === false) {
+	} 
+	else if (ft_util.passwdCheck(req.body.newPassword) === false)
+	{
 		errs.push("Provide a valid password of 5 characters or more, with special cases, uppercase and lowercase letters");
 	}
 
@@ -46,11 +53,14 @@ router.route("/")
 		return;
 	}
 
-	dbc.query(sql.selUserByEmail, vals, getUserId);
+	dbc.query(sql.selUserByEmail, selValues, getUserId);
 
-	function getUserId(err, result) {
+	function getUserId(err, result)
+	{
 		if (err) {throw err}
-		user = result[0];
+
+		const user = result[0];
+		
 		if (!user) {
 			// This is to throw off people trying to guess emails
 			// ie, no email gets sent
@@ -60,29 +70,43 @@ router.route("/")
 		checkOldTokens(user);
 	}
 
-	function checkOldTokens(user) {
-		let vals = [user.id, "password_reset"];
-		dbc.query(sql.delOldTokens, vals, (err, result) => {
+	function checkOldTokens(user)
+	{
+		const delValues = [user.id, "password_reset"];
+		
+		dbc.query(sql.delOldTokens, delValues, (err, result) =>
+		{
 			if (err) {throw err}
+			
 			createToken(user);
 		});
 	}
 
-	function createToken(user) {
-		let salt = 10;
-		let hash = bcrypt.hashSync(req.body.newPassword, salt);
-		let vals = [user.id, token, hash,"password_reset"];
-		dbc.query(sql.insNewPwToken, vals, emailResetLink);
+	function createToken(user)
+	{
+		const salt 		= 10;
+		const hash 		= bcrypt.hashSync(req.body.newPassword, salt);
+		const insValues = [user.id, token, hash, "password_reset"];
+		
+		dbc.query(sql.insNewPwToken, [insValues], emailResetLink);
 	}
 
-	function emailResetLink(err, result) {
+	function emailResetLink(err, result)
+	{
 		if (err) {throw err}
-		if (result.affectedRows !== 1) {
+
+		if (result.affectedRows !== 1)
+		{
 			console.log("Something went wrong in forgot_password");
 			return;
 		}
-		email.main(user.email, "Password Reset Confirmation", msg.passwordReset(url))
-		.catch(console.error);
+
+		const emailAddress 	= user.email;
+		const title 		= "Password Reset Confirmation";
+		const msg 			= msg.passwordReset(url)
+		
+		email.main(emailAddress, title, msg).catch(console.error);
+		
 		res.render("confirm_passwordchange");
 	}
 });

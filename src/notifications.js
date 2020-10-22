@@ -125,7 +125,8 @@ router.get("/", (req, res) =>
 
 	function markAllNotificationsAsViewed(notifications)
 	{
-		dbc.query(sql.updateUserNotifications, [sess.id], (err, result) => {
+		dbc.query(sql.updateUserNotifications, [sess.id], (err, result) =>
+		{
 			if (err) {throw err}
 
 			fetchUserNavElements(notifications);
@@ -134,7 +135,8 @@ router.get("/", (req, res) =>
 
 	function fetchUserNavElements(notifications)
 	{		
-		(async () => {
+		(async () =>
+		{
 			try {
 				const notificationsAvalilable 	= await ft_util.userNotificationStatus(dbc, sess.id);
 				const images 					= await ft_util.getUserImages(dbc, sess.id);
