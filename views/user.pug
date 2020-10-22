@@ -1,37 +1,7 @@
-doctype html
-html
-	head
-		meta(charset='utf-8')
-		meta(http-equiv='X-UA-Compatible', content='IE=edge')
-		title #{title}
-		meta(name='viewport', content='width=device-width, initial-scale=1')
-		link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-		link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
-		link(rel='stylesheet', href='/css/alertify.min.css')
-		link(rel='stylesheet', href='/css/style.css', media='all')  
-		link(rel='stylesheet', href='/css/user.css', media='all')       
-		link(rel='stylesheet', href='/css/main.css', media='all')       
-	body#user
-		header
-			a(href='/')
-				div
-					img(src='images/logo.png')
-				.heading
-					h1 Cupid's Arrow
-			.profile_container
-				a(href='/notifications')
-					img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
-				a(href='/chats')
-					img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
-				.user
-					a(href='/user')
-						if (!profile_pic)
-							img#avatar(src='/images/icons/user.png')
-						else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
-							img#avatar(src=profile_pic.name)
-						else
-							img#avatar(src='/images/uploads/' + profile_pic.name)
-					a.logout(href='/logout') Logout
+extends layout_auth
+
+block content   
+	#user
 		.profile_content(align='center')
 			.profile_pic_content.slider
 				if (user.images.length === 0)
@@ -166,12 +136,12 @@ html
 				a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons 
 				|  from 
 				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
-	script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-	//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-	script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/flatpickr')
-	script(type='text/javascript', src='/js/alertify.min.js')
-	script(type='text/javascript', src='/js/button_groups.js')
-	script(type='text/javascript', src='/js/xhr.js')
-	script(type='text/javascript', src='/js/map.js')
-	script(type='text/javascript', src='/js/user.js')
-	script(type='text/javascript', src='/js/reloadCSS.js')
+		script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
+		//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+		script(type='text/javascript', src='/flatpickr/flatpickr.min.js')
+		script(type='text/javascript', src='/js/alertify.min.js')
+		script(type='text/javascript', src='/js/button_groups.js')
+		script(type='text/javascript', src='/js/xhr.js')
+		script(type='text/javascript', src='/js/map.js')
+		script(type='text/javascript', src='/js/user.js')
+		script(type='text/javascript', src='/js/reloadCSS.js')

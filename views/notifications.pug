@@ -1,36 +1,9 @@
-doctype html
-html
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title #{title}
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/main.css', media='all')       
-  body#notifications
-    header
-      a(href='/')
-        div
-          img(src='images/logo.png')
-        .heading
-          h1 Cupid's Arrow
-      .profile_container
-        a(href='/notifications')
-          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
-        a(href='/chats')
-          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
-        .user
-          a(href='/user')
-            if (!profile_pic)
-              img#avatar(src='/images/icons/user.png')
-            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
-              img#avatar(src=profile_pic.name)
-            else
-              img#avatar(src='/images/uploads/' + profile_pic.name)
-          a.logout(href='/logout') Logout
+extends layout_auth
+
+block content 
+  #notifications
     h2 Notifications
-     .list-group
+    .list-group
       each val, index in userNotifications
         a.list-group-item.list-group-item-action.flex-column.align-items-start(href='profile/' + val.source.id)
           .d-flex.w-100.justify-content-between
@@ -68,7 +41,7 @@ html
         | Icons made by
         a(href='https://www.flaticon.com/authors/freepik' title='Freepik') Freepik
         |             |
-        a(href='https://www.flaticon.com/authors/gregor-cresnar' title='Gregor Cresnar') Gregor Cresnar
+        a(href='https://www.flaticon.com/authors/gregor-cresnar' title='Gregor Cresnar')  Gregor Cresnar
         |             from 
         a(href='https://www.flaticon.com/' title='Flaticon') www.flaticon.com
     script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js')

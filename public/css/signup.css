@@ -9,7 +9,7 @@ h2 {
 }
 
 .wrapper {
-	margin-bottom: 50px;
+	margin-top: -4%;
 }
 
 form {
@@ -17,13 +17,28 @@ form {
 }
 
 .btn-group {
-	margin-left: 40px;
+	margin: auto;
+}
+
+.btn-group button {
+	/*padding: 15%;*/
+	/*transform: scale(1.3);*/
 }
 
 #gender_group {
-	margin-left: 60px;
+	/*margin-left: 60px;*/
 }
 
 input[type="submit"] {
-	margin-top: 20px;
+	margin: 2% 0%;
+}
+
+.top
+{
+	margin-top: -2%;
+}
+
+.bottom
+{
+	margin-bottom: -2%;
 }

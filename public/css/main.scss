@@ -47,6 +47,11 @@ footer {
 }
 
 
+/*
+	
+
+*/
+
 #matcha {
 	.profile, .profile:hover  {
 		text-decoration: none;
@@ -301,11 +306,14 @@ footer {
 	}
 }
 
-/*
+/******************************
+ ******************************
+	
 	#user
-	The user settings view
+	CSS for the "user" page
 
-*/
+ ******************************
+ ******************************/
 
 #user {
 	#profile_picture_form {
@@ -352,9 +360,18 @@ footer {
 	}
 }
 
+/******************************
+ ******************************
+	
+	CSS for the "notifications" page
+
+ ******************************
+ ******************************/
+
 #notifications {
 	h2 {
 		text-align: center;
+		font
 	}
 
 	.list-group {

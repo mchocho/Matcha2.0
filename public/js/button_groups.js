@@ -1,36 +1,42 @@
 function script() {
-	const dob = document.getElementById('dob'),
-		gender_btns = document.getElementById('gender_group').childNodes,
-		preference_btns = document.getElementById('preference_group').childNodes;
+	const dob 				= document.getElementById('dob');
+	const gender_btns 		= document.getElementById('gender_group').childNodes;
+	const preference_btns 	= document.getElementById('preference_group').childNodes;
 	
-	if ('flatpickr' in window && isNode(dob)) flatpickr(dob, {});
+	if ('flatpickr' in window) flatpickr(dob, {});
 
-	function isNode(el) {
-		return (el instanceof Element);
-	}
+	[...gender_btns].forEach((btn, i, arr) =>
+	{
+		btn.addEventListener('click', e =>
+		{
+			const node 		= document.getElementById('gender');
+			const target 	= e.currenTarget;
 
-	for (let i = 0, n = gender_btns.length; i < n; i++) {
-		gender_btns[i].addEventListener('click', function(e) {
-			if (document.getElementById('gender'))
-				document.getElementById('gender').setAttribute('value', e.target.textContent);
-			gender_btns.forEach(function(value){
-				if (isNode(value) && value.classList.contains('option'))
-					value.classList.remove('option');
+			if (node)
+				node.setAttribute('value', target.textContent);
+			arr.forEach(value =>
+			{
+				value.classList.remove('option');
 			});
-			e.target.classList.add('option');
+			target.classList.add('option');
 		});
-	}
+	});
 
-	for (let i = 0, n = preference_btns.length; i < n; i++) {
-		preference_btns[i].addEventListener('click', function(e) {
-			if (document.getElementById('preference'))
-				document.getElementById('preference').setAttribute('value', e.target.textContent);
-			preference_btns.forEach(function(value) {
-				if (isNode(value) && value.classList.contains('option'))
-					value.classList.remove('option');
+	[...preference_btns].forEach((btn, i, arr) =>
+	{
+		btn.addEventListener('click', e =>
+		{
+			const node 		= document.getElementById('preference');
+			const target 	= e.currentTarget;
+
+			if (node)
+				node.setAttribute('value', target.textContent);
+			arr.forEach(value =>
+			{
+				value.classList.remove('option');
 			});
-			e.target.classList.add('option');
+			target.classList.add('option');
 		});
-	}
+	});
 }
 document.addEventListener("DOMContentLoaded", script);

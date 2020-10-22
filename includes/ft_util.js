@@ -12,46 +12,18 @@ const http 		= require('https'),
 
 
 module.exports = {
-	VERBOSE: false,
+	VERBOSE: true,
 	SALT: 10,
 	isstring() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== "[object String]");
-				return false;
-		return true;
+		return [...arguments].every(arg => Object.prototype.toString.call(arg) === '[object String]');
 	},
 	isnumber() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== "[object Number]");
-				return false;
-		return true;
+		return [...arguments].every(arg => Object.prototype.toString.call(arg) === '[object Number]' || !isNaN(arg));
 	},
-	isfunction() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== "[object Function]")
-				return false;
-		return true;
-	},
-	isdate() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== "[object Date]")
-				return false;
-		return true;
-	}
-	,
 	isobject() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== '[object Object]')
-				return false;
-		return true;
+		return [...arguments].every(arg => Object.prototype.toString.call(arg) === '[object Object]');
 	},
-	isarray() {
-		for (let i = 0, n = arguments.length; i < n; i++)
-			if (Object.prototype.toString.call(arguments[i]) !== '[object Array]')
-				return false;
-		return true;
-	},
-	isemail(value) {
+	isEmail(value) {
 		return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value);
 	},
 	emptyObj(value) {
@@ -61,21 +33,15 @@ module.exports = {
 	    }
 	    return true;
 	},
+	isSetStr() {
+		return [...arguments].every(arg => {
+			if (!this.isstring(arg))
+				return false; 
+			return arg.length > 0;
+		});
+	},
 	ranint(max) {
 		return Math.floor(Math.random() * Math.floor(max));
-	},
-	init_errors() {
-		return {
-			error_0: '',
-			error_1: '',
-			error_2: '',
-			error_3: '',
-			error_4: '',
-			error_5: '',
-			error_6: '',
-			error_7: '',
-			error_8: '',
-		};
 	},
 	hasuppercase(str) {
 		let char;
@@ -105,30 +71,10 @@ module.exports = {
 		}
 		return false;
 	},
-	validateUser(res, sess) {
-		if (!this.isobject(res))
-			return;
-		else if (!this.isobject(sess))
-			res.redirect('/..');
-		else if (sess.verified !== 'T')
-			res.redirect('/verify_email');
-	    else if (sess.valid !== 'T')
-	        res.redirect('/reported_account');
-	},
 	removeBlockedUsers(matches, blacklist) {
-		return new Promise((resolve, reject) => {
-			blacklist.forEach((value, index, arr) => {
-				for (let i = 0, n = matches.length; i < n; i++) {
-					if (!'blocked_user' in value)
-						continue;
-					if (value.blocked_user === matches[i].id) {
-						matches.splice(i, 1);
-						break;
-					}
-				}
-			});
-			resolve(matches);
-		});
+		if (blacklist.length === 0)
+			return matches;
+		return matches.filter(match => !blacklist.some(value => value.blocked_user === match.id));
 	},
 	escape(str){
 	  if (!this.isstring(str))
@@ -138,61 +84,61 @@ module.exports = {
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
 	},
-	locateUser(report) {
-		return new Promise((resolve, reject) => {
-			const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) => {
-	        		res.on('data', (result) => {
-						if (report === true)
-						{
-							console.log(`Status: ${res.statusCode}`);
-								console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
-									console.log(`${result}`);
-						}
-						resolve(result)
-					});
-				res.on('error', (result) => {
+	locateUser()
+	{
+		return new Promise((resolve, reject) =>
+		{
+			const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) =>
+			{
+        		res.on('data', (result) =>
+        		{
+					if (true)
+					{
+						console.log(`Status: ${res.statusCode}`);
+						console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
+						console.log(`RESULT: ${result}`);
+					}
+					resolve(result);
+					return;
+				});
+				res.on('error', (result) =>
+				{
 					reject('Failed to locate user');
 				});
 			});
 			req.end();
 		});
 	},
-	valueExists(dbc, table, key, value) {
-		//Checks whether a given value already exists in a table
-		return new Promise((resolve, reject) => {
-			dbc.query("SELECT id FROM " + table + " WHERE " + key + " = ? LIMIT 1", [value], (err, result) => {
-				if (err) {throw err}
-				resolve(result);
-			});
-		});
-	},
-	getTagNames(dbc, tags) {
+	getTagNames(dbc, tags)
+	{
 		//TODO: use innerjoins instead
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve, reject) =>
+		{
 			if (tags.length === 0)
 				resolve([]);
-			for(let i = 0, n = tags.length; i < n; i++) {
-				dbc.query(sql.selTagName, [tags[i].tag_id], (err, result) => {
+
+			tags.forEach((tag, i) =>
+			{
+				dbc.query(sql.selTagName, [tag.tag_id], (err, result) =>
+				{
 					if (err) {throw err}
-					if (result.length > 0) {
-						tags[i]['name'] = result[0]['name'];
-					}
-					if (i === n - 1) {
+
+					if (result.length > 0)
+						tag.name = result[0].name;
+
+					if (i === tags.length - 1)
 						resolve(tags);
-					}
 				});
-			}
+			});
 		});
 	},
 	passwdCheck(passwd)
 	{
 		// Should we handle special chars specifically?
-		if (passwd.length < 5) {
+		if (passwd.length < 5)
 			return false;
-		} 
-		if (!this.haslowercase(passwd) || !this.hasuppercase(passwd) || !this.hasNumber(passwd)) {
+		if (!this.haslowercase(passwd) || !this.hasuppercase(passwd) || !this.hasNumber(passwd))
 			return false;
-		} 
 		return true;
 	},
 	escapeStr(str) {
@@ -201,174 +147,233 @@ module.exports = {
 	   .replace(/'/g, "\\'")
 	   .replace(/"/g, "\\\"");
 	},
-	updateUserLocation(dbc, geo, rowExists, user, VERBOSE) {
+	updateUserLocation(dbc, geo, rowExists, user) {
 		return new Promise((resolve, reject) => {
 			const values = [];
 			let stm;
 
 			if (rowExists === false) {
 				stm = sql.insUserLocation;
-				values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user.id]);
+				values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user]);
 			} else {
 				stm = sql.updateUserLocation;
-				values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user.id);
+				values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user);
 			}
+
 			dbc.query(stm, values, (err, result) => {
 				if (err) {throw err}
-				if (this.VERBOSE) {
+
+				if (this.VERBOSE)
 					console.log("Updated location data for user!");
-				}
 				resolve(result);
 			});
 		});
 	},
-	replaceTag(tag) {
+	replaceTag(tag)
+	{
 	    return tagsToReplace[tag] || tag;
 	},
-	escapeHtmlTags(str) {
+	escapeHtmlTags(str)
+	{
 	    return str.replace(/[&<>]/g, this.replaceTag);
 	},
-	totalUsers(dbc) {
-		return new Promise((resolve, reject) => {
-			dbc.query(sql.selAllUserIds, (err, result) => {
-				if (err) {reject(err)}
+	totalUsers(dbc)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbc.query(sql.selAllUserIds, (err, result) =>
+			{
+				if (err) {throw err}
+
 				resolve(result.length);
 			});
 		});
 	},
-	getUser(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
-			dbc.query(sql.selUserById, [Number(profile)], (err, result) => {
-				if (err) {reject(err)}
+	getUser(dbc, profile)
+	{
+		return new Promise((resolve, reject) =>
+		{
+
+			dbc.query(sql.selUserById, [profile], (err, result) =>
+			{
+				if (err) {throw err}
+
 				resolve(result[0]);
 			})
 		});
 	},
-	totalUsersLikes(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
-			dbc.query(sql.getUserLikes, [Number(profile)], (err, result) => {
-				if (err) {reject(err)}
+	getUserImages(dbc, id)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbc.query(sql.selUserImages, [id], (err, result) =>
+			{
+				if (err) {throw err}
+				
+				resolve(result);
+			});
+		});
+	},
+	totalUsersLikes(dbc, id)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbc.query(sql.getUserLikes, [id], (err, result) =>
+			{
+				if (err) {throw err}
+
 				resolve(result.length);
 			});
 		});
 	},
-	updateFameRating(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
-
-			Promise.all([this.totalUsers(dbc), this.totalUsersLikes(dbc, profile)]).then(values => {
+	updateFameRating(dbc, id)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			Promise.all([
+				this.totalUsers(dbc),
+				this.totalUsersLikes(dbc, id)
+			])
+			.then(values =>
+			{
 				const rating = parseInt(Math.ceil((values[1] / values[0]) * 10));
-				dbc.query(sql.updateFameRating, [rating, Number(profile)], (err, result) => {
-					if (err) {reject(new Error(errs.invalidID))}
+
+				dbc.query(sql.updateFameRating, [rating, id], (err, result) =>
+				{
+					if (err) {throw err}
+					
 					resolve(rating);
 				});
-			}).catch(e => {throw new Error(errs.fameRatingErr)});
+			}).catch(reject);
 		});
 	},
-	userNotificationStatus(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
+	userNotificationStatus(dbc, id)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbc.query(sql.checkNotifications, [id], (err, notificationRes) =>
+			{
+				if (err) {throw err}
 
-			dbc.query(sql.checkNotifications, [profile], (err, notifications) => {
-				if (err) {reject(err)}
-				dbc.query(sql.checkChats, [profile], (err, chats) => {
-					if (err) {reject(err)}
-					resolve({notifications: (notifications.length > 0), chats: (chats.length > 0)});
+				dbc.query(sql.checkChats, [id], (err, chatRes) =>
+				{
+					if (err) {throw err}
+
+					const notifications = notificationRes.length > 0;
+					const chats 		= chatRes.length > 0;
+
+					resolve({notifications, chats});
 				});
 			});
 		});
 	},
-	getConnectionStatus(dbc, client, profile) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(client) || isNaN(profile)) {reject(new Error(errs.invalidID))}
-			const status = {userLikesYou: false, youLikeUser: false};
+	similarInterests(dbc, user1, user2)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			dbc.query(sql.selUserTags, [user1], (err, user1Tags) =>
+			{
+				if (err) {throw err}
 
-			dbc.query(sql.getConnectionStatus, [client, profile, profile, client], (err, result) => {
-				if (err) {reject(err)}
-				for (let i = 0, n = result.length; i < n; i++) {
-					if (result[i].liker === profile)
-						status.userLikesYou = true;
-					if (result[i].liker === client)
-						status.youLikeUser = true;
+				if (user1Tags.length === 0)
+				{
+					resolve([]);
+					return;
 				}
-				resolve(status);
-			});
-		});
-	},
-	getUserNotifications(dbc, profile) {
-		return new Promise((resolve, reject) => {
-			let notifications,
-				query,
-				user;
 
-			if (isNaN(profile)) {reject(new Error(errs.invalidID))}
-			dbc.query(sql.selUserNotifications, [profile], (err, result) => {
-				if (err) {reject(err)}
-				notifications = result;
-				if (notifications.length === 0) resolve([]);
-				
-				result.forEach((value, i , arr) => {
-					let type = value.type;
+				dbc.query(sql.selUserTags, [user2], (err, user2Tags) =>
+				{
+					if (err) {throw err}
 
-					if (type === 'views')
-						query = sql.selUserView;
-					else if (type === 'block')
-						query = sql.selBlockedUserById;
-					else
-						query = sql.selUserLike;
+					if (user2Tags.length === 0)
+					{
+						resolve([])
+						return;
+					}
 
-					dbc.query(
-						query,
-						[value['service_id']], 
-						(err, result) => {
-							if (err) {reject(err)}
+					const similarTags = user1Tags.filter(t1 => user2Tags.some(t2 => t1.tag_id === t2.tag_id));
 
-							if (type === 'views')
-								user = result[0]['viewer'];
-							else if (type === 'block')
-								user = result[0]['blocked_user'];
-							else
-								user = result[0]['liker'];
+					resolve(similarTags.map(tag => tag.tag_id));
 
-							this.getUser(dbc, user).then((source) => {
-								if (!this.isobject(source)) {reject(new Error(err.invalidID))}
-								value['source'] = source;
-								this.getConnectionStatus(dbc, profile, source.id).then((status) => {
-									Object.assign(value, status);
-									if (i === arr.length - 1)
-										resolve(arr);
-								}).catch(err => reject(err));
-							}).catch(err => {reject(err)});
-					});
+
+					/*user1Tags.forEach((value, i, arr) => {
+						for (let j = 0, n = user2Tags.length; j < n; j++) {
+							if (value.tag_id === user2Tags[j]['tag_id']) {
+								similarTags.push(value.tag_id);
+							}
+						}
+						if (i === arr.length - 1) {
+							resolve(similarTags);
+						}
+					});*/
 				});
 			});
-
 		});
 	},
-	filterMatchesByAge(list, minAge, maxAge) {
-		return new Promise((resolve, reject) => {
-			if (list.length === 0 || isNaN(minAge) || isNaN(maxAge))
+	filterMatches(dbc, list, type, arg1, arg2)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			if (list.length === 0)
+			{
 				resolve(list);
-			
-			const min = moment().subtract(Number(minAge), 'years'),
-				  max = moment().subtract(Number(maxAge), 'years'),
-				  filtered = [];
+				return;
+			}
 
-			for (let i = 0, n = list.length; i < n; i++) {
+			(async () => {
+				try
+				{
+					let result = list;
+
+					if (type === 'age')
+						result = await this.filterMatchesByAge(list, arg1, arg2)
+					else if (type === 'location')
+						result = await this.filterMatchesByGeo(list);
+					else if (type === 'tags')
+						result = await this.filterMatchesByTags(dbc, list, arg1)
+					else if (type === 'rating')
+						result = await this.filterMatchesByRating(list)
+
+					resolve(result);
+				}
+				catch(e)
+				{
+					reject(e);
+				}
+			})();
+		});
+	},
+	filterMatchesByAge(list, minAge, maxAge)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			if (list.length === 0 || isNaN(minAge) || isNaN(maxAge))
+			{
+				resolve(list);
+				return;
+			}
+			
+			const min = moment().subtract(minAge, 'years');
+			const max = moment().subtract(maxAge, 'years');
+			// const filtered = [];
+
+			resolve(list.filter(item => moment(item.DOB).isBetween(max, min)));
+
+			/*for (let i = 0, n = list.length; i < n; i++) {
 				if (moment(list[i]['DOB']).isBetween(max, min))
 					filtered.push(list[i]);
 			};
-			resolve(filtered);
+			resolve(filtered);*/
 		});
 	},
 	filterMatchesByGeo(list) {
 		return new Promise((resolve, reject) => {
 			if (list.length === 0)
+			{
 				resolve(list);
+				return;
+			}
 
-			//No async, no worry
 			for (let i = 0, n = list.length; i < n; i++) {
 				let current = list[i];
 				if (i + 1 < n) {
@@ -403,45 +408,6 @@ module.exports = {
 				}
 			}
 			resolve(list);
-		});
-	},
-	similarInterests(dbc, user1, user2) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(user1) || isNaN(user2)) {reject(new Error(errs.invalidID))}
-
-			const similarTags = [];
-			let user1Tags, user2Tags;
-
-			dbc.query(sql.selUserTags, [Number(user1)], (err, result) => {
-				if (err) {reject(new Error(errs.invalidID))}
-				if (result.length === 0) {
-					resolve([]);
-					return;
-				}
-				user1Tags = result;
-				dbc.query(sql.selUserTags, [Number(user2)], (err, result) => {
-					if (err) {
-						reject(new Error(errs.invalidID));
-						return;
-					}
-					if (result.length === 0) {
-						resolve([])
-						return;
-					}
-
-					user2Tags = result;
-					user1Tags.forEach((value, i, arr) => {
-						for (let j = 0, n = user2Tags.length; j < n; j++) {
-							if (value.tag_id === user2Tags[j]['tag_id']) {
-								similarTags.push(value.tag_id);
-							}
-						}
-						if (i === arr.length - 1) {
-							resolve(similarTags);
-						}
-					});
-				});
-			});
 		});
 	},
 	filterMatchesByTags(dbc, list, user) {
@@ -490,42 +456,6 @@ module.exports = {
 						}
 					}).catch(e => {throw e});
 				});
-			});
-		});
-	},
-	filterMatches(dbc, list, type, arg1, arg2) {
-		return new Promise((resolve, reject) => {
-			if (list.length === 0) {
-				resolve(list);
-				return;
-			}
-
-			if (type === 'age') {
-				this.filterMatchesByAge(list, arg1, arg2).then(results => {
-					resolve(results);
-				}).catch(e => {reject(e)});
-			} else if (type === 'location') {
-				this.filterMatchesByGeo(list).then(results => {
-					resolve(results);
-				}).catch(e => {reject(e)});
-			} else if (type === 'tags') {
-				this.filterMatchesByTags(dbc, list, arg1).then(results => {
-					resolve(results);
-				}).catch(e => {reject(e)});
-			} else if (type === 'rating') {
-				this.filterMatchesByRating(list).then(results => {
-					resolve(results);
-				}).catch(e => {reject(e)});
-			} else {resolve(list)}
-		});
-	},
-	getUserImages(dbc, user) {
-		return new Promise((resolve, reject) => {
-			if (isNaN(user)) {reject(new Error(errs.invalidID)); return;}
-
-			dbc.query(sql.selUserImages, [user], (err, result) => {
-				if (err) {reject(err); return;}
-				resolve(result);
 			});
 		});
 	}

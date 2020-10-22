@@ -1,30 +1,38 @@
-const express 		= require('express'),
-	  	dbc			= require('./model/sql_connect.js'),
-		sql			= require('./model/sql_statements'),
-		uuidv4 		= require('uuid/v4'),
-		email		= require('./includes/mail_client.js'),
-		msg 		= require('./includes/email_templates.js'),
-		bcrypt		= require('bcryptjs'),
-		ft_util		= require('./includes/ft_util.js'),
-		_			= require('lodash');
+const express 	= require("express");
+const uuidv4 	= require("uuid/v4");
+const bcrypt	= require("bcryptjs");
+
+const dbc		= require("../model/sql_connect.js");
+const sql		= require("../model/sql_statements");
+const email		= require("../includes/mail_client.js");
+const msg 		= require("../includes/email_templates.js");
+const ft_util	= require("../includes/ft_util.js");
 
 let router = express.Router();
+
 module.exports = router;
 
-router.route('/')
+router.route("/")
 .get((req, res) => {
-	// TODO Stop a signed in user from seeing this page
-	res.render('forgot_password');
+	const sess = req.session.user;
+
+	//User already logged in
+	if (ft_util.isobject(sess))
+	{
+		res.redirect(redirect);
+		return;
+	}
+	res.render("forgot_password");
 }).post((req, res) => {
-	let errs = [];
 	let user;
-	let token = uuidv4();
-	let url = "http://localhost:3000/verification/" + token;
-	let vals = [req.body.email];
+	let errs 	= [];
+	let token 	= uuidv4();
+	let url 	= "http://localhost:3000/verification/" + token;
+	let vals 	= [req.body.email];
 
 	// We need to handle white space input and XSS
 	if (!req.body.newPassword || !req.body.email || !req.body.confPassword) {
-		errs.push("Feilds can't be empty");
+		errs.push("Fiilds can't be empty");
 	}
 
 	if (req.body.newPassword !== req.body.confPassword) {
@@ -34,7 +42,7 @@ router.route('/')
 	}
 
 	if (errs.length > 0) {
-		res.render('forgot_password', {messages: errs});
+		res.render("forgot_password", {messages: errs});
 		return;
 	}
 
@@ -46,7 +54,7 @@ router.route('/')
 		if (!user) {
 			// This is to throw off people trying to guess emails
 			// ie, no email gets sent
-			res.render('confirm_passwordchange');
+			res.render("confirm_passwordchange");
 			return;
 		}
 		checkOldTokens(user);
@@ -63,7 +71,7 @@ router.route('/')
 	function createToken(user) {
 		let salt = 10;
 		let hash = bcrypt.hashSync(req.body.newPassword, salt);
-		let vals = [user.id, token, hash,'password_reset'];
+		let vals = [user.id, token, hash,"password_reset"];
 		dbc.query(sql.insNewPwToken, vals, emailResetLink);
 	}
 
@@ -75,6 +83,6 @@ router.route('/')
 		}
 		email.main(user.email, "Password Reset Confirmation", msg.passwordReset(url))
 		.catch(console.error);
-		res.render('confirm_passwordchange');
+		res.render("confirm_passwordchange");
 	}
 });

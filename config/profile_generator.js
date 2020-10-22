@@ -1,15 +1,19 @@
-const faker 		= require('faker/locale/en_GB'),
-	  util 			= require('util'),
-	  bcrypt		= require('bcryptjs');
-	  dbc 			= require('../model/sql_connect.js'),
-	  ft_util 		= require('../includes/ft_util.js'),
-	  count 		= 500;
+const faker 	= require('faker/locale/en_GB');
+const util 		= require('util');
+const bcrypt	= require('bcryptjs');
+const dbc 		= require('../model/sql_connect.js');
+const ft_util 	= require('../includes/ft_util.js');
+const count 	= 500;
 
-function generate_user(i) {
-	if (i === count) {
-		console.log('Inserted ' + count + ' profile records.');
+function generate_user(i)
+{
+	if (i === count)
+	{
+		console.log(`Inserted ${count} profile records.`);
 		process.exit();
 	}
+
+
 	const user = [
 		faker.name.findName(),				//0
 		faker.name.firstName(),				//1

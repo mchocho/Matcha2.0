@@ -43,16 +43,22 @@ header img {
 	width: 60%;
 	height: 60%;
 	transform: rotateY(180deg);
+	margin-top: -8%;
 }
 
 header .heading {
 	text-align: left;
 	display: inline-block;
-	margin-left: -160px;
+	/*margin-left: -160px;*/
+	margin-left: -18%;
 }
 
 header h1 {
 	font-size: 380%;
+}
+
+header .profile_container a {
+	font-size: 180%;
 }
 
 .profile_container {
@@ -83,7 +89,7 @@ form {
 	background: rgb(238, 238, 238, 0.4);
 	border-radius: 13px;
 	padding: 13px;
-	padding-bottom: 4%;	
+	padding-bottom: 2%;	
 }
 
 form#signin {
@@ -91,7 +97,8 @@ form#signin {
 }
 
 label {
-	margin-top: 5px;
+	margin-top: 1px;
+	font-size: 160%;
 }
 
 label, input {
@@ -99,12 +106,12 @@ label, input {
 }
 
 input[type="text"], input[type="password"], input[type="email"] {
-	font-size: 120%;
+	font-size: 90%;
 	background: unset !important;
 	border: none;
 	border-bottom: 1px solid #000;
-	width: 30%;
-	padding: 10px;
+	width: 60%;
+	padding: 2.5px;
 	text-align: center;
 }
 
@@ -128,6 +135,11 @@ input[type="submit"], .custom_btn {
 	text-align: center;
 }
 
+input[type="submit"]
+{
+	width: 60%;
+}
+
 input[type="submit"], input[type="button"], button, .custom_btn, .btn {
 	-webkit-transition: all .5s;
     -o-transition: all .5s;
@@ -136,9 +148,9 @@ input[type="submit"], input[type="button"], button, .custom_btn, .btn {
 
 
 input[type="submit"]:hover, .custom_btn:hover {
-	background: #eee;
-	color: #000;
-	border: 1px solid #000;
+	background: red;
+	color: #eee;
+	border: 1px solid #eee;
 }
 
 .list-group a:hover {

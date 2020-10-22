@@ -1,71 +1,65 @@
-//- doctype html
-//- head
-//-   meta(charset='utf-8')
-//-   meta(http-equiv='X-UA-Compatible' content='IE=edge')
-//-   title Registration | Cupid
-//-   meta(name='viewport' content='width=device-width, initial-scale=1')
-//-   link(rel='manifest' href='manifest.webmanifest')
-//-   link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
-//-   link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css')
-//-   link(rel='stylesheet' href='/css/style.css' media='all')
-//-   link(rel='stylesheet' href='/css/signup.css' media='all')
-//- body
 extends layout
 
 block content
-  header
-    a(href='/')
-      div
-        img(src='images/logo.png')
-      .heading
-        h1 Cupid's Arrow
-    .profile_container
-      a(href='/signup') Sign up | 
-      a(href='/') Sign in
-  .wrapper(align='center')
-    h2 Register to find your true love!
-    form(method='POST', id="signup")
-      span#error_0.error #{errors.error_0}
-      label
-        | Username
-        input#username.txt(type='text', name='username', required='')
-      span#error_1.error #{errors.error_1}
-      label
-        | First name
-        input#f_name.txt(type='text', name='f_name', required='')
-      span#error_2.error #{errors.error_2}
-      label
-        | Last name
-        input#l_name.txt(type='text', name='l_name', required='')
-      span#error_3.error #{errors.error_3}
-      label
-        | Gender
-        #gender_group.btn-group(role='group', aria-label='Gender')
-          button.btn.btn-secondary(type='button') Female
-          button.btn.btn-secondary(type='button') Male
-        input#gender(type='hidden', name='gender', value='')
-      label
-        | Sexual preference
-        #preference_group.btn-group(role='group', aria-label='preferences')
-          button.btn.btn-secondary(type='button') Female
-          button.btn.btn-secondary(type='button') Male
-          button.btn.btn-secondary(type='button') Both
-        input#preference(type='hidden', name='preference', value='')
-      span#error_4.error #{errors.error_4}
-      label
-        | Date of birth
-        input#dob.txt(type='text', name='dob', placeholder='Select a date...', required='')
-      span#error_5.error #{errors.error_5}
-      label
-        | Email
-        input#email.txt(type='email', name='email', required='')
-      span#error_5.error #{errors.error_6} #{errors.error_7}
-      label
-        | Password
-        input#password.txt(type='password', name='password', required='')
-      label
-        | Password confirmation
-        input#password_confirm.txt(type='password', name='password_confirm', required='')
-      input(type='submit', name='cupid', value='Submit')
-  script(src='https://cdn.jsdelivr.net/npm/flatpickr')
-  script(src='/js/signup.js')
+  body.signup
+    header
+      a(href='/')
+        div
+          img(src='images/logo.png')
+        .heading
+          h1 Cupid's Arrow
+      .profile_container
+        a(href='/signup') Sign up | 
+        a(href='/') Sign in
+    .wrapper.container(align='center')
+      h2 Register to find your true love!
+      form(method='POST', id="signup")
+        span#error_0.error #{errors[0]}
+        label
+          | Username
+          input#username.txt(type='text', name='username', required='')
+        span#error_1.error #{errors[1]}
+        label
+          | First name
+          input#f_name.txt(type='text', name='f_name', required='')
+        span#error_2.error #{errors[2]}
+        label
+          | Last name
+          input#l_name.txt(type='text', name='l_name', required='')
+        span#error_3.error #{errors[3]}
+        label
+          | Date of birth
+          input#dob.txt(type='text', name='dob', placeholder='Select a date...', required='')
+        span#error_5.error #{errors[5]}
+        div.row
+          div.col
+            label.top
+              | Gender
+              br
+              #gender_group.btn-group(role='group', aria-label='Gender')
+                button.btn.btn-secondary(type='button') Female
+                button.btn.btn-secondary(type='button') Male
+              input#gender(type='hidden', name='gender', value='')
+          div.col
+            label
+              | Preference
+              br
+              #preference_group.btn-group(role='group', aria-label='preferences')
+                button.btn.btn-secondary(type='button') Female
+                button.btn.btn-secondary(type='button') Male
+                button.btn.btn-secondary(type='button') Both
+              input#preference(type='hidden', name='preference', value='')
+        span#error_4.error.bottom #{errors[4]}
+        label
+          | Email
+          input#email.txt(type='email', name='email', required='')
+        span#error_5.error #{errors[6]} #{errors[7]}
+        label
+          | Password
+          input#password.txt(type='password', name='password', required='')
+        label
+          | Password confirmation
+          input#password_confirm.txt(type='password', name='password_confirm', required='')
+        input(type='submit', name='cupid', value='Submit')
+    script(src='/flatpickr/flatpickr.min.js')
+    script(src='/js/signup.js')

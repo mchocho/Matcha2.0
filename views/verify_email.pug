@@ -1,23 +1,17 @@
-doctype html
-head
-  meta(charset='utf-8')
-  meta(http-equiv='X-UA-Compatible' content='IE=edge')
-  title Sign in | Cupid's Arrow
-  meta(name='viewport' content='width=device-width, initial-scale=1')
-  link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous')
-  link(rel='stylesheet' href='css/style.css' media='all')
-  link(rel='stylesheet' href='/css/signup.css' media='all')
-body
-  header
-    a(href='/')
-      div
-        img(src='images/logo.png')
-      .heading
-        h1 Cupid's Arrow
-    .profile_container
-      a(href='/signup') Sign up | 
-      a(href='/') Sign in
-  .wrapper(align='center')
-    h2 Verify your email
-    p Thanks for signing up. A love letter has been sent to your email address.
-    | Please proceed to your email and click on the link to verify your email address.
+extends layout
+
+block content
+  body
+    header
+      a(href='/')
+        div
+          img(src='images/logo.png')
+        .heading
+          h1 Cupid's Arrow
+      .profile_container
+        a(href='/signup') Sign up | 
+        a(href='/') Sign in
+    .wrapper(align='center')
+      h2 Verify your email
+      p Thanks for signing up. A love letter has been sent to your email address.
+      | Please proceed to your email and click on the link to verify your email address.

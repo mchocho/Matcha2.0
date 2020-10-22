@@ -1,31 +1,124 @@
 function script() {
-	// $('.slider').bxSlider();
-	const DEVMODE = false,
-	interests = document.getElementById('interests_list').childNodes,
-	inputFields = [
-		document.getElementById('username_txt'),				//0
-		document.getElementById('firstname_txt'),				//1
-		document.getElementById('lastname_txt'),				//2
-		document.getElementById('gender_female_btn'),			//3
-		document.getElementById('gender_male_btn'),				//4
-		document.getElementById('preference_female_btn'),		//5
-		document.getElementById('preference_male_btn'),			//6
-		document.getElementById('preference_both_btn'),			//7
-		document.getElementById('preference_both_btn'),			//8
-		document.getElementById('interest_txt'),				//9
-		document.getElementById('biography_txt'),				//10
-		document.getElementById('old_password_txt'),			//11
-		document.getElementById('new_password_txt'),			//12
-		document.getElementById('confirm_password_txt'),		//13
-		document.getElementById('email_txt'),					//14
-		document.getElementById('dob_txt'),						//15
-		document.getElementById('image'),						//16
-		document.getElementById('image_input_container'),		//17
-		document.getElementById('profile_picture_form'),		//18
-	];
+	// $(".slider").bxSlider();
+	const DEVMODE 	= false;
+	const interests = document.getElementById("interests_list").childNodes;
+	const imgInput 	= document.getElementById("image");
 
-	// if ('flatpickr' in Window)
-		flatpickr(inputFields[15], {});
+	flatpickr(document.getElementById("dob_txt"), {});
+
+	//Enable text input editing
+	editActions(
+		document.getElementById("username_edit_btn"),
+		document.getElementById("username_edit_container"),
+		document.getElementById("username_confirm"),
+		document.getElementById("username_cancel"),
+		validateUsername
+	);
+
+	editActions(
+		document.getElementById("fullname_edit_btn"),
+		document.getElementById("fullname_edit_container"),
+		document.getElementById("fullname_confirm"),
+		document.getElementById("fullname_cancel"),
+		validateFullname
+	);
+
+	editActions(
+		document.getElementById("dob_edit_btn"),
+		document.getElementById("dob_edit_container"),
+		document.getElementById("dob_confirm"),
+		document.getElementById("dob_cancel"),
+		validateDOB
+	);
+
+	editActions(
+		document.getElementById("email_edit_btn"),
+		document.getElementById("email_edit_container"),
+		document.getElementById("email_confirm"),
+		document.getElementById("email_cancel"),
+		validateEmail	
+	);
+
+	editActions(
+		document.getElementById("password_edit_btn"),
+		document.getElementById("password_edit_container"),
+		document.getElementById("password_confirm"),
+		document.getElementById("password_cancel"),
+		validatePassword
+	);
+
+	editActions(
+		document.getElementById("interests_add_btn"),
+		document.getElementById("interest_edit_container"),
+		document.getElementById("interests_confirm"),
+		document.getElementById("interests_cancel"),
+		validateInterests
+	);
+
+	editActions(
+		document.getElementById("biography_edit_btn"),
+		document.getElementById("biography_edit_container"),
+		document.getElementById("biography_confirm"),
+		document.getElementById("biography_cancel"),
+		validateBio
+	);
+
+	//Add update events to gender buttons
+	updateGender(document.getElementById("gender_female_btn"));
+	updateGender(document.getElementById("gender_male_btn"));
+
+
+	//Add update events to preference buttons
+	updatePreference(document.getElementById("preference_female_btn"));
+	updatePreference(document.getElementById("preference_male_btn"));
+	updatePreference(document.getElementById("preference_both_btn"));
+
+	interests.forEach(function(res) {
+		rmPreferenceEvent(res);
+	});
+
+
+	//Image field controls
+	imgInput.value = null;
+
+	//Link img to input
+	document.getElementById("image_input_container")
+	.addEventListener("click", function(e)
+	{
+		imgInput.click();
+	}, true);
+
+	//Submit image
+	document.getElementById("image_confirm")
+	.addEventListener("click", function(e)
+	{
+		handleFileUpload();
+	}, true);
+
+
+	function handleFileUpload()
+	{
+		if (imgInput.files.length === 0) {
+			alertify.alert("Please choose a file to upload.");
+			return;
+		}
+		const form = new FormData(document.getElementById("profile_picture_form"));
+		
+		xhr("/user/image", "POST", form, function(xhr)
+		{
+			const res = JSON.parse(xhr.responseText);
+
+			if (res.result === "Success")
+			{
+				document.getElementById("profile_pic").src 	= `/images/uploads/${res.filename}`;
+				document.getElementById("avatar").src 		= `/images/uploads/${res.filename}`;
+			}
+			else if (res.result === "No file" || res.result === "Invalid type")
+				alertify.alert("Please insert an image file.");
+			else
+				alertify.alert("Please try again.");
+		}, true);
+	}
 
 	function isNode(el) {
        	return (el instanceof Element);
@@ -41,339 +134,319 @@ function script() {
 	}
 
 	function editActions(edit_btn, edit_container, confirm_btn, cancel_btn, validation) {
-		edit_btn.addEventListener('click', function() {
-			edit_btn.classList.add('hide');
-			edit_container.classList.remove('hide');
+		edit_btn.addEventListener("click", function() {
+			edit_btn.classList.add("hide");
+			edit_container.classList.remove("hide");
 			return;
 		}, true);
 
-		confirm_btn.addEventListener('click', function() {
+		confirm_btn.addEventListener("click", function() {
 			if (validation()) {
-				edit_container.classList.add('hide');
-				edit_btn.classList.remove('hide');
+				edit_container.classList.add("hide");
+				edit_btn.classList.remove("hide");
 			}
 			return;
 		}, true);
 
-		cancel_btn.addEventListener('click', function() {
-			edit_container.classList.add('hide');
-			edit_btn.classList.remove('hide');
+		cancel_btn.addEventListener("click", function() {
+			edit_container.classList.add("hide");
+			edit_btn.classList.remove("hide");
 			return;
 		}, true);
 	}
 
 	//Validation methods
-	function validateUsername() {
-		const value =  inputFields[0].value.trim(),
-		      error_node = document.getElementById('error_0');
+	function validateUsername()
+	{
+		const 	value 		= document.getElementById("username_txt").value.trim();
+		const 	error_node 	= document.getElementById("error_0");
+		let 	result;
 
-		if (value.length < 3 && !isValidStr(value)) {
+		//
+		if (value.length < 2 && !isValidStr(value))
+		{
 			error_node.textContent = "Please enter a valid username";
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/username.' + encodeURIComponent(value), 'POST', null, function(xhr) {
+		
+		xhr("/user/new_username", "POST", { value }, xhr => 
+		{
+			//Onsuccess
+
 			const res = JSON.parse(xhr.responseText);
-			if (res.result === 'Success') {
-				document.getElementById('username').textContent = res.value;
+
+			if (res.result === "Success") {
+				document.getElementById("username").textContent = res.value;
 			} else {
-				error_node.textContent = "Please try again.";
+				error_node.textContent = res.result;
 			}
+		}, (e) =>
+		{
+			//On error
 		});
 		return true;
 	}
 
-	function validateFullname() {
-		const firstname = inputFields[1].value.trim(),
-		      lastname = inputFields[2].value.trim(),
-		      error_node = document.getElementById('error_1');
+	function validateFullname()
+	{
+		const firstInput	= document.getElementById("firstname_txt");
+		const lastInput 	= document.getElementById("lastname_txt");
+		const error_node 	= document.getElementById("error_1");
+		const first 		= firstInput.value.trim();
+		const last 			= lastInput.value.trim();
 
-		if (firstname.length === 0 || !isValidStr(firstname)) {
+		if (!isValidStr(first))
+		{
 			error_node.textContent = "Please enter a first name";
 			return false;
 		}
-		if (lastname.length === 0 || !isValidStr(lastname)) {
-			error_node.textContent = 'Please enter a last name';
+		if (!isValidStr(last))
+		{
+			error_node.textContent = "Please enter a last name";
 			return false;
 		}
+
 		error_node.textContent = "";
-		xhr('/user/fullname.' + encodeURIComponent(firstname) + '.' + encodeURIComponent(lastname), 'POST', null, function(xhr) {
+		xhr("/user/fullname", "POST", {first, last}, function(xhr)
+		{
 			const res = JSON.parse(xhr.responseText);
-			if (res.result === 'Success') {
-				document.getElementById('fullname').textContent = firstname + ' ' + lastname;
-				inputFields[1].value = '';
-				inputFields[2].value = '';
-			} else {
-				error_node.textContent = "Please try again.";
+
+			if (res.result === "Success")
+			{
+				document.getElementById("fullname").textContent = res.value;
+				firstInput.value = "";
+				lastInput.value = "";
 			}
+			else
+				error_node.textContent = res.result;
 		});
 		return true;
 	}
 
-	function validateDOB() {
-		const value = inputFields[15].value.trim(),
-			  error_node = document.getElementById('error_4');
+	function validateDOB()
+	{
+		const text 			= document.getElementById("dob");
+		const input 		= document.getElementById("dob_txt");
+		const error_node 	= document.getElementById("error_4");
+		const value 		= input.value.trim();
 
-		if (value.length != 10) {
+		if (value.length != 10)
+		{
 			error_node.textContent = "Please enter your date of birth";
 			return false;
 		}
 		error_node.textContent = "";
-		xhr('/user/DOB.' + encodeURIComponent(value), 'POST', null, function(xhr) {
+		
+		xhr("/user/DOB", "POST", { value }, function(xhr)
+		{
 			const res = JSON.parse(xhr.responseText);
-			if (res.result === 'Success') {
-				document.getElementById('dob').textContent = value;
-				inputFields[15].value = '';
-			} else {
-				error_node.textContent = "Please try again.";
+
+			if (res.result === "Success")
+			{
+				text.textContent = res.value;
+				input.value = "";
 			}
+			else
+				error_node.textContent = res.result;
 		});
 		return true;
 	}
 
-	function validateEmail() {
-		const value = inputFields[14].value.trim(),
-			  error_node = document.getElementById('error_5');
+	function validateEmail()
+	{
+		const node 			= document.getElementById("email_txt");
+		const error_node 	= document.getElementById("error_5");
+		const value 		= node.value.trim();
 
 		if (!isEmail(value)) {
 			error_node.textContent = "Please enter your new email address";
 			return false;
 		}
+
 		error_node.textContent = "";
-		xhr('/user/email.' + encodeURIComponent(value.replace(/\./g, '|')), 'POST', null, function(xhr) {
+		xhr("/user/new_email", "POST", { value }, function(xhr)
+		{
 			const res = JSON.parse(xhr.responseText);
-			if (res.result === 'Success') {
-				document.getElementById('email').textContent = value;
-			} else {
+
+			if (res.result === "Success") 
+				document.getElementById("email").textContent = res.value;
+			else if (res.result === "Not unique")
+				error_node.textContent = "Email address already taken";
+			else
 				error_node.textContent = "Please try again.";
-			}
 		});
 		return true;
 	}
 
-	function validatePassword() {
-		const oldpw = inputFields[11].value.trim(),
-			  newpw = inputFields[12].value.trim(),
-			  confirmpw = inputFields[13].value.trim(),
-			  error_node = document.getElementById('error_6');
+	function validatePassword()
+	{
+		const 	oldpw 		= document.getElementById("old_password_txt").value.trim();
+		const 	newpw 		= document.getElementById("new_password_txt").value.trim();
+		const 	confirmpw 	= document.getElementById("confirm_password_txt").value.trim();
+		const 	error_node 	= document.getElementById("error_6");
 
-		if (oldpw.length === 0) {
+		if (oldpw.length < 5)
+		{
 			error_node.textContent = "Please enter your password";
 			return false;
-		} else if (newpw.length === 0) {
+		}
+		else if (newpw.length < 5)
+		{
 			error_node.textContent = "Please enter a new password";
 			return false;
-		} else if (confirmpw.length === 0) {
+		}
+		else if (confirmpw.length < 5)
+		{
 			error_node.textContent = "Please confirm your new password";
 			return false;
-		} else if (newpw !== confirmpw) {
+		}
+		else if (oldpw === newpw)
+		{
+			error_node.textContent = "New password can't be current password";
+			return false;
+		}
+		else if (newpw !== confirmpw)
+		{
 			error_node.textContent = "The passwords you provided don't match";
 			return false;
-		} else if (oldpw === confirmpw) {
-			error_node.textContent = "Can't use current password";
-			return false;
 		}
+
 		error_node.textContent = "";
-		xhr('/user/resetpassword.' + encodeURIComponent(oldpw) + '.' + encodeURIComponent(confirmpw), 'POST', null, function(xhr) {
-			const res = JSON.parse(xhr.responseText),
-				  el = document.getElementById('username');
-			if (res.result === 'Success') {
-				el.textContent = "Password change successful";
-				setTimeout(8000, function() {
-					el.textContent = "";
-				});
-			} else if (res.result === 'Weak password') {
-				el.textContent = "Please provide a 5 letter password that contains lower and upper cases, as well as numbers";
-			} else {
-				
-			}
-		});
-		return true;
-	}
-
-	function validateInterests() {
-		const value = inputFields[9].value.trim(),
-		      error_node = document.getElementById('error_7');
-
-		if (value.length <= 2) {
-			error_node.textContent = 'Please enter an interest';
-			return false;
-		}
-		error_node.textContent = "";
-		xhr('/user/interest.' + encodeURIComponent(value), 'POST', null, function(xhr) {
-			const res = JSON.parse(xhr.responseText),
-				  el = document.getElementById('interests_list'),
-				  li = document.createElement('li');
-			if (res.result === 'Success') {
-				li.textContent = value;
-				el.appendChild(li);		
-			} else {
-				el.textContent = 'Please try again.';
-			}
-		});
-		return true;
-	}
-
-	function validateBio() {
-		const value = inputFields[10].value.trim(),
-		      error_node = document.getElementById('error_8');
-
-		if (value.length == 0) {
-			error_node.textContent = 'Please enter your biography';
-			return false;
-		}
-		error_node.textContent = "";
-		xhr('/user/biography.' + encodeURIComponent(value), 'POST', null, function(xhr) {
-			const res = JSON.parse(xhr.responseText);
-			if (res.result === 'Success') {
-				document.getElementById('biography').textContent = value;
-			} else {
-				error_node.textContent = '';
-			}
-		});
-		return true;
-	}
-
-	//Enable text input editing
-	editActions(
-		document.getElementById('username_edit_btn'),
-		document.getElementById('username_edit_container'),
-		document.getElementById('username_confirm'),
-		document.getElementById('username_cancel'),
-		validateUsername
-	);
-
-	editActions(
-		document.getElementById('fullname_edit_btn'),
-		document.getElementById('fullname_edit_container'),
-		document.getElementById('fullname_confirm'),
-		document.getElementById('fullname_cancel'),
-		validateFullname
-	);
-
-	editActions(
-		document.getElementById('dob_edit_btn'),
-		document.getElementById('dob_edit_container'),
-		document.getElementById('dob_confirm'),
-		document.getElementById('dob_cancel'),
-		validateDOB
-	);
-
-	editActions(
-		document.getElementById('email_edit_btn'),
-		document.getElementById('email_edit_container'),
-		document.getElementById('email_confirm'),
-		document.getElementById('email_cancel'),
-		validateEmail	
-	);
-
-	editActions(
-		document.getElementById('password_edit_btn'),
-		document.getElementById('password_edit_container'),
-		document.getElementById('password_confirm'),
-		document.getElementById('password_cancel'),
-		validatePassword
-	);
-
-	editActions(
-		document.getElementById('interests_add_btn'),
-		document.getElementById('interest_edit_container'),
-		document.getElementById('interests_confirm'),
-		document.getElementById('interests_cancel'),
-		validateInterests
-	);
-
-	editActions(
-		document.getElementById('biography_edit_btn'),
-		document.getElementById('biography_edit_container'),
-		document.getElementById('biography_confirm'),
-		document.getElementById('biography_cancel'),
-		validateBio
-	);
-
-
-	function updateGender(node) {
-		node.addEventListener('click', function(e) {
-			const value = (node.id === 'gender_female_btn') ? 'F' : 'M',
-				error_node = document.getElementById('error_2');
+		xhr("/user/resetpassword", "POST", {oldpw, newpw, confirmpw}, xhr =>
+		{
+			const res 	= JSON.parse(xhr.responseText);
+			const el 	= document.getElementById("username");
 			
-			xhr('/user/gender.' + value, 'POST', null, function(xhr) {
-					const res = JSON.parse(xhr.responseText);
-					if (res.result !== 'Success')
-						error_node.textContent = 'Gender change request failed. Please try again.';
-			});
+			if (res.result === "Success")
+				el.textContent = "Password changed successful";
+			else if (res.result === "Weak password")
+				el.textContent = "Please provide a 5 letter password that contains lower and upper cases, as well as numbers";
+			else
+				el.textContent = "Something went wrong please try again.";
 		});
+		return true;
 	}
 
-	function updatePreference(node) {
-		node.addEventListener('click', function(e) {
-			const error_node = document.getElementById('error_3');
-			let value;
-			if (node.id === 'preference_female_btn')
-				value = 'F';
-			else if (node.id === 'preference_male_btn')
-				value = 'M'
-			else if (node.id === 'preference_both_btn')
-				value = 'B';
-			else return; 
+	function validateInterests()
+	{
+		const value 		= document.getElementById("interest_txt").value.trim();
+		const error_node 	= document.getElementById("error_7");
 
-			xhr('/user/preferences.' + value, 'POST', null, function(xhr) {
-				const res = JSON.parse(xhr.responseText);
-				if (res.result !== 'Success')
-					error_node.textContent = 'Preference change request failed. Please try again.';
-			});
-		});
-	}
-
-	function rmPreferenceEvent(node) {
-		if (!isNode(node)) return;
-		node.addEventListener('click', function(e) {
-			xhr('/user/rm_interest.' + node.id, 'POST', null, function(xhr) {
-				const res = JSON.parse(xhr.responseText);
-				if (res.result === 'Success') {
-					document.getElementById('interests_list').removeChild(node);
-				}
-			});
-		});
-	}
-
-	updateGender(inputFields[3]);
-	updateGender(inputFields[4]);
-	updatePreference(inputFields[5]);
-	updatePreference(inputFields[6]);
-	updatePreference(inputFields[7]);
-
-	interests.forEach(function(res) {
-		rmPreferenceEvent(res);
-	});
-
-
-	//Image field controls
-	inputFields[16].value = null;
-
-	inputFields[17].addEventListener('click', function(e) {
-		inputFields[16].click();
-	}, true);
-
-	document.getElementById('image_confirm').addEventListener('click', function(e) {
-		if (inputFields[16].files.length === 0) {
-			alertify.alert('Please choose a file to upload.');
-		} else {
-			const form = new FormData(inputFields[18]);
-			xhr('/user/image.1', 'POST', form, function(xhr) {
-				const res = JSON.parse(xhr.responseText);
-				if (res.result === 'Success') {
-					document.getElementById('profile_pic').src = '/images/uploads/' + res.filename;
-					document.getElementById('avatar').src = '/images/uploads/' + res.filename;
-				} else if (res.result === 'No file' || res.result === 'Invalid type') {
-					alertify.alert('Please insert an image file.');
-				} else {
-					alertify.alert('Please try again.');
-				}
-			});
+		if (value.length < 2)
+		{
+			error_node.textContent = "Please enter an interest";
+			return false;
 		}
-	}, true);
+		
+		error_node.textContent = "";
+		
+		xhr("/user/interest", "POST", { value }, function(xhr)
+		{
+			const res 	= JSON.parse(xhr.responseText);
+			const list 	= document.getElementById("interests_list");
+			const newItem 	= document.createElement("li");
+			
+			if (res.result === "Success")
+			{
+				newItem.textContent = res.value;
+				list.appendChild(newItem);		
+			}
+			else
+				error_node.textContent = "Please try again.";
+		});
+		return true;
+	}
 
+	function validateBio()
+	{
+		const node 			= document.getElementById("biography");
+		const input 		= document.getElementById("biography_txt");
+		const error_node 	= document.getElementById("error_8");
+		const value 		= input.value.trim();
+
+		if (value.length > 3500)
+		{
+			error_node.textContent = "Your biography is too long";
+			return false;
+		}
+		error_node.textContent = "";
+
+		xhr("/user/biography", "POST", { value }, function(xhr)
+		{
+			const res = JSON.parse(xhr.responseText);
+
+			if (res.result === "Success")
+				node.textContent = value;
+			else
+				error_node.textContent = "";
+		});
+		return true;
+	}
+
+	function updateGender(node)
+	{
+		node.addEventListener("click", function(e)
+		{
+			const value 		= (node.id === "gender_female_btn") ? "F" : "M";
+			const error_node 	= document.getElementById("error_2");
+			
+			xhr("/user/gender", "POST", { value }, function(xhr)
+			{
+					const res = JSON.parse(xhr.responseText);
+					
+					if (res.result !== "Success")
+						error_node.textContent = "Gender change request failed. Please try again.";
+			});
+		});
+	}
+
+	function updatePreference(node)
+	{
+		node.addEventListener("click", function(e)
+		{
+			const error_node = document.getElementById("error_3");
+			let value;
+
+			if (node.id === "preference_female_btn")
+				value = "F";
+			else if (node.id === "preference_male_btn")
+				value = "M"
+			else if (node.id === "preference_both_btn")
+				value = "B";
+			else
+				return; 
+
+			xhr("/user/preferences", "POST", { value }, function(xhr)
+			{
+				const res = JSON.parse(xhr.responseText);
+				
+				if (res.result !== "Success")
+					error_node.textContent = "Preference change request failed. Please try again.";
+			});
+		});
+	}
+
+	function rmPreferenceEvent(node)
+	{
+		if (!isNode(node)) 
+			return;
+
+		const list = document.getElementById("interests_list");
+		
+		node.addEventListener("click", function(e)
+		{
+			const value = node.id;
+
+			xhr("/user/rm_interest", "POST", { value }, function(xhr)
+			{
+				const res = JSON.parse(xhr.responseText);
+
+				if (res.result === "Success")
+					list.removeChild(node);
+			});
+		});
+	}
 }
 
 document.addEventListener("DOMContentLoaded", script);

@@ -1,96 +1,65 @@
-doctype html
-html
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title #{title} | Cupid's Arrow
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='/css/alertify.min.css')
-    link(rel='stylesheet', href='/css/style.css', media='all')
-    link(rel='stylesheet', href='/css/main.css', media='all')
-    link(rel='stylesheet', href='/css/user.css', media='all')
-  body#profile
-    header
-      a(href='/')
-        div
-          img(src='/images/logo.png')
-        .heading
-          h1 Cupid's Arrow
-      .profile_container
-        a(href='/notifications')
-          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
-        a(href='/chats')
-          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
-        .user
-          a(href='/user')
-            if (!profile_pic)
-              img#avatar(src='/images/icons/user.png')
-            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
-              img#avatar(src=profile_pic.name)
-            else
-              img#avatar(src='/images/uploads/' + profile_pic.name)
-          a.logout(href='/logout') Logout
-    br
-    .content
-      h2#username #{user.username}
-      .available(align='center')
-       .status(class=user.online)
-       if (user.online == 'F')
-        .last_seen Last seen: #{user.last_seen}
-       else
-        .last_seen Online
-      .images
-        each image, index in user.images
-          if (image.profile_pic === 'T')
-            img(src=image.name)
-      .connection_status
-       input#profile_id(type='hidden', value=user.id)
-       if(user.clientLikesUser === true && user.userLikesClient === true)
-        img(src='/images/icons/connected.png')
-        span#connection_status You and #{user.username} are both connected
-        button#connection_btn.btn.btn-dark(type='button') Disconnect
-       else if (user.userLikesClient === true)
-        span#connection_status #{user.username} now likes you, like them back to get to know more about them.
-        button#connection_btn.btn.btn-dark(type='button') Connect
-       else if (user.clientLikesUser === true)
-        span#connection_status It seems like #{user.username} hasn't liked you back, hang in there.
-        button#connection_btn.btn.btn-dark(type='button') Disconnect
-       else
-        span#connection_status You and #{user.username} are not connected
-        button#connection_btn.btn.btn-dark(type='button') Connect
-      .details_container(align='center')
-        .gender
-          img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
-        span.pipe | 
-        .rating
-          span#rating #{user.rating}
-          img(src='/images/icons/star.png')
-        span.pipe | 
-        .dob
-          time #{user.age} old
-      .profile_actions(align='center')
-        button#blockuser_btn.btn.btn-dark(type='button') Block user
-        | &emsp; &emsp; &emsp;
-        button#reportuser_btn.btn.btn-dark(type='button') Report account
-      .location_container
-        h3 Location
-        img(src='/images/icons/distance.png')
-        .distance
-         span #{user.location.area}
-         span #{user.location.country}
-         span #{user.distance} km away
-      .interests(align='center')
-        br
-        h4 Interests
-        ul#interests_list.list.multi-column
-          each val, index in user.tags
-            li #{val.name}
-              if (val.similar === true)
-                img(src='/images/icons/cupid.png')
+extends layout_auth
 
-      script(src='/js/alertify.min.js')
-      script(src='/js/xhr.js')
-      script(src='/js/profile.js')
-      script(src='/js/clearStorage.js')
-      script(src='/js/reloadCSS.js')
+block content 
+  #profile.content
+    h2#username #{profile.username}
+    .available(align='center')
+     .status(class=profile.online)
+     if (profile.online == 'F')
+      .last_seen Last seen: #{profile.last_seen}
+     else
+      .last_seen Online
+    .images
+      each image, index in profile.images
+        if (image.profile_pic === 'T')
+          img(src=image.name)
+    .connection_status
+     input#profile_id(type='hidden', value=profile.id)
+     if (profile.clientLikesUser === true && profile.userLikesProfile === true)
+      img(src='/images/icons/connected.png')
+      span#connection_status You and #{profile.username} are both connected
+      button#connection_btn.btn.btn-dark(type='button') Disconnect
+     else if (profile.userLikesProfile === true)
+      span#connection_status #{profile.username} now likes you, like them back to get to know more about them.
+      button#connection_btn.btn.btn-dark(type='button') Connect
+     else if (profile.clientLikesUser === true)
+      span#connection_status It seems like #{profile.username} hasn't liked you back, hang in there.
+      button#connection_btn.btn.btn-dark(type='button') Disconnect
+     else
+      span#connection_status You and #{profile.username} are not connected
+      button#connection_btn.btn.btn-dark(type='button') Connect
+    .details_container(align='center')
+      .gender
+        img(src='/images/icons/' + ((profile.gender === 'F') ? 'female' : 'male') + '.png' )
+      span.pipe | 
+      .rating
+        span#rating #{profile.rating}
+        img(src='/images/icons/star.png')
+      span.pipe | 
+      .dob
+        time #{profile.age} old
+    .location_container
+      h3 Location
+      img(src='/images/icons/distance.png')
+      .distance
+       span #{profile.location.area}
+       span #{profile.location.country}
+       span #{profile.distance} km away
+    .interests(align='center')
+      br
+      h4 Interests
+      ul#interests_list.list.multi-column
+        each val, index in profile.tags
+          li #{val.name}
+            if (val.similar === true)
+              img(src='/images/icons/cupid.png')
+    .profile_actions(align='center')
+      button#blockuser_btn.btn.btn-dark(type='button') Block user
+      | &emsp; &emsp; &emsp;
+      button#reportuser_btn.btn.btn-dark(type='button') Report account
+
+    script(src='/js/alertify.min.js')
+    script(src='/js/xhr.js')
+    script(src='/js/profile.js')
+    script(src='/js/clearStorage.js')
+    script(src='/js/reloadCSS.js')
