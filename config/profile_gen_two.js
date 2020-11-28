@@ -2,8 +2,9 @@ const faker 	= require('faker/locale/en_GB');
 const util 		= require('util');
 const bcrypt	= require('bcryptjs');
 const dbc 		= require('../model/sql_connect.js');
-const ft_util 	= require('../includes/ft_util.js');
-const count 	= 10;
+const ft_util = require('../includes/ft_util.js');
+const count 	= 100;
+const maxDefaultImages = 10;
 
 function generate_user(i)
 {
@@ -44,9 +45,17 @@ function generate_user(i)
 			if (err) throw err;
 			sql = "INSERT INTO images (name, user_id, profile_pic) VALUES (?)";
 			id = result.insertId;
-			dbc.query(sql, [
-					[(faker.random.image()), id, 'T']
-				], (err, result) => {
+
+			imageGender = "women";
+			if (user[3] == 'M') {
+				imageGender = "men";
+			}
+
+			imagePath = imageGender 
+				+ "/" + ft_util.ranint(maxDefaultImages).toString()
+				+ ".jpg"
+
+			dbc.query(sql, [[imagePath, id, 'T']], (err, result) => {
 				if (err) throw err;
 				sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
 				dbc.query(sql, [[
