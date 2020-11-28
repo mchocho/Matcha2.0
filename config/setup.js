@@ -5,7 +5,7 @@ const credentials = require('../model/credentials.js');
 
 // const credentials 	= require('../model/users.js');
 
-console.log(credentials);
+// console.log(credentials);
 dbc = mysql.createConnection(credentials.setupCred);
 // dbc = mysql.createConnection(credentials.users.Titan_setup);
 
@@ -28,8 +28,8 @@ dbc.connect(err =>
 				if (index === arr.length - 1)
 				{
 					console.log("Created matcha database");
-					// console.log("Inserting profiles...");
-					// require('./profile_generator.js');
+					console.log("Inserting profiles...");
+					require('./profile_generator.js');
 				}
 			});
 		});

@@ -1,12 +1,12 @@
 const mysql = require("mysql"),
-      // credentials = require("./credentials");
-      credentials = require("./users");
+credentials = require("./credentials");
+      // credentials = require("./users");
 
 // console.log('Credentials --> ' + util.inspect(credentials.users.Titan));
 
-// dbc = mysql.createConnection(credentials.connCred);
+dbc = mysql.createConnection(credentials.connCred);
 
-dbc = mysql.createConnection(credentials.users.Titan);
+// dbc = mysql.createConnection(credentials.users.Titan);
 
 dbc.connect((err) => {
     if (err){
