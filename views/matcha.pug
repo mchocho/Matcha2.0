@@ -46,7 +46,7 @@ block content
                 if (user.images[0].name.startsWith('http://'))
                   img(src=user.images[0].name)
                 else
-                  img(src='images/users/' + user.images[0].name)
+                  img(src='images/default_users/' + user.images[0].name)
               .info_container
                 img(src='images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
                 span.name #{user.username}

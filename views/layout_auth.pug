@@ -30,6 +30,6 @@ html
             else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
               img#avatar(src=profile_pic.name)
             else
-              img#avatar(src='/images/uploads/' + profile_pic.name)
+              img#avatar(src='/images/default_users/' + profile_pic.name)
           a.logout(href='/logout') Logout
   block content
