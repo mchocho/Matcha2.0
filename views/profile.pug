@@ -12,7 +12,7 @@ block content
     .images
       each image, index in profile.images
         if (image.profile_pic === 'T')
-          img(src=image.name)
+          img(src='/images/uploads/' + image.name)
     .connection_status
      input#profile_id(type='hidden', value=profile.id)
      if (profile.clientLikesUser === true && profile.userLikesProfile === true)
