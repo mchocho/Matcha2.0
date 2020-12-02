@@ -3,7 +3,7 @@ require('dotenv').config({path: '../.env'});
 let setupCred;
 let connCred;
 
-if (process.env.OS == 'mac') {
+if (process.env.DB_OS == 'mac') {
 	setupCred = {
 		host		: process.env.HOST,
 		user		: process.env.DB_USER,
@@ -22,13 +22,13 @@ if (process.env.OS == 'mac') {
 } else if (process.env.DB_OS == 'windows') {
 	setupCred = {
 		host: process.env.HOST,
-		// password: process.env.DB_PASS,
+		password: process.env.DB_PASS,
 		user: process.env.DB_USER
 	};
 	connCred = {
 		host: process.env.HOST,
 		user: process.env.DB_USER,
-		// password: process.env.DB_PASS,
+		password: process.env.DB_PASS,
 		database: process.env.DB_NAME,
 	};
 }
