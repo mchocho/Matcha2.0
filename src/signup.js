@@ -36,7 +36,7 @@ router.get("/", (req, res) => {
 		res.redirect("/matcha");
 		return;
 	}
-	
+
 	if (user.cupid !== "Submit")
 	{
 		errors[6] = "Something went wrong, please try again";
@@ -179,7 +179,7 @@ router.get("/", (req, res) => {
 	function saveVerificationToken(userId, token)
 	{
 		const insertValues = [userId, token, "registration"];
-		
+
 		dbc.query(sql.insNewToken, [insertValues], (err, result) => {
 			if (err) {throw err}
 
@@ -194,9 +194,10 @@ router.get("/", (req, res) => {
 				//Get user position
 				const userLocation 	= await ft_util.locateUser();
 
-				console.log("There's a bug somewhere in this function. So I just commented out the tracking process!");
-				console.trace();
-			//	const geo 			= JSON.parse(userLocation);	//There's a parsing issue
+				// console.log("There's a bug somewhere in this function. So I just commented out the tracking process!");
+				// console.trace();
+				const geo = JSON.parse(userLocation);	//There's a parsing issue
+				console.log(geo);
 
 				//Create new row
 				const userIdExists = false;
