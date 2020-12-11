@@ -3,7 +3,7 @@ const util 		= require('util');
 const bcrypt	= require('bcryptjs');
 const dbc 		= require('../model/sql_connect.js');
 const ft_util = require('../includes/ft_util.js');
-const count 	= 100;
+const count 	= 20;
 const maxDefaultImages = 10;
 
 function generate_user(i)
