@@ -183,11 +183,11 @@ router.get("/", (req, res) => {
 		dbc.query(sql.insNewToken, [insertValues], (err, result) => {
 			if (err) {throw err}
 
-			saveLocationAndRedirect();
+			saveLocationAndRedirect(userId);
 		});
 	}
 
-	function saveLocationAndRedirect()
+	function saveLocationAndRedirect(userId)
 	{
 		(async () => {
 			try {
@@ -204,7 +204,7 @@ router.get("/", (req, res) => {
 
 				console.log('Updating user location');
 				//Sends new location to db
-			//	const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, profile.id);
+				const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, userId);
 
 				res.redirect("/verify_email");
 			}
