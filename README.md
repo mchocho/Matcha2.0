@@ -10,7 +10,7 @@ Matches are based on romantic & sexual interests, preferences and location. In t
 - Terminal access
 - For editing ONLY: a text editor, eg. [VS Code](https://code.visualstudio.com/)
 
-### Environment configs
+### Environment configs  
 In order to run Matcha2.0 local credentials have to be set for DB setup & access  
 In the root folder, create a `.env` file:  
 ```touch .env```  
@@ -29,13 +29,13 @@ DB_NAME=matcha
 SOCKET_PATH=<the path to your mysql.sock file on your mamp/xampp server>
 ```
 
-## Installation
+## Installation  
 Clone the repository locally.  
 Ensure your MySQL instance is running & the correct credentials are stored in teh `.env` file. 
 
 To adjust the number of profiles that are pre-populated, open `config/profile_gen_two.js` and set the `count` variable to the desired number for profiles.   
 
-### Setup databases (Required on first run only)
+### Setup databases (Required on first run only)  
 Ensure the MySQL instance is running.  
 Open a terminal session in the root folder:
 ```
@@ -43,7 +43,7 @@ cd config
 node setup.js.
 ```
 
-### Run (Post setup)
+### Run (Post setup)  
 Ensure the MySQL instance is running.  
 Open a terminal session in the root folder.
 Install all dependencies:
@@ -59,5 +59,50 @@ OR to run without [Nodemon](https://nodemon.io/):
 npm start
 ```
 
-## Usage
-Once Matcha2.0 is running, the app can be used on 
+A browser window at https://locahost:3000 (or configured port) should automatically open in the default browser. If it does not, please check the console / terminal for possible errors.
+
+## Architecture  
+### Technologies
+Back end technologies:
+- JavaScript
+- Node.js
+- Express.js
+- socket.io
+
+Front end technologies:
+- HTML
+- CSS
+- JavaScript
+- Bootstrap
+- Pug
+- Sass
+
+Libraries / Modules / Dependencies:
+- socket.io
+- alertify.js
+- bcryptjs
+- body-parser
+- bxslider
+- connect-flash
+- cors
+- dotenv
+- express-session
+- faker
+- flatpickr
+- formidable
+- geolocation-utils
+- http
+- lodash
+- moment
+- nodemailer
+- nodemon
+- uuid
+
+Database Management Systems:
+- mysql
+- PhpMyAdmin
+
+
+
+
+
