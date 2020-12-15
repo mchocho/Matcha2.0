@@ -102,6 +102,25 @@ Database Management Systems:
 - mysql
 - PhpMyAdmin
 
+## Testing
+https://github.com/wethinkcode-students/corrections_42_curriculum/blob/master/matcha.markingsheet.pdf
+
+Test outline:
+1. Launch web & database servers
+2. Create an account
+3. Login
+4. Edit profile
+5. View profile suggestions
+6. Search / Filter
+7. Geo-location
+8. Popularity rating
+9. Notifications
+10. View a profile
+11. Like / Unlike a user
+12. Block a user
+13. Message
+
+
 
 
 
