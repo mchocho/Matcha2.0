@@ -31,9 +31,9 @@ router.get("/", (req, res) =>
 
 	const id 		= sess.id;
 
-	getUserNotifications();
+	getUserNotifications(id);
 
-	function getUserNotifications()
+	function getUserNotifications(id)
 	{
 		dbc.query(sql.selUserNotifications, [id], (err, notifications) =>
 		{

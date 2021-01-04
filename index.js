@@ -61,4 +61,3 @@ app.use("*", _404Router);
 app.listen(PORT, () => {
 	console.log("Server started on port " + PORT);
 });
-
