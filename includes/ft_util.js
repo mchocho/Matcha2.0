@@ -36,7 +36,7 @@ module.exports = {
 	isSetStr() {
 		return [...arguments].every(arg => {
 			if (!this.isstring(arg))
-				return false; 
+				return false;
 			return arg.length > 0;
 		});
 	},
@@ -90,16 +90,12 @@ module.exports = {
 		{
 			const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) =>
 			{
-        		res.on('data', (result) =>
-        		{
-					if (true)
-					{
-						console.log(`Status: ${res.statusCode}`);
-						console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
-						console.log(`RESULT: ${result}`);
-					}
-					resolve(result);
-					return;
+				let location = '';
+        		res.on('data', (result) => {
+					location = location + result;
+				});
+				res.on('end', () => {
+					resolve(location);
 				});
 				res.on('error', (result) =>
 				{
@@ -108,6 +104,7 @@ module.exports = {
 			});
 			req.end();
 		});
+
 	},
 	getTagNames(dbc, tags)
 	{
@@ -209,7 +206,7 @@ module.exports = {
 			dbc.query(sql.selUserImages, [id], (err, result) =>
 			{
 				if (err) {throw err}
-				
+
 				resolve(result);
 			});
 		});
@@ -241,7 +238,7 @@ module.exports = {
 				dbc.query(sql.updateFameRating, [rating, id], (err, result) =>
 				{
 					if (err) {throw err}
-					
+
 					resolve(rating);
 				});
 			}).catch(reject);
@@ -352,7 +349,7 @@ module.exports = {
 				resolve(list);
 				return;
 			}
-			
+
 			const min = moment().subtract(minAge, 'years');
 			const max = moment().subtract(maxAge, 'years');
 			// const filtered = [];

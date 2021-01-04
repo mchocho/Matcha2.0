@@ -46,9 +46,9 @@ block content
                 if (user.images[0].name.startsWith('http://'))
                   img(src=user.images[0].name)
                 else
-                  img(src='images/uploads/' + user.images[0].name)
+                  img(src='/images/uploads/' + user.images[0].name)
               .info_container
-                img(src='images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
+                img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
                 span.name #{user.username}
                 br
                 span.distance #{user.distance} km

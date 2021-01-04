@@ -1,9 +1,9 @@
-const faker             = require('faker/locale/en_GB');
-const util              = require('util');
-const bcrypt            = require('bcryptjs');
+const faker             = require("faker/locale/en_GB");
+const util              = require("util");
+const bcrypt            = require("bcryptjs");
 
-const dbc               = require('../model/sql_connect.js');
-const ft_util           = require('../includes/ft_util.js');
+const dbc               = require("../model/sql_connect.js");
+const ft_util           = require("../includes/ft_util.js");
 
 const count             = 10;
 const maxDefaultImages  = 10;
@@ -24,23 +24,7 @@ function generate_user(i)
     const username  = faker.name.findName();
     const email     = faker.internet.email();
 
-
-    /*const user = [
-        faker.name.findName(),              //0
-        faker.name.firstName(),             //1
-        faker.name.lastName(),              //2
-        ['M', 'F'][ft_util.ranint(2)],      //3
-        ['M', 'F', 'B'][ft_util.ranint(3)], //4
-        faker.date.between('1940-01-01', '2000-12-31'),             //5
-        faker.internet.email(),             //6
-        bcrypt.hashSync('OMG42', 10),                           //7
-        ['T', 'F'][ft_util.ranint(1)],      //8
-        'T',
-        'T',
-        faker.random.words()        
-    ];
-    let sql = "SELECT id FROM users WHERE username = ? OR email = ?",
-        id;*/
+    let   id;
 
     dbc.query(sql.usernameAndEmailUnreserved, [username, email], (err, result) =>
     {
@@ -49,7 +33,7 @@ function generate_user(i)
 
       if (result.length > 0)
       {
-          console.log('Username or email already exists');
+          console.log("Username or email already exists");
           generate_user(i);
           return;
       }
@@ -63,7 +47,6 @@ function generate_user(i)
       const online      = ['T', 'F'][ft_util.ranint(1)];
       const verified    = 'T';
       const valid       = 'T';
-
 
       const user = [
         username,
@@ -80,35 +63,35 @@ function generate_user(i)
         valid
       ];
 
-      dbc.query(sql.insNewDemoUser, [user], (err, result) => {
+      dbc.query(sql.insNewDemoUser, [user], (err, result) =>
+      {
         if (err) {throw err}
 
-        sql = "INSERT INTO images (name, user_id, profile_pic) VALUES (?)";
         id = result.insertId;
 
-        imageGender = "women";
-        if (user[3] == 'M') {
-            imageGender = "men";
-        }
+        imageGender = (gender == 'M') ? "men" : "women";
 
         imagePath = imageGender 
             + "/" + ft_util.ranint(maxDefaultImages).toString()
             + ".jpg"
 
-        dbc.query(sql, [[imagePath, id, 'T']], (err, result) => {
+        dbc.query(sql.insImage, [[imagePath, id]], (err, result) =>
+        {
             if (err) throw err;
-            sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)";
-            dbc.query(sql, [[
-                    faker.address.latitude(),
-                    faker.address.longitude(),
-                    faker.address.streetAddress() + ' ' + faker.address.streetName(),
-                    faker.address.county(),
-                    faker.address.state(),
-                    faker.address.country(),
-                    id
-                ]], (err, result) => {
+
+            const userLocation = [
+                faker.address.latitude(),
+                faker.address.longitude(),
+                faker.address.streetAddress() + ' ' + faker.address.streetName(),
+                faker.address.county(),
+                faker.address.state(),
+                faker.address.country(),
+                id
+            ];
+
+            dbc.query(sql, [userLocation], (err, result) => {
                 if (err) throw err;
-                //TODO set up random connections and user interests
+
                 generate_user(i + 1);
             });
         });
