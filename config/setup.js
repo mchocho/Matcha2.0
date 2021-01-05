@@ -1,37 +1,39 @@
-const fs            = require('fs');
-const util          = require('util');
-const mysql         = require("mysql");
-const credentials = require('../model/credentials.js');
+const fs          = require("fs");
+const util        = require("util");
+const mysql       = require("mysql");
 
-// const credentials    = require('../model/users.js');
+const credentials = require("../model/credentials.js");
 
-console.log(credentials);
-dbc = mysql.createConnection(credentials.setupCred);
-// dbc = mysql.createConnection(credentials.users.Titan_setup);
+const file        = "../model/setup.sql";
+const dbc         = mysql.createConnection(credentials.setupCred);
 
 dbc.connect(err =>
 {
-  if (err) throw err;
+  if (err) {throw err}
 
-  fs.readFile('../model/setup.sql', 'utf8', (err, data) =>
+  fs.readFile(file, "utf8", (err, data) =>
   {
     if (err) {throw err}
     
+    const statements = data.trim().split(';');
+
     //Parse sql statements
-    data.trim().split(';').forEach((value, index, arr) =>
+    statements.forEach((value, i) =>
     {
+
       //Run statement
-      dbc.query(value, (err, result) =>
-      {
+      dbc.query(value.trim(), (err, result) =>
+      {      
         if (err) {throw err}
         
-        if (index === arr.length - 1)
+        if (i == statements.length - 1)
         {
           console.log("Created matcha database");
           console.log("Inserting profiles...");
-          require('./profile_gen_two.js');
+          
+          require("./profile_gen_two.js");
         }
       });
     });
   });
-});
+})

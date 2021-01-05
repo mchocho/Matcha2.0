@@ -3,6 +3,7 @@ const util              = require("util");
 const bcrypt            = require("bcryptjs");
 
 const dbc               = require("../model/sql_connect.js");
+const sql               = require("../model/sql_statements.js");
 const ft_util           = require("../includes/ft_util.js");
 
 const count             = 10;
@@ -26,7 +27,7 @@ function generate_user(i)
 
     let   id;
 
-    dbc.query(sql.usernameAndEmailUnreserved, [username, email], (err, result) =>
+    dbc.query(sql.usernameAndEmailReserved, [username, email], (err, result) =>
     {
         
       if (err) {throw err}
@@ -57,7 +58,7 @@ function generate_user(i)
         dob,
         email,
         password,
-        biography
+        biography,
         online,
         verified,
         valid
@@ -75,7 +76,7 @@ function generate_user(i)
             + "/" + ft_util.ranint(maxDefaultImages).toString()
             + ".jpg"
 
-        dbc.query(sql.insImage, [[imagePath, id]], (err, result) =>
+        dbc.query(sql.insImage, [[imagePath, id, 'T']], (err, result) =>
         {
             if (err) throw err;
 
@@ -89,7 +90,7 @@ function generate_user(i)
                 id
             ];
 
-            dbc.query(sql, [userLocation], (err, result) => {
+            dbc.query(sql.insUserLocation, [userLocation], (err, result) => {
                 if (err) throw err;
 
                 generate_user(i + 1);
