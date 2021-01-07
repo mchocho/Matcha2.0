@@ -107,14 +107,11 @@ router.get("/", (req, res) => {
                 const userIdExists = result.length > 0;
 
                 //Get user position
-                // const userLocation   = await ft_util.locateUser();
-            //  const geo           = JSON.parse(userLocation); //There"s a parsing issue
-
-                console.log("There's a bug somewhere in this function. So I just commented out the tracking process!");
-                console.trace();
+                const userLocation   = await ft_util.locateUser();
+                const geo           = JSON.parse(userLocation); //There"s a parsing issue
 
                 //Sends new location to db
-            //  const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, profile.id);
+                const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, profile.id);
 
                 updateSessionAndRedirect(profile);
             }

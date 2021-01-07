@@ -183,27 +183,25 @@ router.get("/", (req, res) => {
         dbc.query(sql.insNewToken, [insertValues], (err, result) => {
             if (err) {throw err}
 
-            saveLocationAndRedirect();
+            saveLocationAndRedirect(userId);
         });
     }
 
-    function saveLocationAndRedirect()
+    function saveLocationAndRedirect(userId)
     {
         (async () => {
             try {
                 //Get user position
                 const userLocation  = await ft_util.locateUser();
 
-                console.log("There's a bug somewhere in this function. So I just commented out the tracking process!");
-                console.trace();
-            //  const geo           = JSON.parse(userLocation); //There's a parsing issue
+                const geo           = JSON.parse(userLocation); //There's a parsing issue
 
                 //Create new row
                 const userIdExists = false;
 
-                console.log('Updating user location');
+                // console.log('Updating user location');
                 //Sends new location to db
-            //  const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, profile.id);
+                const update = await ft_util.updateUserLocation(dbc, geo, userIdExists, userId);
 
                 res.redirect("/verify_email");
             }
