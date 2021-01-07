@@ -43,7 +43,7 @@ html
       .images
         each image, index in user.images
           if (image.profile_pic === 'T')
-            img(src=image.name)
+            img(src="/images/uploads/" + image.name)
       .connection_status
        input#profile_id(type='hidden', value=user.id)
        if(user.clientLikesUser === true && user.userLikesClient === true)
