@@ -37,7 +37,7 @@ module.exports = {
     selImagePath                : "SELECT `name` FROM `images` WHERE `user_id` = ? AND profile_pic = 'T'",
     selUserImages               : "SELECT * from `images` WHERE `user_id` = ?",
     delUserImages               : "DELETE FROM `images` WHERE `user_id` = ?",
-    insImage                    : "INSERT INTO `images` (`name`, `user_id`, `profile_pic` = 'T') VALUES (?)",
+    insImage                    : "INSERT INTO `images` (`name`, `user_id`, `profile_pic`) VALUES (?)",
     insUserLocation             : "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)",
     updateUserLocation          : "UPDATE locations SET lat = ?, lng = ?, street_address = ?, area = ?, state = ?, country = ? WHERE user_id = ?",
     selUserTags                 : "SELECT * from `user_tags` WHERE `user_id` = ?",
