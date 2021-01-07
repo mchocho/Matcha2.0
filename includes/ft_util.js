@@ -138,24 +138,27 @@ module.exports = {
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
 	},
-	locateUser(report) {
-		return new Promise((resolve, reject) => {
-			const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) => {
-	        		res.on('data', (result) => {
-						if (report === true)
-						{
-							console.log(`Status: ${res.statusCode}`);
-								console.log(`Headers: ${JSON.stringify(res.headers)}\n\n`);
-									console.log(`${result}`);
-						}
-						resolve(result)
-					});
-				res.on('error', (result) => {
+	locateUser()
+	{
+		return new Promise((resolve, reject) =>
+		{
+			const req = http.request("https://get.geojs.io/v1/ip/geo.json", (res) =>
+			{
+				let location = '';
+        		res.on('data', (result) => {
+					location = location + result;
+				});
+				res.on('end', () => {
+					resolve(location);
+				});
+				res.on('error', (result) =>
+				{
 					reject('Failed to locate user');
 				});
 			});
 			req.end();
 		});
+
 	},
 	valueExists(dbc, table, key, value) {
 		//Checks whether a given value already exists in a table
@@ -201,17 +204,17 @@ module.exports = {
 	   .replace(/'/g, "\\'")
 	   .replace(/"/g, "\\\"");
 	},
-	updateUserLocation(dbc, geo, rowExists, user, VERBOSE) {
+	updateUserLocation(dbc, geo, rowExists, userId, VERBOSE) {
 		return new Promise((resolve, reject) => {
 			const values = [];
 			let stm;
 
 			if (rowExists === false) {
 				stm = sql.insUserLocation;
-				values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user.id]);
+				values.push([geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, userId]);
 			} else {
 				stm = sql.updateUserLocation;
-				values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, user.id);
+				values.push(geo.latitude, geo.longitude, '-', geo.city, geo.region, geo.country, userId);
 			}
 			dbc.query(stm, values, (err, result) => {
 				if (err) {throw err}
