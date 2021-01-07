@@ -119,14 +119,14 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 					i--;
 					return;
 				}
-				matches[i]['distance'] = geo.distanceTo({
+				matches[i]['distance'] = (geo.distanceTo({
 												lat: location.lat, 
 												lon: location.lng
 											}, 	
 											{
 												lat: result[0]['lat'], 
 												lon: result[0]['lng']
-											}).toFixed(2);
+											}) / 1000).toFixed(0) ;
 				if (i === arrLen - 1) {
 					Promise.all([
 						ft_util.userNotificationStatus(dbc, Number(sess.id)),

@@ -75,7 +75,7 @@ router.get('/:id?', (req, res) => {
 									return;
 								}
 								user['location'] = result[0];
-								user['distance'] = geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}).toFixed(2);
+								user['distance'] = (geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}) / 1000 ).toFixed(0);
 								
 								dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
 									if (err) {throw err}
