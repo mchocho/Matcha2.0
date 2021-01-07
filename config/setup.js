@@ -18,7 +18,8 @@ dbc.connect((err) => {
 				if (index === arr.length - 1) {
 					console.log("Created matcha database");
 					console.log("Inserting profiles...");
-					require('./profile_generator.js');
+					// require('./profile_generator.js');
+					require('./profile_gen_2');
 				}
 			});
 		});
