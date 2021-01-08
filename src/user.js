@@ -168,7 +168,7 @@ router.post("/image", (req, res) =>
             const imageType = files.image.type.split("/")[1];
             const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //strip all slashes
             const oldpath   = files.image.path;
-            const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
+            // const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
 
             if (ft_util.VERBOSE)
             {
@@ -208,7 +208,8 @@ router.post("/image", (req, res) =>
 
             response.result = "Success";
             response.filename = filename;
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
         });
     }
 });
@@ -222,7 +223,9 @@ router.post("/fullname", (req, res) =>
         key         : "fullname"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    console.log("Received message: ", req.body);
+
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and names iare valid
     if (!ft_util.isobject(sess) || !ft_util.isstring(firstname, lastname))
@@ -289,7 +292,7 @@ router.post("/fullname", (req, res) =>
 router.post("/new_username", (req, res) =>
 {
     const sess      = req.session.user;
-    const value     = req.body.value;
+    const value     = req.body.username;
     const response  = {
         value,
         key         : "username"
@@ -317,7 +320,7 @@ router.post("/new_username", (req, res) =>
 
     function validateUsername()
     {
-        if (name.length > 2)
+        if (name.length < 2)
         {
             response.result = "Username must be at least 2 characters long";
             res.end(JSON.stringify(response));
@@ -374,7 +377,7 @@ router.post("/new_username", (req, res) =>
 router.post("/new_email", (req, res) =>
 {
     const sess      = req.session.user;
-    const value     = req.body.value;
+    const value     = req.body.email;
     const response  = {
         key         : "email"
     };

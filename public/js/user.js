@@ -92,17 +92,21 @@ function script() {
 	document.getElementById("image_confirm")
 	.addEventListener("click", function(e)
 	{
-		handleFileUpload();
+		// e.preventDefault();
+		//handleFileUpload();
 	}, true);
 
 
 	function handleFileUpload()
 	{
-		if (imgInput.files.length === 0) {
+		if (imgInput.files.length === 0)
+		{
 			alertify.alert("Please choose a file to upload.");
 			return;
 		}
 		const form = new FormData(document.getElementById("profile_picture_form"));
+
+		console.log("Sending this form: ", form);
 		
 		xhr("/user/image", "POST", form, function(xhr)
 		{
