@@ -109,9 +109,6 @@ router.get("/", (req, res) =>
     }
 });
 
-
-
-
 /****
 
 Should this live inside the api folder?
@@ -120,7 +117,7 @@ Should this live inside the api folder?
 
 router.post("/image", (req, res) =>
 {
-    const sess  = req.session.user;
+    const sess     = req.session.user;
     const response = {
         key: "image",
         value: null
@@ -131,6 +128,8 @@ router.post("/image", (req, res) =>
     //User is logged in, verified, valid, and profile is valid
     if (!ft_util.isobject(sess))
     {
+        console.log("1!");
+
         //Check if a file was uploaded and delete it
         response.result = "Failed";
         res.end(JSON.stringify(response));
@@ -138,6 +137,7 @@ router.post("/image", (req, res) =>
     }
     else if (sess.verified !== 'T' || sess.valid !== 'T')
     {
+      console.log("2!");
         response.result = "Failed";
         res.end(JSON.stringify(response));
         return;
@@ -151,8 +151,11 @@ router.post("/image", (req, res) =>
         
         form.parse(req, (err, fields, files) =>
         {   
+            console.log(files);
+
             if (!files.image)
             {
+              console.log("3!");
                 response.result = "No file uploaded.";
                 res.end(JSON.stringify(response));
                 return;
@@ -160,10 +163,14 @@ router.post("/image", (req, res) =>
 
             if (files.image.type.indexOf("image") === -1)
             {
+              console.log("4!");
                 response.result = "Please uploade an image file.";
                 res.end(JSON.stringify(response));
                 return;
             }
+
+            console.log("What happend?");
+            debugger;
 
             const imageType = files.image.type.split("/")[1];
             const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //strip all slashes
@@ -911,4 +918,29 @@ router.post("/biography", (req, res) =>
             res.end(JSON.stringify(response));
         });     
     }
+});
+
+
+router.post("/location", (req, res) =>
+{
+    const sess      = req.session.user;
+    const value     = req.body;
+    const response  = {};
+
+    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+
+    console.log(value);
+
+    //User is logged in and bio is valid
+    if (!ft_util.isobject(sess) || !ft_util.isstring(value))
+    {
+        response.result = "Failed";
+        res.end(JSON.stringify(response));
+        return;
+    }
+    
+    response.result = "Failed";
+    res.end(JSON.stringify(response));
+    return;
+
 });

@@ -18,16 +18,16 @@ block content
 				span.user_rating
 					| #{user.rating} 
 					img(src='/images/icons/star.png')
-			form#profile_picture_form(enctype='multipart/form-data' action='/user/image.null', method='post')
+			form#profile_picture_form(enctype='multipart/form-data', method='post', action='/user/image')
 				button#image_input_container.custom_btn.ib(type='button')
 					input#image.image.hide(type='file', name='image', accept='image/*')
 					| Change picture
 				#new-image-confirm.btn-group(role='group', aria-label='Change profile picture')
-					button#image_confirm.btn.btn-secondary(type='button') Confirm
+					button#image_confirm.btn.btn-secondary(type='submit') Confirm
 					button#image_cancel.btn.btn-secondary(type='button') Cancel
 			.views_container
 				| #{user.viewcount} views
-			form
+			form(method='post', action='/user/new_username')
 				h4#username.value #{user.username}
 				input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
 				#username_edit_container.edit.hide
@@ -35,8 +35,9 @@ block content
 					input#username_txt(type='text', placeholder='New username')
 					br
 					#new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
-						button#username_confirm.btn.btn-secondary(type='button') Confirm
+						button#username_confirm.btn.btn-secondary(type='submit') Confirm
 						button#username_cancel.btn.btn-secondary(type='button') Cancel
+			form(method='post', action='/user/fullname')
 				h3#fullname.value #{user.first_name} #{user.last_name}
 				input#fullname_edit_btn.custom_btn.ib(type='button', value='Change fullname')
 				#fullname_edit_container.edit.hide
@@ -46,14 +47,16 @@ block content
 					input#lastname_txt(type='text', placeholder='Last name')
 					br
 					#new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
-						button#fullname_confirm.btn.btn-secondary(type='button') Confirm
+						button#fullname_confirm.btn.btn-secondary(type='submit') Confirm
 						button#fullname_cancel.btn.btn-secondary(type='button') Cancel
+			form(method='post')
 				.edit
 					h4 Gender
 					span#error_2.error
 					#gender_group.btn-group(role='group', aria-label='Confirm gender change')
 						button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
 						button#gender_male_btn.btn.btn-secondary(type='button', class=(user.sex == 'M' ? 'option' : '')) Male
+			form(method='post')
 				.edit
 					h4 Sexual preference
 					span#error_3.error
@@ -61,8 +64,9 @@ block content
 						button#preference_female_btn.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
 						button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
 						button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both
+			form(method='post', action='/user/DOB')
 				.edit
-					h4
+					h4 Change Date of birth
 						img(src='images/icons/bithday.png', alt='date of birth address', class='input_icon')
 						p#dob #{user.dob}
 					input#dob_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
@@ -71,10 +75,11 @@ block content
 						input#dob_txt(type='text', name='dob', placeholder='Date of birth', required='')
 						br
 						#new-dob-confirm.btn-group(role='group', aria-label='Confirm date of birth')
-							button#dob_confirm.btn.btn-secondary(type='button') Confirm
+							button#dob_confirm.btn.btn-secondary(type='submit') Confirm
 							button#dob_cancel.btn.btn-secondary(type='button') Cancel
+			form(method='post', action='/user/new_email')
 				.edit
-					h4
+					h4 Change Email
 						img(src='images/icons/envelope.png', alt='email address', class='input_icon')
 						p#email #{user.email}
 					input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
@@ -83,8 +88,9 @@ block content
 						input#email_txt(type='email', placeholder='New email')
 						br
 						#new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
-							button#email_confirm.btn.btn-secondary(type='button') Confirm
+							button#email_confirm.btn.btn-secondary(type='submit') Confirm
 							button#email_cancel.btn.btn-secondary(type='button') Cancel
+			form(method='post', action='/user/reset_password')
 				.edit
 					h4 Password
 					input#password_edit_btn.custom_btn.ib(type='button', value='Change password')
@@ -96,8 +102,9 @@ block content
 						br
 						input#confirm_password_txt(type='password', placeholder='Confirm password')
 						#new-password-confirm.btn-group(role='group', aria-label='Confirm new password')
-							button#password_confirm.btn.btn-secondary(type='button') Confirm
+							button#password_confirm.btn.btn-secondary(type='submit') Confirm
 							button#password_cancel.btn.btn-secondary(type='button') Cancel
+			form(method='post', action='/user/interest')
 				.edit
 					h4 Interests
 					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
@@ -106,11 +113,12 @@ block content
 						input#interest_txt(type='text', placeholder='Add interest')
 						br
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-							button#interests_confirm.btn.btn-secondary(type='button') Confirm
+							button#interests_confirm.btn.btn-secondary(type='submit') Confirm
 							button#interests_cancel.btn.btn-secondary(type='button') Cancel
 					ul#interests_list.list.multi-column
 						each val, index in user.tags
 							li(id=val.tag_id) #{val.name}
+			form(method='post', action='/user/biography')
 				.edit
 					h4 Biography
 					span#error_8.error
@@ -119,7 +127,7 @@ block content
 					#biography_edit_container.biography.hide
 						textarea#biography_txt(placeholder='Say something about yourself')
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
-							button#biography_confirm.btn.btn-secondary(type='button') Confirm
+							button#biography_confirm.btn.btn-secondary(type='submit') Confirm
 							button#biography_cancel.btn.btn-secondary(type='button') Cancel
 				.edit
 					span#error_8.error
@@ -137,7 +145,6 @@ block content
 				|  from 
 				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
 		script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-		//- script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
 		script(type='text/javascript', src='/flatpickr/flatpickr.min.js')
 		script(type='text/javascript', src='/js/alertify.min.js')
 		script(type='text/javascript', src='/js/button_groups.js')

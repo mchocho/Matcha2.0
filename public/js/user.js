@@ -140,14 +140,6 @@ function script() {
 			return;
 		}, true);
 
-		confirm_btn.addEventListener("click", function() {
-			if (validation()) {
-				edit_container.classList.add("hide");
-				edit_btn.classList.remove("hide");
-			}
-			return;
-		}, true);
-
 		cancel_btn.addEventListener("click", function() {
 			edit_container.classList.add("hide");
 			edit_btn.classList.remove("hide");
