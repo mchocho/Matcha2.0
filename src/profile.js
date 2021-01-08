@@ -156,7 +156,7 @@ router.get("/:id?", (req, res) =>
         lon: result[0]["lng"]
       }
 
-      profile.distance = geo.distanceTo(profileLocation, userLocation).toFixed(2);
+      profile.distance = (geo.distanceTo(profileLocation, userLocation) / 1000).toFixed(2);
       increaseProfileViewCount(profile);
     });
   }
