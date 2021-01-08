@@ -1,101 +1,118 @@
-const faker             = require("faker/locale/en_GB");
-const util              = require("util");
-const bcrypt            = require("bcryptjs");
+const bcrypt		= require('bcryptjs');
+const dbc 			= require('../model/sql_connect.js');
 
-const dbc               = require("../model/sql_connect.js");
-const sql               = require("../model/sql_statements.js");
-const ft_util           = require("../includes/ft_util.js");
+const usersArr = [
+	{
+		userInfo : [
+			"Bev",
+			"Beverly",
+			"James",
+			"F",
+			"M",
+			"1981-05-01",
+			"123bev@mailinator.com",
+			bcrypt.hashSync('OMG42', 10),
+			"T",
+			"T",
+			"T",
+			"I like long walks on the beach."
+		],
+		userLocation : [
+			"-25.743243",
+			"28.192465",
+			"-",
+			"Pretoria",
+			"Gauteng",
+			"South Africa"
+		],
+		userImage : "women/0.jpg"
+	},
+	{
+		userInfo : [
+			"Joe",
+			"Joe",
+			"Soap",
+			"M",
+			"F",
+			"1984-07-03",
+			"123joe@mailinator.com",
+			bcrypt.hashSync('OMG42', 10),
+			"T",
+			"T",
+			"T",
+			"I like short walks on the beach."
+			],
+		userLocation : [
+			"-25.776791",
+			"28.220983",
+			"-",
+			"Pretoria",
+			"Gauteng",
+			"South Africa"
+		],
+		userImage : "men/0.jpg"
+	},
+	{
+		userInfo : [
+			"Jen",
+			"Jennifer",
+			"Jones",
+			"F",
+			"M",
+			"1990-01-01",
+			"123jen@mailinator.com",
+			bcrypt.hashSync('OMG42', 10),
+			"T",
+			"T",
+			"T",
+			"I like short and long walks on the beach."
+			],
+		userLocation : [
+			"-25.836444",
+			"28.178663",
+			"-",
+			"Centurion",
+			"Gauteng",
+			"South Africa"
+		],
+		userImage : "women/2.jpg"
+	}
+];
 
-const count             = 10;
-const maxDefaultImages  = 10;
+function genUsers() {
 
-const passwordValue     = "OMG42";
-const password          = bcrypt.hashSync(passwordValue, 10);
+	for (let i = 0; i < usersArr.length; i++) {
+		insUser(usersArr[i]);
+	}
 
-generate_user(0);
+	function insUser(user) {
+		let sql = "INSERT INTO users (username, first_name, last_name, gender, preferences, DOB, email, password, online, verified, valid, biography) VALUES (?)";
+		dbc.query(sql, [[...user.userInfo]], (err, res) => {
+		if (err) {
+			throw err;
+		}
+		userId = res.insertId;
+		insLocations(user, userId);
+	});
+	}
 
-function generate_user(i)
-{
-    if (i === count)
-    {
-      console.log(`Inserted ${count} profile records.`);
-      process.exit();
-    }
+	function insLocations(user, userId) {
+		let sql = "INSERT INTO locations (lat, lng, street_address, area, state, country, user_id) VALUES (?)"
+		dbc.query(sql, [[...user.userLocation, userId]], (err, res) => {
+			if (err) {
+				throw err;
+			}
+			insImages(user, userId);
+		});
+	}
 
-    const username  = faker.name.findName();
-    const email     = faker.internet.email();
-
-    let   id;
-
-    dbc.query(sql.usernameAndEmailReserved, [username, email], (err, result) =>
-    {
-        
-      if (err) {throw err}
-
-      if (result.length > 0)
-      {
-          console.log("Username or email already exists");
-          generate_user(i);
-          return;
-      }
-
-      const firstName   = faker.name.findName();
-      const lastName    = faker.name.lastName();
-      const gender      = ['M', 'F'][ft_util.ranint(2)];
-      const preferences = ['M', 'F', 'B'][ft_util.ranint(3)];
-      const dob         = faker.date.between("1900-01-01", "2000-12-31");
-      const biography   = faker.random.words();
-      const online      = ['T', 'F'][ft_util.ranint(1)];
-      const verified    = 'T';
-      const valid       = 'T';
-
-      const user = [
-        username,
-        firstName,
-        lastName,
-        gender,
-        preferences,
-        dob,
-        email,
-        password,
-        biography,
-        online,
-        verified,
-        valid
-      ];
-
-      dbc.query(sql.insNewDemoUser, [user], (err, result) =>
-      {
-        if (err) {throw err}
-
-        id = result.insertId;
-
-        imageGender = (gender == 'M') ? "men" : "women";
-
-        imagePath = imageGender 
-            + "/" + ft_util.ranint(maxDefaultImages).toString()
-            + ".jpg"
-
-        dbc.query(sql.insImage, [[imagePath, id, 'T']], (err, result) =>
-        {
-            if (err) throw err;
-
-            const userLocation = [
-                faker.address.latitude(),
-                faker.address.longitude(),
-                faker.address.streetAddress() + ' ' + faker.address.streetName(),
-                faker.address.county(),
-                faker.address.state(),
-                faker.address.country(),
-                id
-            ];
-
-            dbc.query(sql.insUserLocation, [userLocation], (err, result) => {
-                if (err) throw err;
-
-                generate_user(i + 1);
-            });
-        });
-      });
-    });
+	function insImages(user, userId) {
+		let sql = "INSERT INTO images (name, user_id, profile_pic) VALUES (?)";
+		dbc.query(sql, [[user.userImage, userId, "T"]], (err, res) => {
+			if (err) {
+				throw err;
+			}
+		});
+	}
 }
+genUsers();

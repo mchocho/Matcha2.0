@@ -141,7 +141,7 @@ router.get("/:filter?.:arg1?.:arg2?", (req, res) =>
           lon: result[0]["lng"]
         };
 
-        match["distance"] = geo.distanceTo(userLocation, matchLocation).toFixed(2);
+        match["distance"] = (geo.distanceTo(userLocation, matchLocation) / 1000).toFixed(2);
 
         if (i === arr.length - 1)
           renderMatches(matches);
