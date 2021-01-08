@@ -77,7 +77,6 @@ const usersArr = [
 		],
 		userImage : "women/2.jpg"
 	}
-
 ];
 
 function genUsers() {
