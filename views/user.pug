@@ -32,7 +32,7 @@ block content
 				input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
 				#username_edit_container.edit.hide
 					span#error_0.error
-					input#username_txt(type='text', placeholder='New username')
+					input#username_txt(type='text', name='username', placeholder='New username')
 					br
 					#new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
 						button#username_confirm.btn.btn-secondary(type='submit') Confirm
@@ -42,9 +42,9 @@ block content
 				input#fullname_edit_btn.custom_btn.ib(type='button', value='Change fullname')
 				#fullname_edit_container.edit.hide
 					span#error_1.error
-					input#firstname_txt(type='text', placeholder='First name')
+					input#firstname_txt(type='text', name='first', placeholder='First name')
 					br
-					input#lastname_txt(type='text', placeholder='Last name')
+					input#lastname_txt(type='text', name='last', placeholder='Last name')
 					br
 					#new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
 						button#fullname_confirm.btn.btn-secondary(type='submit') Confirm
@@ -85,7 +85,7 @@ block content
 					input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
 					#email_edit_container.interest_edit.hide
 						span#error_5.error
-						input#email_txt(type='email', placeholder='New email')
+						input#email_txt(type='email', name='email', placeholder='New email')
 						br
 						#new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
 							button#email_confirm.btn.btn-secondary(type='submit') Confirm
