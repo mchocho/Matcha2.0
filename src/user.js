@@ -151,34 +151,29 @@ router.post("/image", (req, res) =>
         
         form.parse(req, (err, fields, files) =>
         {   
-            console.log(files);
-
             if (!files.image)
             {
-              console.log("3!");
-                response.result = "No file uploaded.";
-                res.end(JSON.stringify(response));
-                return;
+              response.result = "No file uploaded.";
+              res.end(JSON.stringify(response));
+              return;
             }
 
             if (files.image.type.indexOf("image") === -1)
             {
-              console.log("4!");
-                response.result = "Please uploade an image file.";
-                res.end(JSON.stringify(response));
-                return;
+              response.result = "Please uploade an image file.";
+              res.end(JSON.stringify(response));
+              return;
             }
-
-            console.log("What happend?");
-            debugger;
 
             const imageType = files.image.type.split("/")[1];
             const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //strip all slashes
             const oldpath   = files.image.path;
-            const newpath   = path.join(__dirname, "public/images/uploads/" + filename);
+            const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
 
-            if (ft_util.VERBOSE) {
-                console.log(util.inspect({fields, files, newpath, oldpath}));
+            if (ft_util.VERBOSE)
+            {
+              console.log("Uploaded file details...");
+              console.log(util.inspect({fields, files, newpath, oldpath}));
             }
 
             //Move uploaded file
