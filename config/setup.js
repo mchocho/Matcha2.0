@@ -31,7 +31,7 @@ dbc.connect(err =>
           console.log("Created matcha database");
           console.log("Inserting profiles...");
           
-          require("./profile_gen_two.js");
+          require("./profile_generator.js");
         }
       });
     });
