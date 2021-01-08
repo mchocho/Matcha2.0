@@ -22,7 +22,7 @@ router.get('/:id?', (req, res) => {
 	const sess = req.session.user,
 		  id = Number(req.params.id);
 	let   location,
-		  user;
+			user;
 
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
@@ -153,6 +153,7 @@ router.get('/:id?', (req, res) => {
 		});
 	});
 }).post('/connect:profile?', (req, res) => {
+	console.log("xxxxxxxxxxx " + JSON.stringify(req.params));
 	const sess = req.session.user,
 		  profile = Number(req.params.profile.replace(/\./g, ''));
 	let rowExists,

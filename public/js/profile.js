@@ -9,7 +9,8 @@ function script() {
           
     connection_btn.addEventListener('click', function(e) {
         xhr('/profile/connect.' + parseInt(profile_id), 'POST', null, function(xhr) {
-        	const res = JSON.parse(xhr.responseText);
+					const res = JSON.parse(xhr.responseText);
+					console.log("cxcxcxcxcxcxcx" + JSON.stringify(res));
 			if (res.result === 'Success') {
 				if (res.youLikeUser === 'true') {
 					connection_btn.textContent = 'Disconnect';
