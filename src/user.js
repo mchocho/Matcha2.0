@@ -123,25 +123,7 @@ router.post("/image", (req, res) =>
         value: null
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
-
-    //User is logged in, verified, valid, and profile is valid
-    if (!ft_util.isobject(sess))
-    {
-        console.log("1!");
-
-        //Check if a file was uploaded and delete it
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
-    {
-      console.log("2!");
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     handleIncomingFile();
     
@@ -154,21 +136,46 @@ router.post("/image", (req, res) =>
             if (!files.image)
             {
               response.result = "No file uploaded.";
-              res.end(JSON.stringify(response));
-              return;
-            }
-
-            if (files.image.type.indexOf("image") === -1)
-            {
-              response.result = "Please uploade an image file.";
-              res.end(JSON.stringify(response));
+              res.redirect("/user");
               return;
             }
 
             const imageType = files.image.type.split("/")[1];
-            const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //strip all slashes
             const oldpath   = files.image.path;
-            // const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
+
+            if (files.image.type.indexOf("image") === -1)
+            {
+              console.log("Please uploade an image file.");
+              //deleteFile(oldpath);
+              res.redirect("/user");
+              return;
+            }
+
+            if (!ft_util.isobject(sess))
+            {
+                console.log("Please sign in.");
+                //deleteFile(oldpath);
+                res.redirect("/user");
+                return;
+            }
+            else if (sess.verified !== 'T')
+            {
+                console.log("Your account is not verified.");
+                //deleteFile(oldpath);
+                res.redirect("/user");
+                return;
+            }
+            else if (sess.valid !== 'T')
+            {
+                console.log("Your account has been reported");
+                //deleteFile(oldpath);
+                res.redirect("/user");
+                return;
+            }
+
+            
+            const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //remove all slashes
+            const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
 
             if (ft_util.VERBOSE)
             {
@@ -200,18 +207,55 @@ router.post("/image", (req, res) =>
 
     function saveNewImage(filename)
     {
-        const insValues = [filename, sess.id, "T"];
+        const insValues = [filename, sess.id, 'T'];
 
         dbc.query(sql.insImage, [insValues], (err, result) =>
         {
             if (err) {throw err}
 
-            response.result = "Success";
+            console.log("File successfully uploaded!");
+            response.result   = "Success";
             response.filename = filename;
-            // res.end(JSON.stringify(response));
             res.redirect("/user");
         });
     }
+});
+
+router.post("*", (req, res, next) => {
+  const sess      = req.session.user;
+
+  if (!ft_util.isobject(sess))
+  {
+      console.log("Please sign in.");
+      res.redirect("/matcha");
+
+      return;
+  }
+  else if (sess.verified !== 'T')
+  {
+      console.log("Your account is not verified.");
+      req.session.destroy(err => {
+        if (err) {throw err}
+        
+        res.redirect("/verify_email");
+      });
+
+      return;
+  }
+  else if (sess.valid !== 'T')
+  {
+     req.session.destroy(err => {
+      if (err) {throw err}
+      
+      res.redirect("/reported_account");
+    });
+
+    return;
+  }
+
+  console.log("Moving to next handler");
+
+  next();
 });
 
 router.post("/fullname", (req, res) =>
@@ -225,19 +269,11 @@ router.post("/fullname", (req, res) =>
 
     console.log("Received message: ", req.body);
 
-    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    if (!ft_util.isstring(firstname, lastname))
+    {
+        console.log("Please enter your first and last name.");
+        res.redirect("/user");
 
-    //User is logged in, verified, valid, and names iare valid
-    if (!ft_util.isobject(sess) || !ft_util.isstring(firstname, lastname))
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
         return;
     }
 
@@ -246,37 +282,38 @@ router.post("/fullname", (req, res) =>
 
     validateFullnames();
 
-    function validateFullnames()
+    function validateFullnames(first, last)
     {
         if (first.length === 0)
         {
-            response.result = "Please enter your first name";
-            res.end(JSON.stringify(response));
+            console.log("Please enter your first name");
+            res.redirect("/user");
+
             return;
         }
         else if (last.length === 0)
         {
-            response.result = "Please enter your last name";
-            res.end(JSON.stringify(response));
-            return;
+          console.log("Please enter your last name");
+          res.redirect("/user");
+
+          return;
         }
 
-        saveNewFullname();
+        saveNewFullname(first, last);
     }
 
-    function saveNewFullname()
+    function saveNewFullname(first, last)
     {
         dbc.query(sql.updateUserFullname, [first, last, sess.id], (err, result) =>
         {
             if (err) {throw err}
 
-            response.value = `${first} ${last}`;
-            response.result = "Success";
-            updateSession();
+            console.log(`Successfully updated new name to ${first} ${last}`);
+            updateSession(first, last);
         });
     }
 
-    function updateSession()
+    function updateSession(first, last)
     {
         sess.first_name = first;
         sess.last_name  = last;
@@ -284,7 +321,7 @@ router.post("/fullname", (req, res) =>
         req.session.save(err => {
             if (err) {throw err}
 
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
         });
     }
 });
@@ -298,19 +335,38 @@ router.post("/new_username", (req, res) =>
         key         : "username"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
-
-    //User is logged in, verified, valid, and username is valid
-    if (!ft_util.isobject(sess) || !ft_util.isstring(value))
+    /*if (!ft_util.isobject(sess))
     {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
+        console.log("Please sign in.");
+        res.redirect("/user");
         return;
     }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
+    else if (sess.verified !== 'T')
+    {
+        console.log("Your account is not verified.");
+        req.session.destroy(err => {
+          if (err) {throw err}
+          
+          res.redirect("/verify_email");
+        });
+
+        return;
+    }
+    else if (sess.valid !== 'T')
+    {
+        console.log("Your account has been reported.");
+        res.redirect("/user");
+        return;
+    }
+
+      */
+
+    if (!ft_util.isstring(value))
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        console.log("");
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
 
@@ -323,7 +379,8 @@ router.post("/new_username", (req, res) =>
         if (name.length < 2)
         {
             response.result = "Username must be at least 2 characters long";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         checkIfUsernameExists();
@@ -337,7 +394,8 @@ router.post("/new_username", (req, res) =>
             if (result.length > 0)
             {
                 response.result = "Username already taken";
-                res.end(JSON.stringify(response));
+                // res.end(JSON.stringify(response));
+                res.redirect("/user");
                 return;
             }
 
@@ -352,7 +410,8 @@ router.post("/new_username", (req, res) =>
             if (result.affectedRows !== 1)
             {
                 response.result = "Please try again";
-                res.end(JSON.stringify(response));
+                // res.end(JSON.stringify(response));
+                res.redirect("/user");
                 return;
             }
 
@@ -369,7 +428,8 @@ router.post("/new_username", (req, res) =>
             if (err) {throw err}
 
             response.result = "Success";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
         });
     }
 });
@@ -382,22 +442,23 @@ router.post("/new_email", (req, res) =>
         key         : "email"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    /*// res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and username is valid
     if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || !ft_util.isstring(value))
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
-    }
+    }*/
 
     const email = value.trim();
 
     if (!ft_util.isEmail(email))
     {
-        response.result = "Please enter an email address.";
-        res.end(JSON.stringify(response));
+        console.log("Please enter an email address.");
+        res.redirect("/user");
         return;
     }
 
@@ -408,8 +469,8 @@ router.post("/new_email", (req, res) =>
 
         if (result.length > 0)
         {
-            response.result = "Email address is reserved.";
-            res.end(JSON.stringify(response));
+            console.log("Email address is reserved.");
+            res.redirect("/user");
             return;
         }
 
@@ -436,7 +497,8 @@ router.post("/new_email", (req, res) =>
         {
             if (err) {throw err}
 
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
+            // res.end(JSON.stringify(response));
         });
     }
 });
@@ -451,21 +513,23 @@ router.post("/reset_password", (req, res) =>
         key         : "username"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    /*// res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and passwords valid
     if (!ft_util.isobject(sess) || !ft_util.isstring(oldpw, newpw, confirmpw))
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
     else if (sess.verified !== 'T' || sess.valid !== 'T')
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
-    }
+    }*/
 
     const email = value.trim();
 
@@ -476,31 +540,36 @@ router.post("/reset_password", (req, res) =>
         if (!ft_util.passwdCheck(oldpw))
         {
             response.result = "Please enter your current password.";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         else if (!ft_util.passwdCheck(newpw))
         {
             response.result = "Please enter a new valid password.";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         else if (oldpw === newpw)
         {
             response.result = "New password can't be current password";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         else if (confirmpw !== newpw)
         {
             response.result = "The passwords you provided don't match.";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         else if (bcrypt.compareSync(oldpw, sess.password))
         {
             response.result = "Incorrect password";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
 
@@ -516,9 +585,11 @@ router.post("/reset_password", (req, res) =>
         {
             if (err) {throw err}
             
-            if (result.affectedRows !== 1) {
+            if (result.affectedRows !== 1)
+            {
                 response.result = "Please try again";
-                res.end(JSON.stringify(response));
+                // res.end(JSON.stringify(response));
+                res.redirect("/user");
                 return;
             }
 
@@ -529,7 +600,8 @@ router.post("/reset_password", (req, res) =>
                 if (err) {throw err}
 
                 response.result = "Success";
-                res.end(JSON.stringify(response));
+                // res.end(JSON.stringify(response));
+                res.redirect("/user");
             });
         });
     }
@@ -545,45 +617,29 @@ router.post("/DOB", (req, res) =>
 
     console.log(req.body);
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
-
-    //User is logged in, verified, valid, and username is valid
-    if (!ft_util.isobject(sess) || !ft_util.isstring(value))
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
-
     const dob = value.trim();
 
-    validateDOB();
+    validateDOB(dob);
 
-    function validateDOB()
+    function validateDOB(dob)
     {
         if (!moment(dob, "YYYY-MM-DD").isValid())
         {
             response.result = "Invalid date";
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
         else if (!moment(dob).isBefore(moment().subtract(18, "years")))
         {
             response.result = "The age you specified is too young.";
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
 
-        saveNewDOB();
+        saveNewDOB(dob);
     }
 
-    function saveNewDOB()
+    function saveNewDOB(dob)
     {
         dbc.query(sql.updateUserDOB, [dob, sess.id], (err, result) =>
         {
@@ -591,18 +647,18 @@ router.post("/DOB", (req, res) =>
 
             response.value = dob;
             response.result = "Success";
-            updateSession();
+            updateSession(dob);
         });
     }
 
-    function updateSession()
+    function updateSession(dob)
     {
         sess.DOB = dob;
 
         req.session.save(err => {
             if (err) {throw err}
 
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
         });
     }
 });
@@ -615,19 +671,21 @@ router.post("/preferences", (req, res) =>
         key         : "preferences"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and preference is valid
     if (!ft_util.isobject(sess) || !ft_util.isstring(value))
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
     else if (sess.verified !== 'T' || sess.valid !== 'T')
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
 
@@ -646,7 +704,8 @@ router.post("/preferences", (req, res) =>
                 break;
             default:
                 response.result = "Failed";
-                res.end(JSON.stringify(response));
+                // res.end(JSON.stringify(response));
+                res.redirect("/user");
                 return;
         }
     }
@@ -669,7 +728,8 @@ router.post("/preferences", (req, res) =>
             if (err) {throw err}
 
             response.result = "Success";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
         });
     }
 });
@@ -682,7 +742,7 @@ router.post("/gender", (req, res) =>
         key         : "gender"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and gender is valid
     if (!ft_util.isobject(sess) || !ft_util.isstring(value))
@@ -700,24 +760,20 @@ router.post("/gender", (req, res) =>
 
     const gender = value;
 
-    validateGender();
+    validateGender(gender);
 
-    function validateGender()
+    function validateGender(gender)
     {
-        switch(gender)
-        {
-            case "M":
-            case "F":
-                saveNewGender();
-                break;
-            default:
-                response.result = "Failed";
-                res.end(JSON.stringify(response));
-                return;
+      if (gender === 'M' || gender === 'B')
+         updateNewGender(gender);
+       else
+       {
+          response.result = "Failed";
+          res.end(JSON.stringify(response));
         }
     }
 
-    function saveNewGender()
+    function updateNewGender(gender)
     {
         dbc.query(sql.updateUserGender, [gender, sess.id], (err, result) =>
         {
@@ -736,6 +792,7 @@ router.post("/gender", (req, res) =>
 
             response.result = "Success";
             res.end(JSON.stringify(response));
+            // res.redirect("/user");
         });
     }
 });
@@ -748,19 +805,21 @@ router.post("/interest", (req, res) =>
         key         : "interest"
     };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in, verified, valid, and interest is valid
     if (!ft_util.isobject(sess) || !ft_util.isstring(value))
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
     else if (sess.verified !== 'T' || sess.valid !== 'T')
     {
         response.result = "Failed";
-        res.end(JSON.stringify(response));
+        // res.end(JSON.stringify(response));
+        res.redirect("/user");
         return;
     }
 
@@ -773,7 +832,8 @@ router.post("/interest", (req, res) =>
         if (interest.length < 2)
         {
             response.result = "Failed";
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         }
 
@@ -814,7 +874,8 @@ router.post("/interest", (req, res) =>
 
             response.result = "Success";
             response.value = interest;
-            res.end(JSON.stringify(response));
+            // res.end(JSON.stringify(response));
+            res.redirect("/user");
             return;
         });
     }
