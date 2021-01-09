@@ -7,6 +7,9 @@ const express 		= require('express'),
 		flash		= require('connect-flash'),
 	  	PORT 		= 3000;
 
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
 require('dotenv').config();
 app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
@@ -17,7 +20,17 @@ app.use(express.static(__dirname + '/public'));
 // Does the secret not change everytime? Yes, but only if the server stops or the this script fails to cache
 app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialized: true, resave: true}));
 
-if (app.get('env') === 'production') 
+// CHAT
+io.on('connection', (socket) => {
+	console.log('a user connected');
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
+});
+
+
+
+if (app.get('env') === 'production')
 	app.set('trust proxy', 1);
 
 let signinRouter = require('./signin');
@@ -50,6 +63,9 @@ app.use('/notifications', notificationsRouter);
 
 let logoutRouter = require('./logout');
 app.use('/logout', logoutRouter);
+
+let chatRouter = require('./chat');
+app.use('/chat', chatRouter);
 
 app.use((req, res) => {
 	const sess = req.session.user;

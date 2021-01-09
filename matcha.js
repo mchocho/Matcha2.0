@@ -15,7 +15,7 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 	let	blacklist;
 	let	location;
 	let	matches;
-	
+
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
 		return;
@@ -48,7 +48,7 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 		location = result[0];
 		dbc.query(sql.selBlockedUsers, [sess.id], findPrefrences);
 	}
-		
+
 	function findPrefrences(err, result) {
 		if (err) {throw err}
 		blacklist = result;
@@ -73,7 +73,7 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 
 	function getMatches(err, result) {
 		if (err) {throw err}
-		matches = result;		
+		matches = result;
 		if (matches.length > 0) {
 			createProfileUrls();
 		} else {
@@ -82,16 +82,16 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 				users: []
 			});
 		}
-	} 
-			
-	function createProfileUrls() {	
+	}
+
+	function createProfileUrls() {
 		for (let i = 0, n = matches.length; i < n; i++) {
 			matches[i]['url'] = '/profile/' + matches[i].id;
 		}
 		getMatchesImages();
 	}
 
-	function getMatchesImages() {	
+	function getMatchesImages() {
 		let i = 0;
 		let arrLen = matches.length;
 		getEachImage(i);
@@ -101,12 +101,12 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 					if (err) throw err;
 					matches[i].images = result;
 					i++;
-					getEachImage(i);	
+					getEachImage(i);
 				});
 			} else {
 				getMatchesLocations();
 			}
-		}	
+		}
 	}
 
 	function getMatchesLocations() {
@@ -120,11 +120,11 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 					return;
 				}
 				matches[i]['distance'] = geo.distanceTo({
-												lat: location.lat, 
+												lat: location.lat,
 												lon: location.lng
-											}, 	
+											},
 											{
-												lat: result[0]['lat'], 
+												lat: result[0]['lat'],
 												lon: result[0]['lng']
 											}).toFixed(2);
 				if (i === arrLen - 1) {
@@ -145,5 +145,5 @@ router.get('/:filter?.:arg1?.:arg2?', (req, res) => {
 				}
 			});
 		}
-	}	 
+	}
 });

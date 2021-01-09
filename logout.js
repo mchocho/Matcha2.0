@@ -8,7 +8,7 @@ const 	  express 		= require('express'),
 let router = express.Router();
 module.exports = router;
 
-router.get('/', (req, res) => {
+app.get('/', (req, res) => {
 	const sess = req.session.user;
 	let sql = "UPDATE users SET online = 'F' WHERE id = ?";
 	if (ft_util.isobject(sess))

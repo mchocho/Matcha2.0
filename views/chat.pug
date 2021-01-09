@@ -1,0 +1,16 @@
+extends layout
+
+block content
+	style.
+		form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
+		form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+		#messages { list-style-type: none; margin: 0; padding: 0; }
+		#messages li { padding: 5px 10px; }
+		#messages li:nth-child(odd) { background: #eee; }
+	ul#messages
+	form(action='')
+	input#m(autocomplete='off')
+	button Send
+	script(src='/socket.io/socket.io.js')
+	script.
+		var socket = io();
