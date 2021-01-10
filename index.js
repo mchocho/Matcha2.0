@@ -20,10 +20,15 @@ io.on('connection', (socket) => {
 		console.log('user disconnected');
 	});
 
+	socket.on('add user', (username) => {
+		socket.username = username;
+		console.log('Socket user: ' + socket.username);
+	});
+
 	socket.on('chat message', (msg) => {
 		console.log('message: ' + msg);
 		io.emit('chat message', {
-			username: 'Jane',
+			user: socket.username,
 			msg
 		});
 	});
