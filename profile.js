@@ -318,4 +318,90 @@ router.get('/:id?', (req, res) => {
 		});
 	});
 	return;
+}).post('/cconnect', (req, res) => {
+	const user = req.session.user;
+	const otherUserId = req.body.otherUser;
+	let userHasImage = false;
+	let otherUserHasImage = false;
+	let jsonReturn = "";
+	let userLikesYou = false;
+	let youLikeUser = false;
+
+	res.writeHead(200, {"Content-Type": "text/plain"});
+
+	// Check if user is logged in
+	if (!ft_util.isobject(user) || user.verified !== 'T' || user.valid !== 'T' ) {
+		res.end('{"res":failed}');
+		res.redirect('/logout');
+		console.log("Profile cconnect logged you out");
+    return;
+	}
+
+	checkUsersImages(user.id, otherUserId);
+
+	// Check if both users have profile pics
+	function checkUsersImages(userId, otherUserId) {
+		dbc.query(sql.selUserImages, [[userId]], (err, result) => {
+			if (err) {
+				throw err;
+			}
+			if (result.length > 0) {
+				userHasImage = true;
+				dbc.query(sql.selUserImages, [[otherUserId]], (err, result) => {
+					if (err) {
+						throw err;
+					}
+					if (result.length > 0) {
+						otherUserHasImage = true;
+						jsonReturn = '{"res": success}';
+						// res.end(jsonReturn);
+						getUsersConnStatus();
+					}
+					else {
+						res.end('{"res": failed, "reason": no images}');
+						return ;
+					}
+				});
+			} else {
+				res.end('{"res": failed, "reason": no images}');
+				return ;
+			}
+		});
+	}
+
+	// Get conn status
+	function getUsersConnStatus() {
+		dbc.query(sql.getConnectionStatus, [user.id, otherUserId, otherUserId, user.id], (err, result) => {
+			if (err) {throw err}
+			for (let i = 0; i < result.length; i++) {
+				if (result[i].liker === otherUserId) {
+					userLikesYou = true;
+					console.log("user likes you");
+				}
+				if (result[i].liker === user.id) {
+					youLikeUser = true;
+					console.log("You like user");
+				}
+			}
+			checkBlockedStatus();
+		});
+	}
+
+	// Check if user is blocked
+	function checkBlockedStatus() {
+		dbc.query(sql.selBlockedUser, [otherUserId, user.id], (err, result) => {
+			if (err) {throw err}
+			if (result.length > 0) {
+				res.end('{"res": failed, "reason": user has blocked you}');
+				return ;
+			} else {
+				jsonReturn = '{"res": success, "reason": you are not blocked}';
+				res.end(jsonReturn);
+				return;
+			}
+		});
+	}
+
+	
+
 });

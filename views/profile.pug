@@ -52,16 +52,16 @@ html
        if(user.clientLikesUser === true && user.userLikesClient === true)
         img(src='/images/icons/connected.png')
         span#connection_status You and #{user.username} are both connected
-        button#connection_btn.btn.btn-dark(type='button') Disconnect
+        button#connection_btnn.btn.btn-dark(type='button') Disconnect
        else if (user.userLikesClient === true)
         span#connection_status #{user.username} now likes you, like them back to get to know more about them.
-        button#connection_btn.btn.btn-dark(type='button') Connect
+        button#connection_btnn.btn.btn-dark(type='button') Connect
        else if (user.clientLikesUser === true)
         span#connection_status It seems like #{user.username} hasn't liked you back, hang in there.
-        button#connection_btn.btn.btn-dark(type='button') Disconnect
+        button#connection_btnn.btn.btn-dark(type='button') Disconnect
        else
         span#connection_status You and #{user.username} are not connected
-        button#connection_btn.btn.btn-dark(type='button') Connect
+        button#connection_btnn.btn.btn-dark(type='button') Connect
       .details_container(align='center')
         .gender
           img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
@@ -97,3 +97,4 @@ html
       script(src='/js/profile.js')
       script(src='/js/clearStorage.js')
       script(src='/js/reloadCSS.js')
+      script(src='/js/profilee.js')
