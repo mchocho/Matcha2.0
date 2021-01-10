@@ -1,3 +1,5 @@
+const express       = require("express");
+
 const dbc           = require("../model/sql_connect.js");
 const sql           = require("../model/sql_statements.js");
 const ft_util       = require("../includes/ft_util.js");

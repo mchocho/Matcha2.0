@@ -8,38 +8,31 @@ const router        = express.Router();
 
 module.exports      = router;
 
-router.post("*", (req, res, next) =>
-{
-  const sess        = req.session.user;
-  const response    = {};
-
-  if (!ft_util.isobject(sess))
-  {
-    response.result = "Please sign in.";
-    res.end(JSON.stringify(response));
-    return;
-  }
-  else if (sess.verified !== 'T' || sess.valid !== 'T')
-  {
-    response.result = "Please verify your account.";
-    res.end(JSON.stringify(response));
-    return;
-  }
-
-  next();
-
-});
-
 router.post("/add", (req, res) =>
 {
   const sess        = req.session.user;
   const value       = req.body.value;   //Lowercase all tags
   const response    = { key : "interest" };
 
+  if (!ft_util.isobject(sess))
+  {
+    res.redirect("/");
+    return;
+  }
+  else if (sess.verified !== "T")
+  {
+      res.redirect("/verify_email");
+      return;
+  }
+  else if (sess.valid !== "T")
+  {
+      res.redirect("/reported_account");
+      return;
+  }
+
   if (!ft_util.isstring(value))
   {
-    response.result = "Please enter an interest.";
-    res.end(JSON.stringify(response));
+    res.redirect("/user");
     return;
   }
 
@@ -47,8 +40,8 @@ router.post("/add", (req, res) =>
   
   if (interest.length === 0)
   {
-    response.result = "Please enter an interest.";
-    res.end(JSON.stringify(response));
+    console.log("Please enter an interest.");
+    res.redirect("/user");
     return;
   }
 
@@ -86,41 +79,51 @@ router.post("/add", (req, res) =>
       dbc.query(sql.insNewUserTag, [insValues], (err, result) => {
           if (err) {throw err}
 
-          response.result = "Success";
-          response.value  = interest;
-
-          res.end(JSON.stringify(response));
+          res.redirect("/user");
       });
   }
 });
 
 router.post("/delete", (req, res) =>
 {
-    const sess      = req.session.user;
-    const id        = req.body.value;
-    const response  = {
-        key         : "rm_interest",
-        value       : id
-    };
+  const sess      = req.session.user;
+  const id        = req.body.value;
+  const response  = {
+      key         : "rm_interest",
+      value       : id
+  };
 
-    res.writeHead(200, {"Content-Type": "text/plain"});
+  if (!ft_util.isobject(sess))
+  {
+    response.result = "Please sign in.";
+    res.end(JSON.stringify(response));
+    return;
+  }
+  else if (sess.verified !== 'T' || sess.valid !== 'T')
+  {
+    response.result = "Please verify your account.";
+    res.end(JSON.stringify(response));
+    return;
+  }
 
-    //User is logged in, verified, valid, and id is valid
-    if (isNaN(id))
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
+  res.writeHead(200, {"Content-Type": "text/plain"});
 
-    const delValues = [sess.id, id];
+  //User is logged in, verified, valid, and id is valid
+  if (isNaN(id))
+  {
+      response.result = "Failed";
+      res.end(JSON.stringify(response));
+      return;
+  }
 
-    //Remove user tag link
-    dbc.query(sql.delUserTag, delValues, (err, result) =>
-    {
-        if (err) {throw err}
+  const delValues = [sess.id, id];
 
-        response.result = "Success";
-        res.end(JSON.stringify(response));
-    });
+  //Remove user tag link
+  dbc.query(sql.delUserTag, delValues, (err, result) =>
+  {
+      if (err) {throw err}
+
+      response.result = "Success";
+      res.end(JSON.stringify(response));
+  });
 });
