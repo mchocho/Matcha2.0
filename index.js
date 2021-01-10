@@ -9,8 +9,22 @@ const express 		= require('express'),
 
 // const http = require('http');
 // const server = require('http').Server(app);
-const server = require('http').createServer(app);
+var server = require('http').createServer(app);
 const io = require('socket.io')(server);
+
+// CHAT
+io.on('connection', (socket) => {
+	console.log('a user connected - index.js');
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
+
+	socket.on('chat message', (msg) => {
+		console.log('message: ' + msg);
+		io.emit('chat message', msg);
+	});
+});
 
 require('dotenv').config();
 app.use(flash());
@@ -21,16 +35,6 @@ app.use(body_p.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 // Does the secret not change everytime? Yes, but only if the server stops or the this script fails to cache
 app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialized: true, resave: true}));
-
-// CHAT
-io.on('connection', (socket) => {
-	console.log('a user connected - index.js');
-
-	socket.on('disconnect', () => {
-		console.log('user disconnected');
-	});
-});
-
 
 
 if (app.get('env') === 'production')
