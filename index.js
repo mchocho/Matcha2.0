@@ -10,18 +10,25 @@ const express 		= require('express'),
 var server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+// CHAT
 io.on('connection', (socket) => {
-	console.log('a user connected');
-
-	socket.broadcast.emit('hi');
+	console.log('a user connected - index.js');
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 	});
 
+	socket.on('add user', (username) => {
+		socket.username = username;
+		console.log('Socket user: ' + socket.username);
+	});
+
 	socket.on('chat message', (msg) => {
 		console.log('message: ' + msg);
-		io.emit('chat message', msg);
+		io.emit('chat message', {
+			user: socket.username,
+			msg
+		});
 	});
 });
 

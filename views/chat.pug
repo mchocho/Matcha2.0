@@ -11,6 +11,8 @@ block content
 			#messages { list-style-type: none; margin: 0; padding: 0; }
 			#messages li { padding: 5px 10px; }
 			#messages li:nth-child(odd) { background: #eee; }
+	h2(align="center") Chat
+	h2(id="username" hidden='true') #{username}
 	ul#messages
 	form(id="form" action='')
 		input#m(autocomplete='off')
@@ -23,19 +25,31 @@ block content
 		var messages = document.getElementById('messages');
 		var form = document.getElementById('form');
 		var input = document.getElementById('m');
+		var username = document.getElementById('username');
+
+		socket.emit('add user', username.innerText);
 
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();
 			if (input.value) {
-				socket.emit('chat message', input.value);
+				socket.emit('chat message', input.value, username.innerText);
 				input.value = '';
 			}
 		});
 
-		socket.on('chat message', function(msg) {
+		socket.on('chat message', (data) => {
+			var userDiv = document.createElement('span');
+			userDiv.setAttribute("class", "username");
+			userDiv.textContent = data.user;
+
+			var msgDiv = document.createElement('span');
+			msgDiv.setAttribute("class", "msgBody");
+			msgDiv.textContent = data.msg;
+
 			var item = document.createElement('li');
-			item.textContent = msg;
+			item.append(userDiv, msgDiv);
 			messages.appendChild(item);
 			window.scrollTo(0, document.body.scrollHeight);
 		});
+
 
