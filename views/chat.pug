@@ -11,7 +11,9 @@ block content
 			#messages { list-style-type: none; margin: 0; padding: 0; }
 			#messages li { padding: 5px 10px; }
 			#messages li:nth-child(odd) { background: #eee; }
+	h2 Chat
 	ul#messages
+	h2(id="username" hidden='true') #{username}
 	form(id="form" action='')
 		input#m(autocomplete='off')
 		button Send
@@ -23,6 +25,7 @@ block content
 		var messages = document.getElementById('messages');
 		var form = document.getElementById('form');
 		var input = document.getElementById('m');
+		var username = document.getElementById('username')
 
 		form.addEventListener('submit', function(e) {
 			e.preventDefault();
@@ -35,7 +38,7 @@ block content
 		socket.on('chat message', (data) => {
 			var userDiv = document.createElement('span');
 			userDiv.setAttribute("class", "username");
-			userDiv.textContent = data.username;
+			userDiv.textContent = username.innerText;
 
 			var msgDiv = document.createElement('span');
 			msgDiv.setAttribute("class", "msgBody");

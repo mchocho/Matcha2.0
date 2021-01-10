@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
 	// console.log(sess);
 
 	res.render('chat.pug', {
-		title: "Your Chat | Cupid's Arrow"
-  });
+		title: "Your Chat | Cupid's Arrow",
+		username: sess.username
+	});
 });
