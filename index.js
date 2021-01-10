@@ -8,6 +8,24 @@ const flash			= require("connect-flash");
 const app 			= express();
 const PORT 			= 3000;
 
+var server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+// CHAT
+io.on('connection', (socket) => {
+	console.log('a user connected');
+
+	// socket.broadcast.emit('hi');
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
+
+	socket.on('chat message', (msg) => {
+		console.log('message: ' + msg);
+	});
+});
+
 require("dotenv").config();
 app.use(flash());
 app.set("views", path.join(__dirname, "views"));
@@ -22,7 +40,7 @@ app.use("/flatpickr", express.static(__dirname + "/node_modules/flatpickr/dist/"
 // Does the secret not change everytime? Yes, but only if the server stops or the this script fails to cache
 app.use(session({secret: uuidv4(), cookie: {maxAge: 6000000}, saveUninitialized: true, resave: true}));
 
-if (app.get("env") === "production") 
+if (app.get("env") === "production")
 	app.set("trust proxy", 1);
 
 let signinRouter = require("./src/signin");
@@ -55,9 +73,12 @@ app.use("/notifications", notificationsRouter);
 let logoutRouter = require("./src/logout");
 app.use("/logout", logoutRouter);
 
+let chatRouter = require("./src/chat");
+app.use("/chat", chatRouter);
+
 let _404Router = require("./src/logout");
 app.use("*", _404Router);
 
-app.listen(PORT, () => {
-	console.log("Server started on port " + PORT);
+server.listen(PORT, () => {
+	console.log("Socket started on port " + PORT);
 });
