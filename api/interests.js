@@ -87,9 +87,9 @@ router.post("/add", (req, res) =>
           if (err) {throw err}
 
           response.result = "Success";
-          response.value = interest;
+          response.value  = interest;
+
           res.end(JSON.stringify(response));
-          return;
       });
   }
 });

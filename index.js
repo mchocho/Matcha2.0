@@ -1,14 +1,15 @@
-const express 		= require("express");
-const path			= require("path");
-const bodyParser	= require("body-parser");
-const session 		= require("express-session");
-const uuidv4 		= require("uuid/v4");
-const flash			= require("connect-flash");
-
-const app 			= express();
-const PORT 			= 3000;
-
 require("dotenv").config();
+
+const express     = require("express");
+const path        = require("path");
+const bodyParser  = require("body-parser");
+const session     = require("express-session");
+const uuidv4      = require("uuid/v4");
+const flash       = require("connect-flash");
+
+const app         = express();
+const PORT        = 3000;
+
 app.use(flash());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -23,41 +24,60 @@ app.use("/flatpickr", express.static(__dirname + "/node_modules/flatpickr/dist/"
 app.use(session({secret: uuidv4(), cookie: {maxAge: 6000000}, saveUninitialized: true, resave: true}));
 
 if (app.get("env") === "production") 
-	app.set("trust proxy", 1);
+  app.set("trust proxy", 1);
 
-let signinRouter = require("./src/signin");
+let signinRouter        = require("./src/signin");
 app.use("/", signinRouter);
 
-let signupRouter = require("./src/signup");
+let signupRouter        = require("./src/signup");
 app.use("/signup", signupRouter);
 
-let verify_emailRouter = require("./src/verify_email");
+let verify_emailRouter  = require("./src/verify_email");
 app.use("/verify_email", verify_emailRouter);
 
-let verifyUserEmail = require("./api/verification");
+let verifyUserEmail     = require("./api/verification");
 app.use("/verification", verifyUserEmail);
 
-let forgotPassword = require("./src/forgot_password");
+let forgotPassword      = require("./src/forgot_password");
 app.use("/forgot_password", forgotPassword);
 
-let userRouter = require("./src/user");
+let userRouter          = require("./src/user");
 app.use("/user", userRouter);
 
-let matchaRouter = require("./src/matcha");
+let genderRouter        = require("./api/gender");
+app.use("/gender", genderRouter);
+
+let interestsRouter     = require("./api/interests");
+app.use("/interests", interestsRouter);
+
+let preferencesRouter   = require("./api/preferences");
+app.use("/preferences", preferencesRouter);
+
+let matchaRouter        = require("./src/matcha");
 app.use("/matcha", matchaRouter);
 
-let profileRouter = require("./src/profile");
+let profileRouter       = require("./src/profile");
 app.use("/profile", profileRouter);
+
+let connectRouter       = require("./api/connect");
+app.use("/connect", connectRouter);
+
+let reportRouter        = require("./api/report");
+app.use("/report", reportRouter);
+
+let blockRouter         = require("./api/block");
+app.use("/block", blockRouter);
 
 let notificationsRouter = require("./src/notifications");
 app.use("/notifications", notificationsRouter);
 
-let logoutRouter = require("./src/logout");
+let logoutRouter        = require("./src/logout");
 app.use("/logout", logoutRouter);
 
-let _404Router = require("./src/logout");
+let _404Router          = require("./src/logout");
 app.use("*", _404Router);
 
-app.listen(PORT, () => {
-	console.log("Server started on port " + PORT);
+app.listen(PORT, () =>
+{
+  console.log("Server started on port " + PORT);
 });
