@@ -33,7 +33,8 @@ header div {
 	display: inline-block;
 }
 
-header a, header a:hover {
+header a,
+header a:hover {
 	color: unset;
 	text-decoration: unset !important;
 }
@@ -83,7 +84,7 @@ form {
 	background: rgb(238, 238, 238, 0.4);
 	border-radius: 13px;
 	padding: 13px;
-	padding-bottom: 4%;	
+	padding-bottom: 4%;
 }
 
 form#signin {
@@ -94,11 +95,14 @@ label {
 	margin-top: 5px;
 }
 
-label, input {
+label,
+input {
 	display: block;
 }
 
-input[type="text"], input[type="password"], input[type="email"] {
+input[type='text'],
+input[type='password'],
+input[type='email'] {
 	font-size: 120%;
 	background: unset !important;
 	border: none;
@@ -118,7 +122,8 @@ input[type="text"], input[type="password"], input[type="email"] {
 	padding: 15px;
 }
 
-input[type="submit"], .custom_btn {
+input[type='submit'],
+.custom_btn {
 	/*min-width: 10%;*/
 	background: #000;
 	color: #eee;
@@ -128,14 +133,18 @@ input[type="submit"], .custom_btn {
 	text-align: center;
 }
 
-input[type="submit"], input[type="button"], button, .custom_btn, .btn {
-	-webkit-transition: all .5s;
-    -o-transition: all .5s;
-    transition: all .5s;
+input[type='submit'],
+input[type='button'],
+button,
+.custom_btn,
+.btn {
+	-webkit-transition: all 0.5s;
+	-o-transition: all 0.5s;
+	transition: all 0.5s;
 }
 
-
-input[type="submit"]:hover, .custom_btn:hover {
+input[type='submit']:hover,
+.custom_btn:hover {
 	background: #eee;
 	color: #000;
 	border: 1px solid #000;
@@ -146,4 +155,15 @@ input[type="submit"]:hover, .custom_btn:hover {
 	color: #fff;
 	background-color: #007bff;
 	border-color: #007bff;
+}
+
+.username {
+	font-weight: 700;
+	overflow: hidden;
+	padding-right: 15px;
+	text-align: right;
+}
+
+.messageBody {
+	color: gray;
 }

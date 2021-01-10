@@ -32,9 +32,17 @@ block content
 			}
 		});
 
-		socket.on('chat message', function(msg) {
+		socket.on('chat message', (data) => {
+			var userDiv = document.createElement('span');
+			userDiv.setAttribute("class", "username");
+			userDiv.textContent = data.username;
+
+			var msgDiv = document.createElement('span');
+			msgDiv.setAttribute("class", "msgBody");
+			msgDiv.textContent = data.msg;
+
 			var item = document.createElement('li');
-			item.textContent = msg;
+			item.append(userDiv, msgDiv);
 			messages.appendChild(item);
 			window.scrollTo(0, document.body.scrollHeight);
 		});

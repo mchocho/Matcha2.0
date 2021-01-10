@@ -22,7 +22,10 @@ io.on('connection', (socket) => {
 
 	socket.on('chat message', (msg) => {
 		console.log('message: ' + msg);
-		io.emit('chat message', msg);
+		io.emit('chat message', {
+			username: 'Jane',
+			msg
+		});
 	});
 });
 
@@ -90,6 +93,7 @@ app.use('/chat', chatRouter);
 
 app.use((req, res) => {
 	const sess = req.session.user;
+	console.log(sess);
 
 	if (!ft_util.isobject(sess)) {
 			res.redirect('/logout');
