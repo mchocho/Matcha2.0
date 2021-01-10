@@ -7,6 +7,8 @@ const express 		= require('express'),
 		flash		= require('connect-flash'),
 	  	PORT 		= 3000;
 
+// const http = require('http');
+// const server = require('http').Server(app);
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
@@ -22,7 +24,8 @@ app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000}, saveUninitialize
 
 // CHAT
 io.on('connection', (socket) => {
-	console.log('a user connected');
+	console.log('a user connected - index.js');
+
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 	});
@@ -67,6 +70,20 @@ app.use('/logout', logoutRouter);
 let chatRouter = require('./chat');
 app.use('/chat', chatRouter);
 
+// app.get('/chat', (req, res) => {
+// 	res.render('chat.pug', {
+// 		title: "Your Chat | Cupid's Arrow"
+// 	});
+// });
+
+// io.on('connection', (socket) => {
+// 	console.log('a user connected - index.js');
+
+// 	socket.on('disconnect', () => {
+// 		console.log('user disconnected');
+// 	});
+// });
+
 app.use((req, res) => {
 	const sess = req.session.user;
 
@@ -98,7 +115,12 @@ app.use((req, res) => {
 	});
 });
 
-app.listen(PORT, () => {
-	console.log('Server started on port ' + PORT);
+
+server.listen(PORT, () => {
+	console.log('socket listening on ' + PORT);
 });
+
+// app.listen(PORT, () => {
+// 	console.log('Server started on port ' + PORT);
+// });
 
