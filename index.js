@@ -96,7 +96,7 @@ app.use("/logout", logoutRouter);
 let chatRouter = require("./src/chat");
 app.use("/chat", chatRouter);
 
-let _404Router = require("./src/logout");
+let _404Router = require("./src/404");
 app.use("*", _404Router);
 
 server.listen(PORT, () => {
