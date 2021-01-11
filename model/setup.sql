@@ -217,6 +217,9 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`notifications`
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
+CREATE UNIQUE INDEX unique_notif_row
+ON `matcha`.`notifications` (`user_id`, `service_id`, `type`, `viewed`);
+
 CREATE TABLE IF NOT EXISTS  `matcha`.`chat_notifications` 	
 ( 
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT , 

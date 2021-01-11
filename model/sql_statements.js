@@ -67,5 +67,6 @@ module.exports = {
 	selUserLike				: "SELECT * FROM likes WHERE id = ?",
 	selUserView				: "SELECT viewer FROM views WHERE id = ?",
 	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?",
-	selUserLikeStatus : "SELECT * FROM likes WHERE `liker` = ? AND `liked` = ?"
+	selUserLikeStatus : "SELECT * FROM likes WHERE `liker` = ? AND `liked` = ?",
+	selUserRating : "SELECT rating FROM users WHERE `id` = ?" 
 };

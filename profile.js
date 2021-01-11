@@ -442,20 +442,45 @@ router.get('/:id?', (req, res) => {
 	// Unlike a user
 	function unlikeUser() {
 		dbc.query(sql.unlikeUser, [user.id, otherUserId], (err, result) => {
-			createNotification();
 			console.log("you unliked a user");
 			jsonReturn = '{"res": success, "reason": you unliked a user}';
-			res.end(jsonReturn);
+			// res.end(jsonReturn);
+			updateFameRating(false);
 			return ;
 		});
 	}
 
-	// Only send a notification if other user was liked
+	// Only create a notification if other user was liked
 	function createNotification(serviceId) {
 		console.log(`SID ${serviceId}`);
 		dbc.query(sql.insNewNotification, [[otherUserId, serviceId, 'like']], (err, result) => {
-			if (err) {throw err}
-			
+			// Due to the unique row index this will
+			// throw an error for duplicate row entries
+			// see line 220 of setup.sql
+			if (err) {
+				if (err.code === 'ER_DUP_ENTRY'){
+					console.log("Dup row found");
+					updateFameRating(true);
+				}
+				else {
+					throw err;
+				}
+			} else {
+				updateFameRating(true);
+			}
+			return;
 		});
+	}
+
+	function updateFameRating(increaseRating) {
+		dbc.query(sql.selUserRating, [otherUserId], (err, result) => {
+			if (err) {throw err}
+			console.log("eeet");
+			let currentRating = Number(result[0].rating);
+			let newRating = increaseRating ? currentRating + 1 : currentRating - 1 ; 
+			res.end(`{"success": true, "rating": ${newRating}}`);
+			return;
+		});
+	
 	}
 });
