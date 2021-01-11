@@ -7,6 +7,31 @@ const express 		= require('express'),
 		flash		= require('connect-flash'),
 	  	PORT 		= 3000;
 
+var server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+// CHAT
+io.on('connection', (socket) => {
+	console.log('a user connected - index.js');
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
+
+	socket.on('add user', (username) => {
+		socket.username = username;
+		console.log('Socket user: ' + socket.username);
+	});
+
+	socket.on('chat message', (msg) => {
+		console.log('message: ' + msg);
+		io.emit('chat message', {
+			user: socket.username,
+			msg
+		});
+	});
+});
+
 require('dotenv').config();
 app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
@@ -17,7 +42,7 @@ app.use(express.static(__dirname + '/public'));
 // Does the secret not change everytime? Yes, but only if the server stops or the this script fails to cache
 app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000, sameSite: 'lax'}, saveUninitialized: true, resave: true}));
 
-if (app.get('env') === 'production') 
+if (app.get('env') === 'production')
 	app.set('trust proxy', 1);
 
 let signinRouter = require('./signin');
@@ -51,6 +76,9 @@ app.use('/notifications', notificationsRouter);
 let logoutRouter = require('./logout');
 app.use('/logout', logoutRouter);
 
+let chatRouter = require('./chat');
+app.use('/chat', chatRouter);
+
 app.use((req, res) => {
 	const sess = req.session.user;
 
@@ -82,7 +110,7 @@ app.use((req, res) => {
 	});
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
 	console.log('Server started on port ' + PORT);
 });
 
