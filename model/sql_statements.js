@@ -66,5 +66,6 @@ module.exports = {
 	checkChats				: "SELECT id FROM chat_notifications WHERE user_id = ? AND viewed = 'F' LIMIT 1",
 	selUserLike				: "SELECT * FROM likes WHERE id = ?",
 	selUserView				: "SELECT viewer FROM views WHERE id = ?",
-	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?"
-}
+	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?",
+	selUserLikeStatus : "SELECT * FROM likes WHERE `liker` = ? AND `liked` = ?"
+};

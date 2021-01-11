@@ -395,13 +395,58 @@ router.get('/:id?', (req, res) => {
 				res.end('{"res": failed, "reason": user has blocked you}');
 				return ;
 			} else {
-				jsonReturn = '{"res": success, "reason": you are not blocked}';
-				res.end(jsonReturn);
+				// jsonReturn = '{"res": success, "reason": you are not blocked}';
+				// res.end(jsonReturn);
+				checkLikeStatus();
 				return;
 			}
 		});
 	}
 
-	
+	// Check like status
+	function checkLikeStatus() {
+		dbc.query(sql.selUserLikeStatus, [user.id, otherUserId], (err, result) => {
+			if (err) {throw err}
+			if (result.length == 0) {
+				likeUser(false);
+			} else if (result[0].unliked === 'T') {
+				likeUser(true);
+			} else if (result[0].unliked === 'F') {
+				unlikeUser();
+			}
+			console.log(`You checked like status`);
+			// res.end(JSON.stringify(result));
+			return ;
+		});
+	}
 
+	// Like a user
+	function likeUser(hasLikedBefore) {
+		if (!hasLikedBefore) {
+			dbc.query(sql.insLike, [[user.id, otherUserId]], (err, result) => {
+				if (err) {throw err}
+				console.log("Like inserted " + JSON.stringify(result));
+				res.end(JSON.stringify(result));
+				return ;
+			});
+		} else if (hasLikedBefore) {
+			dbc.query(sql.likeUnlikedUser, [user.id, otherUserId], (err, result) => {
+				if (err) {throw err}
+				console.log("Like updated " + JSON.stringify(result));
+				res.end(JSON.stringify(result));
+				return ;
+			});
+		}
+	}
+
+	// Unlike a user
+	function unlikeUser() {
+		dbc.query(sql.unlikeUser, [user.id, otherUserId], (err, result) => {
+			if (err) {throw err}
+			console.log("you unliked a user");
+			jsonReturn = '{"res": success, "reason": you unliked a user}';
+			res.end(jsonReturn);
+			return ;
+		});
+	}
 });
