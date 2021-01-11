@@ -15,7 +15,7 @@ module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
-	let notifications
+	let notifications;
 	// let sql = "SELECT * FROM notifications WHERE user_id = ?";
 		//notifications;
 		

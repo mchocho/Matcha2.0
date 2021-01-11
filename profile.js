@@ -376,11 +376,9 @@ router.get('/:id?', (req, res) => {
 			for (let i = 0; i < result.length; i++) {
 				if (result[i].liker === otherUserId) {
 					userLikesYou = true;
-					console.log("user likes you");
 				}
 				if (result[i].liker === user.id) {
 					youLikeUser = true;
-					console.log("You like user");
 				}
 			}
 			checkBlockedStatus();
@@ -410,30 +408,32 @@ router.get('/:id?', (req, res) => {
 			if (result.length == 0) {
 				likeUser(false);
 			} else if (result[0].unliked === 'T') {
-				likeUser(true);
+				likeUser(true, result[0].id);
 			} else if (result[0].unliked === 'F') {
 				unlikeUser();
 			}
-			console.log(`You checked like status`);
+			console.log(`You checked like status ${JSON.stringify(result)}`);
 			// res.end(JSON.stringify(result));
 			return ;
 		});
 	}
 
 	// Like a user
-	function likeUser(hasLikedBefore) {
+	function likeUser(hasLikedBefore, likesRowId) {
 		if (!hasLikedBefore) {
 			dbc.query(sql.insLike, [[user.id, otherUserId]], (err, result) => {
 				if (err) {throw err}
 				console.log("Like inserted " + JSON.stringify(result));
-				res.end(JSON.stringify(result));
+				// res.end(JSON.stringify(result));
+				createNotification(result.insertId);
 				return ;
 			});
 		} else if (hasLikedBefore) {
 			dbc.query(sql.likeUnlikedUser, [user.id, otherUserId], (err, result) => {
 				if (err) {throw err}
 				console.log("Like updated " + JSON.stringify(result));
-				res.end(JSON.stringify(result));
+				// res.end(JSON.stringify(result));
+				createNotification(likesRowId);
 				return ;
 			});
 		}
@@ -442,11 +442,20 @@ router.get('/:id?', (req, res) => {
 	// Unlike a user
 	function unlikeUser() {
 		dbc.query(sql.unlikeUser, [user.id, otherUserId], (err, result) => {
-			if (err) {throw err}
+			createNotification();
 			console.log("you unliked a user");
 			jsonReturn = '{"res": success, "reason": you unliked a user}';
 			res.end(jsonReturn);
 			return ;
+		});
+	}
+
+	// Only send a notification if other user was liked
+	function createNotification(serviceId) {
+		console.log(`SID ${serviceId}`);
+		dbc.query(sql.insNewNotification, [[otherUserId, serviceId, 'like']], (err, result) => {
+			if (err) {throw err}
+			
 		});
 	}
 });
