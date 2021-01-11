@@ -479,6 +479,10 @@ router.get('/:id?', (req, res) => {
 			let currentRating = Number(result[0].rating);
 			let newRating = increaseRating ? currentRating + 1 : currentRating - 1 ; 
 			res.end(`{"success": true, "rating": ${newRating}}`);
+			dbc.query(sql.updateFameRating, [newRating, otherUserId], (err, result) => {
+				if (err) {throw err}
+				console.log("rating updated");
+			});
 			return;
 		});
 	
