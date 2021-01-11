@@ -15,18 +15,24 @@ const io = require('socket.io')(server);
 
 // CHAT
 io.on('connection', (socket) => {
-  console.log('a user connected');
+	console.log('a user connected - index.js');
 
-  // socket.broadcast.emit('hi');
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+	socket.on('add user', (username) => {
+		socket.username = username;
+		console.log('Socket user: ' + socket.username);
+	});
 
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-  });
+	socket.on('chat message', (msg) => {
+		console.log('message: ' + msg);
+		io.emit('chat message', {
+			user: socket.username,
+			msg
+		});
+	});
 });
 
 app.use(flash());
