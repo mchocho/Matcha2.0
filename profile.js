@@ -97,7 +97,9 @@ router.get('/:id?', (req, res) => {
 												dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
 													if (err) throw err;
 													dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
-														if (err) throw err;
+														if (err) {
+															console.log("There was on err on line 101 of profile.js: " + err.message);
+														}
 														if (ft_util.VERBOSE) {
 															console.log('Notification status: ', values[0]);
 
@@ -320,18 +322,18 @@ router.get('/:id?', (req, res) => {
 	return;
 }).post('/cconnect', (req, res) => {
 	const user = req.session.user;
-	const otherUserId = req.body.otherUser;
+	const otherUserId = Number(req.body.otherUser);
 	let userHasImage = false;
 	let otherUserHasImage = false;
-	let jsonReturn = "";
-	let userLikesYou = false;
+	let jsonReturn = {};
+	let otherUserLikesYou = false;
 	let youLikeUser = false;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});
 
 	// Check if user is logged in
 	if (!ft_util.isobject(user) || user.verified !== 'T' || user.valid !== 'T' ) {
-		res.end('{"res":failed}');
+		res.end(JSON.stringify({success: false}));
 		res.redirect('/logout');
 		console.log("Profile cconnect logged you out");
     return;
@@ -353,17 +355,25 @@ router.get('/:id?', (req, res) => {
 					}
 					if (result.length > 0) {
 						otherUserHasImage = true;
-						jsonReturn = '{"res": success}';
-						// res.end(jsonReturn);
 						getUsersConnStatus();
 					}
 					else {
-						res.end('{"res": failed, "reason": no images}');
+						jsonReturn = {
+							success: false,
+							otherUserHasImage,
+							userHasImage,
+						}
+						res.end(JSON.stringify(jsonReturn));
 						return ;
 					}
 				});
 			} else {
-				res.end('{"res": failed, "reason": no images}');
+				jsonReturn = {
+					success: false,
+					otherUserHasImage,
+					userHasImage,
+				}
+				res.end(JSON.stringify(jsonReturn));
 				return ;
 			}
 		});
@@ -375,10 +385,12 @@ router.get('/:id?', (req, res) => {
 			if (err) {throw err}
 			for (let i = 0; i < result.length; i++) {
 				if (result[i].liker === otherUserId) {
-					userLikesYou = true;
+					otherUserLikesYou = true;
+					console.log('xxxxxxx1');
 				}
 				if (result[i].liker === user.id) {
 					youLikeUser = true;
+					console.log('xxxxxxxx2');
 				}
 			}
 			checkBlockedStatus();
@@ -390,11 +402,13 @@ router.get('/:id?', (req, res) => {
 		dbc.query(sql.selBlockedUser, [otherUserId, user.id], (err, result) => {
 			if (err) {throw err}
 			if (result.length > 0) {
-				res.end('{"res": failed, "reason": user has blocked you}');
+				jsonReturn = {
+					success: false,
+					otherUserBlockedYou: true
+				}
+				res.end(JSON.stringify(jsonReturn));
 				return ;
 			} else {
-				// jsonReturn = '{"res": success, "reason": you are not blocked}';
-				// res.end(jsonReturn);
 				checkLikeStatus();
 				return;
 			}
@@ -412,27 +426,24 @@ router.get('/:id?', (req, res) => {
 			} else if (result[0].unliked === 'F') {
 				unlikeUser();
 			}
-			console.log(`You checked like status ${JSON.stringify(result)}`);
-			// res.end(JSON.stringify(result));
 			return ;
 		});
 	}
 
 	// Like a user
 	function likeUser(hasLikedBefore, likesRowId) {
+		youLikeUser = true;
 		if (!hasLikedBefore) {
 			dbc.query(sql.insLike, [[user.id, otherUserId]], (err, result) => {
 				if (err) {throw err}
-				console.log("Like inserted " + JSON.stringify(result));
-				// res.end(JSON.stringify(result));
+				console.log("Like inserted ");
 				createNotification(result.insertId);
 				return ;
 			});
 		} else if (hasLikedBefore) {
 			dbc.query(sql.likeUnlikedUser, [user.id, otherUserId], (err, result) => {
 				if (err) {throw err}
-				console.log("Like updated " + JSON.stringify(result));
-				// res.end(JSON.stringify(result));
+				console.log("Like updated ");
 				createNotification(likesRowId);
 				return ;
 			});
@@ -443,8 +454,7 @@ router.get('/:id?', (req, res) => {
 	function unlikeUser() {
 		dbc.query(sql.unlikeUser, [user.id, otherUserId], (err, result) => {
 			console.log("you unliked a user");
-			jsonReturn = '{"res": success, "reason": you unliked a user}';
-			// res.end(jsonReturn);
+			youLikeUser = false;
 			updateFameRating(false);
 			return ;
 		});
@@ -478,10 +488,16 @@ router.get('/:id?', (req, res) => {
 			console.log("eeet");
 			let currentRating = Number(result[0].rating);
 			let newRating = increaseRating ? currentRating + 1 : currentRating - 1 ; 
-			res.end(`{"success": true, "rating": ${newRating}}`);
+			jsonReturn = {
+				success : true,
+				rating : newRating,
+				otherUserLikesYou,
+				youLikeUser
+			}
+			res.end(JSON.stringify(jsonReturn));
 			dbc.query(sql.updateFameRating, [newRating, otherUserId], (err, result) => {
 				if (err) {throw err}
-				console.log("rating updated");
+				console.log(`rating updated ${JSON.stringify(jsonReturn)}`);
 			});
 			return;
 		});
