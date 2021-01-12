@@ -17,6 +17,7 @@ form.addEventListener('submit', function(e) {
 });
 
 socket.on('chat message', (data) => {
+	console.log("hey hey");
 	var userDiv = document.createElement('span');
 	userDiv.setAttribute("class", "username");
 	userDiv.textContent = data.user;
