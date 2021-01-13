@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     return;
 	}
 
-	res.render('chat.pug', {
+	res.render('chat', {
 		title: "Your Chat | Cupid's Arrow",
 		username: sess.username
 	});

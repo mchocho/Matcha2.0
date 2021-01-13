@@ -79,9 +79,11 @@ app.use('/logout', logoutRouter);
 let chatRouter = require('./chat');
 app.use('/chat', chatRouter);
 
+let cchatRouter = require('./chat');
+app.use('/cchat', chatRouter);
+
 app.use((req, res) => {
 	const sess = req.session.user;
-
 	if (!ft_util.isobject(sess)) {
 			res.redirect('/logout');
 			return;
