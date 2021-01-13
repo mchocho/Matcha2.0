@@ -1,11 +1,12 @@
-const express 		= require('express'),
-	  	path		= require('path'),
-	  	body_p		= require('body-parser'),
-	  	session 	= require('express-session'),
-	  	uuidv4 		= require('uuid/v4'),
-	  	app 		= express(),
-		flash		= require('connect-flash'),
-	  	PORT 		= 3000;
+const express = require('express');
+const	path = require('path');
+const	body_p = require('body-parser');
+const session = require('express-session');
+const uuidv4 = require('uuid/v4');
+const app = express();
+const flash	= require('connect-flash');
+const PORT = 3000;
+const {addChatUser, getChatUser, removeChatUser, getRoomId} = require('./includes/chatUsers');
 
 var server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -13,22 +14,26 @@ const io = require('socket.io')(server);
 // CHAT
 io.on('connection', (socket) => {
 	console.log('a user connected - index.js');
+	socket.on('joinRoom', ({username, room}) => {
+		const user = addChatUser(socket.id, username, room);
+		socket.join(user.room);
+
+		io.to(user.room).emit('fromServer', {
+			user: `hi ${user.username} welcome to chat`,
+			msg: 'you are in ' + room
+		});
+	});
+
+	socket.on('fromClient', (msg) => {
+		const user = getChatUser(socket.id);
+		io.to(user.room).emit('fromServer', {
+			user: user.username,
+			msg
+		})
+	});
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
-	});
-
-	socket.on('add user', (username) => {
-		socket.username = username;
-		console.log('Socket user: ' + socket.username);
-	});
-
-	socket.on('chat message', (msg) => {
-		console.log('message: ' + msg);
-		io.emit('chat message', {
-			user: socket.username,
-			msg
-		});
 	});
 });
 
@@ -79,8 +84,8 @@ app.use('/logout', logoutRouter);
 let chatRouter = require('./chat');
 app.use('/chat', chatRouter);
 
-let cchatRouter = require('./chat');
-app.use('/cchat', chatRouter);
+let cchatRouter = require('./cchat');
+app.use('/cchat', cchatRouter);
 
 app.use((req, res) => {
 	const sess = req.session.user;

@@ -494,13 +494,18 @@ router.get('/:id?', (req, res) => {
 				otherUserLikesYou,
 				youLikeUser
 			}
-			res.end(JSON.stringify(jsonReturn));
 			dbc.query(sql.updateFameRating, [newRating, otherUserId], (err, result) => {
 				if (err) {throw err}
 				console.log(`rating updated ${JSON.stringify(jsonReturn)}`);
+				res.end(JSON.stringify(jsonReturn));
 			});
 			return;
 		});
-	
+	}
+
+	function createRoom() {
+		if (youLikeUser && otherUserLikesYou) {
+			
+		}
 	}
 });

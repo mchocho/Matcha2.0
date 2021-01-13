@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS  `matcha`.`user_chat`
 ( 
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT , 
 	`user_one` INT UNSIGNED NOT NULL , 
-	`user_two` INT UNSIGNED NOT NULL , 
+	`user_two` INT UNSIGNED NOT NULL ,
+  `room_name` VARCHAR(180) DEFAULT NULL , 
 	`date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	PRIMARY KEY (`id`),
 	CONSTRAINT `user_one_id_constraint`
