@@ -69,5 +69,8 @@ module.exports = {
 	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?",
 	selUserLikeStatus : "SELECT * FROM likes WHERE `liker` = ? AND `liked` = ?",
 	selUserRating : "SELECT rating FROM users WHERE `id` = ?",
-	insNewChatRoom : "INSERT INTO user_chat (user_one, user_two, room_name) VALUES (?)" 
+	insNewChatRoom : "INSERT INTO user_chat (user_one, user_two, room_name) VALUES (?)",
+	selUserChatId : "SELECT id FROM user_chat WHERE (user_one = ? AND user_two = ?) OR (user_two = ? AND user_one = ?)",
+	selUserChatRoom : "SELECT room_name FROM user_chat WHERE (user_one = ? AND user_two = ?) OR (user_one = ? AND user_two = ?)",
+	delChatRoom : "DELETE FROM user_chat WHERE room_name = ?"
 };

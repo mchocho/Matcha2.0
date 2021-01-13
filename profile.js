@@ -14,7 +14,7 @@ const express 		= require('express'),
 	  sql			= require('./model/sql_statements.js'),
 	  email			= require('./includes/mail_client.js'),
 	  msgTemplates 	= require('./includes/email_templates.js');
-const { result } = require('lodash');
+const { result, find } = require('lodash');
 
 let router = express.Router();
 module.exports = router;
@@ -330,6 +330,7 @@ router.get('/:id?', (req, res) => {
 	let otherUserLikesYou = false;
 	let youLikeUser = false;
 	let roomName = "";
+	let newRating;
 
 	res.writeHead(200, {"Content-Type": "text/plain"});
 
@@ -457,8 +458,27 @@ router.get('/:id?', (req, res) => {
 		dbc.query(sql.unlikeUser, [user.id, otherUserId], (err, result) => {
 			console.log("you unliked a user");
 			youLikeUser = false;
-			updateFameRating(false);
+			deleteRoom();
 			return ;
+		});
+	}
+
+	// Delete a chat room if it exists
+	function deleteRoom() {
+		dbc.query(sql.selUserChatRoom, [user.id, otherUserId, otherUserId, user.id], (err, result) => {
+			if (err) {throw err}
+			if (result.length > 0) {
+				dbc.query(sql.delChatRoom, [result[0].room_name], (err, result) => {
+					if (err) {throw err}
+					console.log("deleting a room ", JSON.stringify(result));
+					roomName = false;
+					updateFameRating(false);;
+				});
+			} else {
+				console.log("Tried to del a room ", JSON.stringify(result))
+				roomName = false;
+				updateFameRating(false);
+			}
 		});
 	}
 
@@ -489,29 +509,64 @@ router.get('/:id?', (req, res) => {
 			if (err) {throw err}
 			console.log("eeet");
 			let currentRating = Number(result[0].rating);
-			let newRating = increaseRating ? currentRating + 1 : currentRating - 1 ; 
-			jsonReturn = {
-				success : true,
-				rating : newRating,
-				otherUserLikesYou,
-				youLikeUser
-			}
+			newRating = increaseRating ? currentRating + 1 : currentRating - 1 ; 
 			dbc.query(sql.updateFameRating, [newRating, otherUserId], (err, result) => {
 				if (err) {throw err}
-				console.log(`rating updated ${JSON.stringify(jsonReturn)}`);
-				res.end(JSON.stringify(jsonReturn));
-				createRoom();
+				console.log(`rating updated`);
+				findChatRoom();
 			});
 			return;
 		});
 	}
 
-	function createRoom() {
+	function findChatRoom() {
 		if (youLikeUser && otherUserLikesYou) {
-			roomName = uuidv4();
-			dbc.query(sql.insNewChatRoom, [[user.id, otherUserId, roomName]], (err, result) => {
+			dbc.query(sql.selUserChatRoom, [user.id, otherUserId, otherUserId, user.id], (err, result) => {
 				if (err) {throw err}
+				if (result.length > 0) {
+					roomName = result[0].room_name;
+					jsonReturn = {
+						success : true,
+						rating : newRating,
+						otherUserLikesYou,
+						youLikeUser,
+						roomId : roomName
+					}
+					console.log("in find room 1", JSON.stringify(jsonReturn));
+					res.end(JSON.stringify(jsonReturn));
+					return ;
+				} else {
+					createRoom();
+				}
 			});
+		} else {
+			jsonReturn = {
+				success : true,
+				rating : newRating,
+				otherUserLikesYou,
+				youLikeUser,
+				roomId : false
+			}
+			console.log("in find room 2", JSON.stringify(jsonReturn));
+			res.end(JSON.stringify(jsonReturn));
+			return ;
 		}
+	}
+
+	function createRoom() {
+		roomName = uuidv4();
+		dbc.query(sql.insNewChatRoom, [[user.id, otherUserId, roomName]], (err, result) => {
+			if (err) {throw err}
+			jsonReturn = {
+				success : true,
+				rating : newRating,
+				otherUserLikesYou,
+				youLikeUser,
+				roomId : roomName
+			}
+			console.log("in create room", JSON.stringify(jsonReturn));
+			res.end(JSON.stringify(jsonReturn));
+			return ;
+		});
 	}
 });
