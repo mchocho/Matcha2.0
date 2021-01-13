@@ -20,10 +20,11 @@ let router = express.Router();
 module.exports = router;
 
 router.get('/:id?', (req, res) => {
-	const sess = req.session.user,
-		  id = Number(req.params.id);
-	let   location,
-			user;
+	const sess = req.session.user;
+	const	id = Number(req.params.id);
+	let location;
+	let	user;
+	let roomId = "";
 
 	if (!ft_util.isobject(sess)) {
 		res.redirect('/logout');
@@ -42,119 +43,136 @@ router.get('/:id?', (req, res) => {
 		res.redirect('/matcha');
 		return;
 	}
-	dbc.query(sql.selUserById, [id], (err, result) => {
-		if (err) {throw err}
-		if (result.length === 0) {
-				res.redirect('/matcha');
-				return;
-		}
-		user = result[0];
-		dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
+
+	getChatRoomId();
+
+	function getChatRoomId() {
+		dbc.query(sql.selUserChatRoom, [sess.id, id, id, sess.id], (err, result) => {
 			if (err) {throw err}
-			
-			location = result[0];
-			dbc.query(sql.selUserImages, [id], (err, result) => {
+			if (result.length > 0) {
+				roomId = result[0].room_name;
+			}
+			doTheThings();
+		});
+	}
+
+	function doTheThings() {
+		dbc.query(sql.selUserById, [id], (err, result) => {
+			if (err) {throw err}
+			if (result.length === 0) {
+					res.redirect('/matcha');
+					return;
+			}
+			user = result[0];
+			dbc.query(sql.selUserLocation, [sess.id], (err, result) => {
 				if (err) {throw err}
-				user.images = result;
-				dbc.query(sql.selUserTags, [id], (err, result) => {
-					if (err) throw err;
-					ft_util.getTagNames(dbc, result).then(nTags => {
-						user.tags = nTags;
-						ft_util.similarInterests(dbc, sess.id, id).then(tags => {
-							for (let i = 0, n = tags.length; i < n; i++) {
-								for (let j = 0, m = user.tags.length; j < m; j++) {
-									if (tags[i] === user.tags[j].id) {
-										user.tags[j]['similar'] = true;
+				
+				location = result[0];
+				dbc.query(sql.selUserImages, [id], (err, result) => {
+					if (err) {throw err}
+					user.images = result;
+					dbc.query(sql.selUserTags, [id], (err, result) => {
+						if (err) throw err;
+						ft_util.getTagNames(dbc, result).then(nTags => {
+							user.tags = nTags;
+							ft_util.similarInterests(dbc, sess.id, id).then(tags => {
+								for (let i = 0, n = tags.length; i < n; i++) {
+									for (let j = 0, m = user.tags.length; j < m; j++) {
+										if (tags[i] === user.tags[j].id) {
+											user.tags[j]['similar'] = true;
+										}
 									}
 								}
-							}
-
-							dbc.query(sql.selUserLocation, [id], (err, result) => {
-								if (err) throw err;
-								if (result.length === 0) {
-									res.redirect('/matcha');
-									return;
-								}
-								user['location'] = result[0];
-								user['distance'] = (geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}) / 1000 ).toFixed(0);
-								
-								dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
-									if (err) {throw err}
-									for (let i = 0, n = result.length; i < n; i++) {
-										if (result[i].liker === id)
-											user['userLikesClient'] = true;
-										if (result[i].liker === Number(sess.id))
-											user['clientLikesUser'] = true;
+	
+								dbc.query(sql.selUserLocation, [id], (err, result) => {
+									if (err) throw err;
+									if (result.length === 0) {
+										res.redirect('/matcha');
+										return;
 									}
-									user['age'] = moment(user.DOB).fromNow(true);
-									user['last_seen'] = moment(user['last_seen']).fromNow();
-
-									dbc.query(sql.selBlockedUser, [sess.id, id], (err, result) => {
-										Promise.all([
-											ft_util.userNotificationStatus(dbc, sess.id),
-											ft_util.getUserImages(dbc, sess.id)
-										]).then((values) => {
-											if (result === 0) {
-												dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
-													if (err) throw err;
-													dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
-														if (err) {
-															console.log("There was on err on line 101 of profile.js: " + err.message);
-														}
-														if (ft_util.VERBOSE) {
-															console.log('Notification status: ', values[0]);
-
-															console.log('Profile object --> ' + util.inspect({
+									user['location'] = result[0];
+									user['distance'] = (geo.distanceTo({lat: location.lat, lon: location.lng}, {lat: result[0]['lat'], lon: result[0]['lng']}) / 1000 ).toFixed(0);
+									
+									dbc.query(sql.getConnectionStatus, [sess.id, id, id, sess.id], (err, result) => {
+										if (err) {throw err}
+										for (let i = 0, n = result.length; i < n; i++) {
+											if (result[i].liker === id)
+												user['userLikesClient'] = true;
+											if (result[i].liker === Number(sess.id))
+												user['clientLikesUser'] = true;
+										}
+										user['age'] = moment(user.DOB).fromNow(true);
+										user['last_seen'] = moment(user['last_seen']).fromNow();
+	
+										dbc.query(sql.selBlockedUser, [sess.id, id], (err, result) => {
+											Promise.all([
+												ft_util.userNotificationStatus(dbc, sess.id),
+												ft_util.getUserImages(dbc, sess.id)
+											]).then((values) => {
+												if (result === 0) {
+													dbc.query(sql.insNewView, [[id, sess.id]], (err, result) => {
+														if (err) throw err;
+														dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
+															if (err) {
+																console.log("There was on err on line 101 of profile.js: " + err.message);
+															}
+															if (ft_util.VERBOSE) {
+																console.log('Notification status: ', values[0]);
+	
+																console.log('Profile object --> ' + util.inspect({
+																	title: user.username,
+																	notifications: values[0].notifications,
+																	chats: values[0].chats,
+																	profile_pic: values[1][0],
+																	user: user
+																}));
+															}
+															res.render('profile.pug', {
 																title: user.username,
 																notifications: values[0].notifications,
 																chats: values[0].chats,
 																profile_pic: values[1][0],
-																user: user
-															}));
-														}
-														res.render('profile.pug', {
+																user: user,
+																roomId
+															});
+														});
+													});
+												} else {
+													if (ft_util.VERBOSE) {
+														console.log('Profile object --> ' + util.inspect({
 															title: user.username,
 															notifications: values[0].notifications,
 															chats: values[0].chats,
 															profile_pic: values[1][0],
 															user: user
-														});
-													});
-												});
-											} else {
-												if (ft_util.VERBOSE) {
-													console.log('Profile object --> ' + util.inspect({
+														}));
+													}
+													res.render('profile.pug', {
 														title: user.username,
 														notifications: values[0].notifications,
 														chats: values[0].chats,
 														profile_pic: values[1][0],
-														user: user
-													}));
+														user: user,
+														roomId
+													});
 												}
-												res.render('profile.pug', {
-													title: user.username,
-													notifications: values[0].notifications,
-													chats: values[0].chats,
-													profile_pic: values[1][0],
-													user: user
-												});
-											}
-										}).catch(e => {
-											throw (e)
+											}).catch(e => {
+												throw (e)
+											});
 										});
 									});
 								});
+							}).catch(e => {
+								throw (e)
 							});
 						}).catch(e => {
-							throw (e)
+							throw (e);
 						});
-					}).catch(e => {
-						throw (e);
 					});
 				});
 			});
 		});
-	});
+	}	
 }).post('/connect:profile?', (req, res) => {
 	console.log("xxxxxxxxxxx " + JSON.stringify(req.params));
 	const sess = req.session.user,
