@@ -78,6 +78,9 @@ app.use("/interests", interestsRouter);
 let preferencesRouter = require("./api/preferences");
 app.use("/preferences", preferencesRouter);
 
+let locationRouter = require("./api/location");
+app.use("/location", locationRouter);
+
 let matchaRouter = require("./src/matcha");
 app.use("/matcha", matchaRouter);
 
