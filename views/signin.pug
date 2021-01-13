@@ -1,31 +1,19 @@
 extends layout
 
 block content
-	body.signin
-		// what is this header here?
-		header
-			a(href='/')
-				div
-					img(src='images/logo.png')
-				.heading
-					h1 Cupid's Arrow
-			.profile_container
-				a(href='/signup') Sign up | 
-				a(href='/') Sign in
-		.wrapper(align='center')
-			h2 Meet and fall in love!
-			form#signin(method='POST')
-				if message
-					span #{message}
-				span.error #{errors[0]} #{errors[2]}
-				label
-					| Username
-					input.txt(type='text', name='username', autofocus='true', required='')
-				span.error #{errors[1]}
-				label
-					| Password
-					input.txt(type='password', name='password', required='')
-				input.btn.btn-primary.btn-lg(type='submit' name='cupid' value='Submit')
-				br
-				span Forgot your password?
-				a(href='/forgot_password')  Click here
+  .wrapper(align='center')
+    h2 Meet and fall in love!
+    form#signin(method='POST')
+      if message
+        span #{message}
+      span.error #{errors[0]} #{errors[1]} #{errors[2]}
+      h1.h3.mb-3.font-weight-normal Sign in
+      label.sr-only(for='inputName') Username
+      input#inputName.form-control(type='text', name='username', placeholder='Username', required='', autofocus='')
+      label.sr-only(for='inputPassword') Password
+      input#inputPassword.form-control(type='password', name='password',placeholder='Password', required='')
+      br
+      input.btn.btn-lg.btn-primary.btn-block(type='submit', name='cupid', value='Sign in')
+      br
+      span Forgot your password? 
+      a(href='/forgot_password') Click here

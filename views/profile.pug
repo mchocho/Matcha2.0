@@ -1,4 +1,4 @@
-extends layout_auth
+extends layout
 
 block content 
   #profile.content
@@ -57,9 +57,9 @@ block content
       button#blockuser_btn.btn.btn-dark(type='button') Block user
       | &emsp; &emsp; &emsp;
       button#reportuser_btn.btn.btn-dark(type='button') Report account
-
+    include footer.pug
     script(src='/js/alertify.min.js')
     script(src='/js/xhr.js')
-    script(src='/js/profile.js')
-    script(src='/js/clearStorage.js')
-    script(src='/js/reloadCSS.js')
+    script(src='/js/connect.js')
+    script(src='/js/block.js')
+    script(src='/js/report.js')

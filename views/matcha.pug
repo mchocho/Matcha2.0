@@ -1,4 +1,4 @@
-extends layout_auth
+extends layout
 
 block content 
   #matcha
@@ -52,18 +52,7 @@ block content
                 span.name #{user.username}
                 br
                 span.distance #{user.distance} km
-  footer
-    div(align='center')
-      | Icons made by 
-      a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
-      |  | 
-      a(href='https://www.flaticon.com/authors/bqlqn', title='bqlqn') bqlqn
-      |  | 
-      a(href='https://www.flaticon.com/authors/smashicons' title='Smashicons') Smashicons
-      |  | 
-      a(href='https://www.flaticon.com/authors/good-ware', title='Good Ware') Good Ware
-      |  from 
-      a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+    include footer.pug
   script(src='/js/matcha.js')
   script(src='/js/reloadCSS.js')
 

@@ -1,4 +1,4 @@
-extends layout_auth
+extends layout
 
 block content   
 	#user
@@ -27,7 +27,7 @@ block content
 					button#image_cancel.btn.btn-secondary(type='button') Cancel
 			.views_container
 				| #{user.viewcount} views
-			form(method='post', action='/user/new_username')
+			form(method='post', action='/user/username')
 				h4#username.value #{user.username}
 				input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
 				#username_edit_container.edit.hide
@@ -49,7 +49,7 @@ block content
 					#new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
 						button#fullname_confirm.btn.btn-secondary(type='submit') Confirm
 						button#fullname_cancel.btn.btn-secondary(type='button') Cancel
-			form(method='post')
+			form.inline(method='post')
 				.edit
 					h4 Gender
 					span#error_2.error
@@ -77,7 +77,7 @@ block content
 						#new-dob-confirm.btn-group(role='group', aria-label='Confirm date of birth')
 							button#dob_confirm.btn.btn-secondary(type='submit') Confirm
 							button#dob_cancel.btn.btn-secondary(type='button') Cancel
-			form(method='post', action='/user/new_email')
+			form(method='post', action='/user/email')
 				.edit
 					h4 Change Email
 						img(src='images/icons/envelope.png', alt='email address', class='input_icon')
@@ -90,7 +90,7 @@ block content
 						#new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
 							button#email_confirm.btn.btn-secondary(type='submit') Confirm
 							button#email_cancel.btn.btn-secondary(type='button') Cancel
-			form(method='post', action='/user/reset_password')
+			form(method='post', action='/user/password')
 				.edit
 					h4 Password
 					input#password_edit_btn.custom_btn.ib(type='button', value='Change password')
@@ -104,7 +104,7 @@ block content
 						#new-password-confirm.btn-group(role='group', aria-label='Confirm new password')
 							button#password_confirm.btn.btn-secondary(type='submit') Confirm
 							button#password_cancel.btn.btn-secondary(type='button') Cancel
-			form(method='post', action='/user/interest')
+			form(method='post', action='/interest/add')
 				.edit
 					h4 Interests
 					input#interests_add_btn.custom_btn.ib(type='button', value='Add')
@@ -129,21 +129,11 @@ block content
 						#new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
 							button#biography_confirm.btn.btn-secondary(type='submit') Confirm
 							button#biography_cancel.btn.btn-secondary(type='button') Cancel
-				.edit
-					span#error_8.error
-					input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
-					#map
-			footer
-				| Icons made by 
-				a(href='https://www.flaticon.com/authors/dave-gandy', title='Dave Gandy') Dave Gandy
-				|  from 
-				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com 
-				| | 
-				a(href='https://www.flaticon.com/authors/pixel-perfect', title='Pixel perfect') Pixel perfect
-				| | 
-				a(href="https://www.flaticon.com/authors/those-icons", title="Those Icons") Those Icons 
-				|  from 
-				a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+			.edit
+				span#error_8.error
+				input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
+				#map
+			include footer.pug
 		script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
 		script(type='text/javascript', src='/flatpickr/flatpickr.min.js')
 		script(type='text/javascript', src='/js/alertify.min.js')
@@ -151,4 +141,3 @@ block content
 		script(type='text/javascript', src='/js/xhr.js')
 		script(type='text/javascript', src='/js/map.js')
 		script(type='text/javascript', src='/js/user.js')
-		script(type='text/javascript', src='/js/reloadCSS.js')

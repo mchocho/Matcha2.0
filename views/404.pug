@@ -1,37 +1,8 @@
-doctype html
-html
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title #{title}
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
-    link(rel='stylesheet', href='/css/style.css', media='all')  
-    link(rel='stylesheet', href='/css/profile.css', media='all')       
-    link(rel='stylesheet', href='/css/404.css', media='all')       
-  body.no_file
-    header
-      a(href='/')
-        div
-          img(src='images/logo.png')
-        .heading
-          h1 Cupid's Arrow
-      .profile_container
-        a(href='/notifications')
-          img.notifications.icons(src=(!notifications) ? '/images/icons/bell_0.png' : '/images/icons/bell.png')
-        a(href='/chats')
-          img.messages.icons(src=(!chats) ? '/images/icons/envelope.png' : '/images/icons/new_message.png')
-        .user
-          a(href='/user')
-            if (!profile_pic)
-              img#avatar(src='/images/icons/user.png')
-            else if (profile_pic.name.startsWith('http://') || profile_pic.name.startsWith('https://'))
-              img#avatar(src=profile_pic.name)
-            else
-              img#avatar(src='/images/uploads/' + profile_pic.name)
-          a.logout(href='/logout') Logout
-    .error_container(align='center')
-      img(src='images/error.JPG')
-      h2 404
-      br
-      p Page Not Found
+extends layout
+
+block content
+  .error_container(align='center')
+    img(src='images/error.JPG')
+    h2 404
+    br
+    p Page Not Found

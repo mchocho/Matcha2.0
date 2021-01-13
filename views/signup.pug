@@ -1,65 +1,72 @@
 extends layout
 
 block content
-  body.signup
-    header
-      a(href='/')
-        div
-          img(src='images/logo.png')
-        .heading
-          h1 Cupid's Arrow
-      .profile_container
-        a(href='/signup') Sign up | 
-        a(href='/') Sign in
-    .wrapper.container(align='center')
-      h2 Register to find your true love!
-      form(method='POST', id="signup")
-        span#error_0.error #{errors[0]}
-        label
-          | Username
-          input#username.txt(type='text', name='username', required='')
-        span#error_1.error #{errors[1]}
-        label
-          | First name
-          input#f_name.txt(type='text', name='f_name', required='')
-        span#error_2.error #{errors[2]}
-        label
-          | Last name
-          input#l_name.txt(type='text', name='l_name', required='')
-        span#error_3.error #{errors[3]}
-        label
-          | Date of birth
-          input#dob.txt(type='text', name='dob', placeholder='Select a date...', required='')
-        span#error_5.error #{errors[5]}
-        div.row
-          div.col
-            label.top
-              | Gender
-              br
-              #gender_group.btn-group(role='group', aria-label='Gender')
-                button.btn.btn-secondary(type='button') Female
-                button.btn.btn-secondary(type='button') Male
-              input#gender(type='hidden', name='gender', value='')
-          div.col
-            label
-              | Preference
-              br
-              #preference_group.btn-group(role='group', aria-label='preferences')
-                button.btn.btn-secondary(type='button') Female
-                button.btn.btn-secondary(type='button') Male
-                button.btn.btn-secondary(type='button') Both
-              input#preference(type='hidden', name='preference', value='')
-        span#error_4.error.bottom #{errors[4]}
-        label
-          | Email
-          input#email.txt(type='email', name='email', required='')
-        span#error_5.error #{errors[6]} #{errors[7]}
-        label
-          | Password
-          input#password.txt(type='password', name='password', required='')
-        label
-          | Password confirmation
-          input#password_confirm.txt(type='password', name='password_confirm', required='')
-        input(type='submit', name='cupid', value='Submit')
-    script(src='/flatpickr/flatpickr.min.js')
-    script(src='/js/signup.js')
+  .wrapper.container(align='center')
+    h2 Register to find your true love!
+    form(method='POST', id="signup")
+      if (errors[0])
+        span.error #{errors[0]}
+      if (errors[1])
+        span.error #{errors[1]}
+      if (errors[2])
+        span.error #{errors[2]}
+      if (errors[3])
+        span.error #{errors[3]}
+      if (errors[4])
+        span.error #{errors[4]}
+      if (errors[5])
+        span.error #{errors[5]}
+      if (errors[6])
+        span.error #{errors[6]}
+      if (errors[7])
+        span.error #{errors[7]}
+
+      h1.h3.mb-3.font-weight-normal Sign up
+      
+      label.sr-only(for='inputName') Username
+      input#inputName.form-control(type='text', name='username', placeholder='Username', required='', autofocus='')
+      
+      label.sr-only(for='inputFirst') First name
+      input#inputFirst.form-control(type='text', name='firstname', placeholder='First name', required='')
+      
+      label.sr-only(for='inputLast') Last name
+      input#inputLast.form-control(type='text', name='lastname', placeholder='Last name', required='')
+      
+      label.sr-only(for='dob') Date of birth
+      input#dob.form-control(type='text', name='dob', placeholder='Date of birth', required='')
+
+      br
+      div.row
+        div.col
+          label.top
+            | Gender
+            br
+            #gender_group.btn-group(role='group', aria-label='Gender')
+              button.btn.btn-secondary(type='button') Female
+              button.btn.btn-secondary(type='button') Male
+            input#gender(type='hidden', name='gender', value='')
+        div.col
+          label
+            | Preference
+            br
+            #preference_group.btn-group(role='group', aria-label='preferences')
+              button.btn.btn-secondary(type='button') Female
+              button.btn.btn-secondary(type='button') Male
+              button.btn.btn-secondary(type='button') Both
+            input#preference(type='hidden', name='preference', value='')
+
+      br
+      label.sr-only(for='inputEmail') Email
+      input#inputLast.form-control(type='email', name='email', placeholder='Email', required='')
+
+      label.sr-only(for='inputPassword') Password
+      input#inputPassword.form-control(type='password', name='password', placeholder='Password', required='')
+
+      label.sr-only(for='inputPassword') Confirm password
+      input#inputPassword.form-control(type='password', placeholder='Confirm password', name='confirm', required='')
+
+      br
+
+      input.btn.btn-lg.btn-primary.btn-block(type='submit', name='cupid', value='Sign up')
+  script(src='/flatpickr/flatpickr.min.js')
+  script(src='/js/signup.js')
