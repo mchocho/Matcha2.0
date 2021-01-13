@@ -71,7 +71,6 @@ app.use('/user', userRouter);
 
 let matchaRouter = require('./matcha');
 app.use('/matcha', matchaRouter);
-// app.use('/matcha/:filter.:arg1?.:arg2?', matchaRouter);
 
 let profileRouter = require('./profile');
 app.use('/profile', profileRouter);

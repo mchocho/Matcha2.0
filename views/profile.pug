@@ -49,11 +49,11 @@ html
               img(src='/images/uploads/' + user.images[0].name)
       .connection_status
         input#profile_id(type='hidden', value=user.id)
-        img(src='/images/icons/connected.png' class=`${user.clientLikesUser && user.userLikesClient ? "d-inline" : "d-none"}`)
+        input#room_id(type='hidden', value=roomId)
+        img#conn_img(src='/images/icons/connected.png' class=`${user.clientLikesUser && user.userLikesClient ? "d-inline" : "d-none"}`)
         if(user.clientLikesUser === true && user.userLikesClient === true)
           span#connection_status You and #{user.username} are both connected
           button#connection_btnn.btn.btn-dark(type='button') Disconnect
-          button#chat_btn.btn.btn-dark.ml-1(type='button') Chat
         else if (user.userLikesClient === true)
           span#connection_status #{user.username} now likes you, like them back to get to know more about them.
           button#connection_btnn.btn.btn-dark(type='button') Connect
@@ -63,6 +63,7 @@ html
         else
           span#connection_status You and #{user.username} are not connected
           button#connection_btnn.btn.btn-dark(type='button') Connect
+        button#chat_btn.btn.btn-dark.ml-1(type='button' class=`${user.clientLikesUser && user.userLikesClient ? "d-inline" : "d-none"}`) Chat
       .details_container(align='center')
         .gender
           img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
