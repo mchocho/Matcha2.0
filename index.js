@@ -46,7 +46,7 @@ app.use("/bootstrap", express.static(__dirname + "/node_modules/bootstrap/dist/"
 app.use("/flatpickr", express.static(__dirname + "/node_modules/flatpickr/dist/"));
 
 // Does the secret not change everytime? Yes, but only if the server stops or the this script fails to cache
-app.use(session({secret: uuidv4(), cookie: {maxAge: 6000000}, saveUninitialized: true, resave: true}));
+app.use(session({secret: uuidv4(), cookie: {maxAge: 6000000, sameSite: 'lax'}, saveUninitialized: true, resave: true}));
 
 if (app.get("env") === "production")
   app.set("trust proxy", 1);
