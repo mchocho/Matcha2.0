@@ -14,6 +14,7 @@ const express 		= require('express'),
 	  sql			= require('./model/sql_statements.js'),
 	  email			= require('./includes/mail_client.js'),
 	  msgTemplates 	= require('./includes/email_templates.js');
+const { result } = require('lodash');
 
 let router = express.Router();
 module.exports = router;
@@ -328,6 +329,7 @@ router.get('/:id?', (req, res) => {
 	let jsonReturn = {};
 	let otherUserLikesYou = false;
 	let youLikeUser = false;
+	let roomName = "";
 
 	res.writeHead(200, {"Content-Type": "text/plain"});
 
@@ -498,6 +500,7 @@ router.get('/:id?', (req, res) => {
 				if (err) {throw err}
 				console.log(`rating updated ${JSON.stringify(jsonReturn)}`);
 				res.end(JSON.stringify(jsonReturn));
+				createRoom();
 			});
 			return;
 		});
@@ -505,7 +508,10 @@ router.get('/:id?', (req, res) => {
 
 	function createRoom() {
 		if (youLikeUser && otherUserLikesYou) {
-			
+			roomName = uuidv4();
+			dbc.query(sql.insNewChatRoom, [[user.id, otherUserId, roomName]], (err, result) => {
+				if (err) {throw err}
+			});
 		}
 	}
 });

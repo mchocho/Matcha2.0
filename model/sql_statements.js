@@ -68,5 +68,6 @@ module.exports = {
 	selUserView				: "SELECT viewer FROM views WHERE id = ?",
 	selUserBlacklist		: "SELECT blocked_user FROM blocked_accounts WHERE user_id = ?",
 	selUserLikeStatus : "SELECT * FROM likes WHERE `liker` = ? AND `liked` = ?",
-	selUserRating : "SELECT rating FROM users WHERE `id` = ?" 
+	selUserRating : "SELECT rating FROM users WHERE `id` = ?",
+	insNewChatRoom : "INSERT INTO user_chat (user_one, user_two, room_name) VALUES (?)" 
 };

@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('disconnect', () => {
+		removeChatUser(socket.id);
 		console.log('user disconnected');
 	});
 });

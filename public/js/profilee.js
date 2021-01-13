@@ -17,6 +17,12 @@ window.onload=function(){
 						connection_btnn.textContent = 'Disconnect';
 						if (res.otherUserLikesYou === true) {
 							connect_status.textContent = 'You and ' + profile_name + ' are both connected';
+							let chatButton = document.createElement('button');
+							chatButton.textContent = "Chat";
+							chatButton.setAttribute("class", "chat_btn btn btn-dark ml-1");
+							chatButton.setAttribute("type", "button");
+							const chatDiv = document.querySelector('.connection_status');
+							chatDiv.appendChild(chatButton);
 						} else {
 							connect_status.textContent = 'It seems like ' + profile_name + " hasn't liked you back, hang in there.";
 						}
