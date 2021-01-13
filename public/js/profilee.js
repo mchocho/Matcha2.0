@@ -7,6 +7,7 @@ window.onload=function(){
 	const chatButton = document.getElementById('chat_btn');
 	const connImg = document.getElementById('conn_img');
 	const roomId = document.getElementById('room_id');
+	let room_id = roomId.value;
 
 	connection_btnn.addEventListener('click', function(e) {
 		let xhttp = new XMLHttpRequest();
@@ -17,11 +18,12 @@ window.onload=function(){
 				
 				if (!res.roomId) {
 					roomId.setAttribute("value", "");
+					room_id = "";
 				}
 
 				if (!res.youLikeUser || !res.otherUserLikesYou) {
 					connImg.setAttribute("class", "d-none");
-					chatButton.setAttribute("class", "btn btn-dark ml-1 d-none");
+					chatButton.setAttribute("class", "nu d-none");
 				}
 
 				if (res.success === true) {
@@ -29,10 +31,12 @@ window.onload=function(){
 						connection_btnn.textContent = 'Disconnect';
 						if (res.otherUserLikesYou === true) {
 							connect_status.textContent = 'You and ' + profile_name + ' are both connected';
-							chatButton.setAttribute("class", "btn btn-dark ml-1 d-inline");
+							chatButton.setAttribute("class", "nu btn-dark ml-1 d-inline");
 							connImg.setAttribute("class", "d-inline");
 							if (res.roomId) {
 								roomId.setAttribute("value", res.roomId);
+								room_id = res.roomId;
+								chatButton.href = "/chat?roomId=" + room_id + "&otherUserId=" + profile_id;
 							}
 						} else {
 							connect_status.textContent = 'It seems like ' + profile_name + " hasn't liked you back, hang in there.";

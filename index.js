@@ -84,9 +84,6 @@ app.use('/logout', logoutRouter);
 let chatRouter = require('./chat');
 app.use('/chat', chatRouter);
 
-let cchatRouter = require('./cchat');
-app.use('/cchat', cchatRouter);
-
 app.use((req, res) => {
 	const sess = req.session.user;
 	if (!ft_util.isobject(sess)) {
