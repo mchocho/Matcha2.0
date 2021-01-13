@@ -1,21 +1,19 @@
-const express       = require("express");
-const ft_util       = require("../includes/ft_util.js");
+const express     = require("express");
+const ft_util     = require("../includes/ft_util.js");
 
-const router        = express.Router();
+const router      = express.Router();
 
-module.exports      = router;
+module.exports    = router;
 
 router.get("/", (req, res) =>
 {
-    const sess      = req.session.user;
-    const errors    = []
+  const sess      = req.session.user;
+  const errors    = []
 
-    //User already logged in
-    if (ft_util.isobject(sess))
-    {
-        res.redirect("/matcha");
-        return;
-    }
+  req.session.destroy(err =>
+  {
+    if (err) {throw err}
 
     res.render("verify_email.pug", { errors });
+  });
 })

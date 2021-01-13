@@ -16,6 +16,11 @@
 	margin-top: 1.5%;
 }
 
+form.inline
+{
+	display: inline-block;
+}
+
 .input_icon {
 	display: block;
 	width: 10%;

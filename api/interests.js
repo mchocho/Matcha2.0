@@ -1,7 +1,7 @@
 const express       = require("express");
+
 const dbc           = require("../model/sql_connect.js");
-const email         = require("../includes/mail_client.js");
-const msgTemplates  = require("../includes/email_templates.js");
+const ft_util       = require("../includes/ft_util.js");
 const sql           = require("../model/sql_statements");
 
 const router        = express.Router();

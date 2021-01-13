@@ -18,108 +18,102 @@ module.exports      = router;
 
 router.get("/", (req, res) =>
 {
-    const sess  = req.session.user;
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
 
-    if (!ft_util.isobject(sess))
+  if (!userSignedIn)
+  {
+    res.redirect("/logout");
+    return;
+  }
+  else if (sess.verified !== "T")
+  {
+    res.redirect("/verify_email");
+    return;
+  }
+  else if (sess.valid !== "T")
+  {
+    res.redirect("/reported_account");
+    return;
+  }
+
+  getAllUserImages();
+
+  //Get all user images
+  function getAllUserImages()
+  {
+    dbc.query(sql.selUserImages, [sess.id], (err, result) =>
     {
-        res.redirect("/logout");
-        return;
-    }
-    else if (sess.verified !== "T")
+      if (err) {throw err}
+
+      getUserViews(result);
+    });
+  }
+
+  function getUserViews(images)
+  {
+    dbc.query(sql.selUserViews, [sess.id], (err, result) =>
     {
-        res.redirect("/verify_email");
-        return;
-    }
-    else if (sess.valid !== "T")
+      if (err) {throw err}
+
+      getUserTags(images, result.length);
+    });
+  }
+
+  function getUserTags(images, viewcount)
+  {
+    dbc.query(sql.selUserTags, [sess.id], (err, result) => {
+      if (err) {throw err}
+
+      renderPage(images, viewcount, result);
+    });
+  }
+
+  function renderPage(images, viewcount, tags)
+  {
+    Promise.all([
+      ft_util.userNotificationStatus(dbc, Number(sess.id)),
+      ft_util.getUserImages(dbc, sess.id),
+      ft_util.getTagNames(dbc, tags)
+    ])
+    .then(values =>
     {
-        res.redirect("/reported_account");
-        return;
-    }
+      const notifications = values[0].notifications;
+      const chats         = values[0].chats;
+      const profile_pic   = values[1][0];
+      const user          = {
+        images,
+        viewcount,
+        username        : sess.username,
+        sex             : sess.gender,
+        email           : sess.email,
+        dob             : sess.DOB.slice(0, 10),
+        first_name      : sess.first_name,
+        last_name       : sess.last_name,
+        preference      : sess.preferences,
+        biography       : sess.biography,
+        rating          : sess.rating,
+        tags            : values[2]
+      };
 
-    getAllUserImages();
-
-    //Get all user images
-    function getAllUserImages()
-    {
-        dbc.query(sql.selUserImages, [sess.id], (err, result) =>
-        {
-            if (err) {throw err}
-
-            getUserViews(result);
-        });
-    }
-
-    function getUserViews(images)
-    {
-        dbc.query(sql.selUserViews, [sess.id], (err, result) =>
-        {
-            if (err) {throw err}
-
-            getUserTags(images, result.length);
-        });
-    }
-
-    function getUserTags(images, viewcount)
-    {
-
-        dbc.query(sql.selUserTags, [sess.id], (err, result) => {
-            if (err) {throw err}
-
-            renderPage(images, viewcount, result);
-        });
-    }
-
-    function renderPage(images, viewcount, tags)
-    {
-
-        Promise.all([
-            ft_util.userNotificationStatus(dbc, Number(sess.id)),
-            ft_util.getUserImages(dbc, sess.id),
-            ft_util.getTagNames(dbc, tags)
-        ])
-        .then(values =>
-        {
-            const notifications = values[0].notifications;
-            const chats         = values[0].chats;
-            const profile_pic   = values[1][0];
-            const user          = {
-                images,
-                viewcount,
-                username        : sess.username,
-                sex             : sess.gender,
-                email           : sess.email,
-                dob             : sess.DOB.slice(0, 10),
-                first_name      : sess.first_name,
-                last_name       : sess.last_name,
-                preference      : sess.preferences,
-                biography       : sess.biography,
-                rating          : sess.rating,
-                tags            : values[2]
-            };
-
-            res.render("user.pug", {
-                user,
-                chats,
-                profile_pic,
-                notifications,
-                title           : "Your profile!"
-            });
-        })
-        .catch(e => { throw (e) });
-    }
+      res.render("user.pug", {
+        userSignedIn,
+        user,
+        chats,
+        profile_pic,
+        notifications,
+        title           : "Your profile!"
+      });
+    })
+    .catch(e => { throw (e) });
+  }
 });
-
-/****
-
-Should this live inside the api folder?
-
-*****/
 
 router.post("/image", (req, res) =>
 {
     const sess     = req.session.user;
     const response = {
-        key: "image",
+        key  : "image",
         value: null
     };
 
@@ -129,95 +123,100 @@ router.post("/image", (req, res) =>
     
     function handleIncomingFile()
     {
-        const form = new formidable.IncomingForm();
+      const form = new formidable.IncomingForm();
+      
+      form.parse(req, (err, fields, files) =>
+      {   
+        if (!files.image)
+        {
+          console.log("No file uploaded.");
+          res.redirect("/user");
+
+          return;
+        }
+
+        const imageType = files.image.type.split("/")[1];
+        const oldpath   = files.image.path;
+
+        if (files.image.type.indexOf("image") === -1)
+        {
+          console.log("Please uploade an image file.");
+          res.redirect("/user");
+          return;
+        }
+
+        if (!ft_util.isobject(sess))
+        {
+          deleteUploadedFile(oldpath, "/logout");
+
+          return;
+        }
+        else if (sess.verified !== 'T')
+        {
+          deleteUploadedFile(oldpath, "/verify_email");
+
+          return;
+        }
+        else if (sess.valid !== 'T')
+        {
+          deleteUploadedFile(oldpath, "/reported_account");
+
+          return;
+        }
         
-        form.parse(req, (err, fields, files) =>
-        {   
-            if (!files.image)
-            {
-              response.result = "No file uploaded.";
-              res.redirect("/user");
-              return;
-            }
+        const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //remove all slashes
+        const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
 
-            const imageType = files.image.type.split("/")[1];
-            const oldpath   = files.image.path;
+        if (ft_util.VERBOSE)
+        {
+          console.log("Uploaded file details...");
+          console.log(util.inspect({fields, files, newpath, oldpath}));
+        }
 
-            if (files.image.type.indexOf("image") === -1)
-            {
-              console.log("Please uploade an image file.");
-              //deleteFile(oldpath);
-              res.redirect("/user");
-              return;
-            }
+        //Move uploaded file
+        fs.rename(oldpath, newpath, err =>
+        {
+          if (err) {throw err}
 
-            if (!ft_util.isobject(sess))
-            {
-                console.log("Please sign in.");
-                //deleteFile(oldpath);
-                res.redirect("/user");
-                return;
-            }
-            else if (sess.verified !== 'T')
-            {
-                console.log("Your account is not verified.");
-                //deleteFile(oldpath);
-                res.redirect("/user");
-                return;
-            }
-            else if (sess.valid !== 'T')
-            {
-                console.log("Your account has been reported");
-                //deleteFile(oldpath);
-                res.redirect("/user");
-                return;
-            }
-
-            
-            const filename  = uuidv4().replace(/\.|\//g, "").replace("\\", "") + "." + imageType; //remove all slashes
-            const newpath   = path.join(__dirname, "../public/images/uploads/" + filename);
-
-            if (ft_util.VERBOSE)
-            {
-              console.log("Uploaded file details...");
-              console.log(util.inspect({fields, files, newpath, oldpath}));
-            }
-
-            //Move uploaded file
-            fs.rename(oldpath, newpath, err =>
-            {
-                if (err) {throw err}
-
-                deleteCurrentDP(filename);
-            });
+          deleteCurrentDP(filename);
         });
+      });
     }
 
-    function deleteCurrentDP(filename)  //User may have only 1 picture
+    function deleteUploadedFile(filename, redirect)
+    {
+      fs.unlink(filename, err =>
+      {
+        if (err) {throw err}
+
+        res.redirect(redirect);
+      });
+    }
+
+    function deleteCurrentDP(filename)
     {
         dbc.query(sql.delUserImages, [sess.id], (err, result) =>
         {
-            if (err) {throw err}
+          if (err) {throw err}
 
-            //Delete file in memory
+          //Delete file in memory
 
-            saveNewImage(filename);
+          saveNewImage(filename);
         });
     }
 
     function saveNewImage(filename)
     {
-        const insValues = [filename, sess.id, 'T'];
+      const insValues = [filename, sess.id, 'T'];
 
-        dbc.query(sql.insImage, [insValues], (err, result) =>
-        {
-            if (err) {throw err}
+      dbc.query(sql.insImage, [insValues], (err, result) =>
+      {
+        if (err) {throw err}
 
-            console.log("File successfully uploaded!");
-            response.result   = "Success";
-            response.filename = filename;
-            res.redirect("/user");
-        });
+        console.log("File successfully uploaded!");
+
+        res.redirect("/user");
+      });
     }
 });
 
@@ -226,29 +225,22 @@ router.post("*", (req, res, next) => {
 
   if (!ft_util.isobject(sess))
   {
-      console.log("Please sign in.");
-      res.redirect("/matcha");
+    console.log("Please sign in.");
+    res.redirect("/logout");
 
-      return;
+    return;
   }
   else if (sess.verified !== 'T')
   {
-      console.log("Your account is not verified.");
-      req.session.destroy(err => {
-        if (err) {throw err}
-        
-        res.redirect("/verify_email");
-      });
+    console.log("Your account is not verified."); 
+    res.redirect("/verify_email");
 
-      return;
+    return;
   }
   else if (sess.valid !== 'T')
   {
-     req.session.destroy(err => {
-      if (err) {throw err}
-      
-      res.redirect("/reported_account");
-    });
+    console.log();
+    res.redirect("/reported_account");
 
     return;
   }
@@ -278,53 +270,54 @@ router.post("/fullname", (req, res) =>
     const first     = firstname.trim();
     const last      = lastname.trim();
 
-    validateFullnames();
+    validateFullnames(first, last);
 
     function validateFullnames(first, last)
     {
-        if (first.length === 0)
-        {
-            console.log("Please enter your first name");
-            res.redirect("/user");
+      if (first.length === 0)
+      {
+        console.log("Please enter your first name");
+        res.redirect("/user");
 
-            return;
-        }
-        else if (last.length === 0)
-        {
-          console.log("Please enter your last name");
-          res.redirect("/user");
+        return;
+      }
+      else if (last.length === 0)
+      {
+        console.log("Please enter your last name");
+        res.redirect("/user");
 
-          return;
-        }
+        return;
+      }
 
-        saveNewFullname(first, last);
+      saveNewFullname(first, last);
     }
 
     function saveNewFullname(first, last)
     {
-        dbc.query(sql.updateUserFullname, [first, last, sess.id], (err, result) =>
-        {
-            if (err) {throw err}
+      dbc.query(sql.updateUserFullname, [first, last, sess.id], (err, result) =>
+      {
+        if (err) {throw err}
 
-            console.log(`Successfully updated new name to ${first} ${last}`);
-            updateSession(first, last);
-        });
+        console.log(`Successfully updated new name to ${first} ${last}`);
+        updateSession(first, last);
+      });
     }
 
     function updateSession(first, last)
     {
-        sess.first_name = first;
-        sess.last_name  = last;
+      sess.first_name = first;
+      sess.last_name  = last;
 
-        req.session.save(err => {
-            if (err) {throw err}
+      req.session.save(err =>
+      {
+        if (err) {throw err}
 
-            res.redirect("/user");
-        });
+        res.redirect("/user");
+      });
     }
 });
 
-router.post("/new_username", (req, res) =>
+router.post("/username", (req, res) =>
 {
     const sess      = req.session.user;
     const value     = req.body.username;
@@ -333,39 +326,13 @@ router.post("/new_username", (req, res) =>
         key         : "username"
     };
 
-    /*if (!ft_util.isobject(sess))
-    {
-        console.log("Please sign in.");
-        res.redirect("/user");
-        return;
-    }
-    else if (sess.verified !== 'T')
-    {
-        console.log("Your account is not verified.");
-        req.session.destroy(err => {
-          if (err) {throw err}
-          
-          res.redirect("/verify_email");
-        });
-
-        return;
-    }
-    else if (sess.valid !== 'T')
-    {
-        console.log("Your account has been reported.");
-        res.redirect("/user");
-        return;
-    }
-
-      */
 
     if (!ft_util.isstring(value))
     {
-        response.result = "Failed";
-        console.log("");
-        // res.end(JSON.stringify(response));
-        res.redirect("/user");
-        return;
+      console.log("Please enter a new username");
+      res.redirect("/user");
+
+      return;
     }
 
     const name = value.trim();
@@ -374,234 +341,198 @@ router.post("/new_username", (req, res) =>
 
     function validateUsername()
     {
-        if (name.length < 2)
-        {
-            response.result = "Username must be at least 2 characters long";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
-        checkIfUsernameExists();
+      if (name.length < 2)
+      {
+        console.log("Username must be at least 2 characters long");
+        res.redirect("/user");
+ 
+        return;
+      }
+      checkIfUsernameExists();
     }
 
     function checkIfUsernameExists()
     {
-        //Check if username exists
-        dbc.query(sql.selCheckUsernameExists, [name], (err, result) =>
+      //Check if username exists
+      dbc.query(sql.selCheckUsernameExists, [name], (err, result) =>
+      {
+        if (result.length > 0)
         {
-            if (result.length > 0)
-            {
-                response.result = "Username already taken";
-                // res.end(JSON.stringify(response));
-                res.redirect("/user");
-                return;
-            }
+          console.log("Username already taken");
+          res.redirect("/user");
 
-            saveNewUsername();
-        });
+          return;
+        }
+
+        saveNewUsername();
+      });
     }
 
     function saveNewUsername()
     {
-        dbc.query(sql.updateUsername, [name, sess.id], (err, result) =>
+      dbc.query(sql.updateUsername, [name, sess.id], (err, result) =>
+      {
+        if (result.affectedRows !== 1)
         {
-            if (result.affectedRows !== 1)
-            {
-                response.result = "Please try again";
-                // res.end(JSON.stringify(response));
-                res.redirect("/user");
-                return;
-            }
+          console.log("Please try again");
+          res.redirect("/user");
 
-            updateSession();
-        });
+          return;
+        }
+
+        updateSession();
+      });
     }
 
     function updateSession()
     {
-        sess.username = name;
+      sess.username = name;
 
-        req.session.save(err =>
-        {
-            if (err) {throw err}
+      req.session.save(err =>
+      {
+        if (err) {throw err}
 
-            response.result = "Success";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-        });
+        response.result = "Success";
+        res.redirect("/user");
+      });
     }
 });
 
-router.post("/new_email", (req, res) =>
+router.post("/email", (req, res) =>
 {
     const sess      = req.session.user;
-    const value     = req.body.email;
-    const response  = {
-        key         : "email"
-    };
-
-    /*// res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
-
-    //User is logged in, verified, valid, and username is valid
-    if (!ft_util.isobject(sess) || sess.verified !== 'T' || sess.valid !== 'T' || !ft_util.isstring(value))
-    {
-        response.result = "Failed";
-        // res.end(JSON.stringify(response));
-        res.redirect("/user");
-        return;
-    }*/
-
-    const email = value.trim();
+    const email     = req.body.email;
+    const response  = { key : "email" };
 
     if (!ft_util.isEmail(email))
     {
-        console.log("Please enter an email address.");
-        res.redirect("/user");
-        return;
+      console.log("Please enter an email address.");
+      res.redirect("/user");
+
+      return;
     }
 
     //Check if email exists
     dbc.query(sql.selCheckUserEmailExists, [email], (err, result) =>
     {
-        if (err) {throw err}
+      if (err) {throw err}
 
-        if (result.length > 0)
-        {
-            console.log("Email address is reserved.");
-            res.redirect("/user");
-            return;
-        }
+      if (result.length > 0)
+      {
+        console.log("Email address is reserved.");
+        res.redirect("/user");
+        
+        return;
+      }
 
-        saveNewEmailAddress();
+      saveNewEmailAddress();
     });
 
     function saveNewEmailAddress()
     {
-        dbc.query(sql.updateEmail, [email, sess.id], (err, result) =>
-        {
-            if (err) {throw err}
+      dbc.query(sql.updateEmail, [email, sess.id], (err, result) =>
+      {
+        if (err) {throw err}
 
-            response.value = email;
-            response.result = "Success";
-            updateSession();
-        });
+        updateSession();
+      });
     }
 
     function updateSession()
     {
-        sess.email = email;
+      sess.email = email;
 
-        req.session.save(err =>
-        {
-            if (err) {throw err}
+      req.session.save(err =>
+      {
+        if (err) {throw err}
 
-            res.redirect("/user");
-            // res.end(JSON.stringify(response));
-        });
+        res.redirect("/user");
+      });
     }
 });
 
-router.post("/reset_password", (req, res) =>
+router.post("/password", (req, res) =>
 {
     const sess      = req.session.oldpw;
     const oldpw     = req.body.value;
     const newpw     = req.body.newpw;
     const confirmpw = req.body.confirmpw;
-    const response  = {
-        key         : "username"
-    };
-
-    /*// res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
-
-    //User is logged in, verified, valid, and passwords valid
-    if (!ft_util.isobject(sess) || !ft_util.isstring(oldpw, newpw, confirmpw))
-    {
-        response.result = "Failed";
-        // res.end(JSON.stringify(response));
-        res.redirect("/user");
-        return;
-    }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
-    {
-        response.result = "Failed";
-        // res.end(JSON.stringify(response));
-        res.redirect("/user");
-        return;
-    }*/
-
-    const email = value.trim();
+    const response  = {key : "username"};
 
     validatePassword();
 
     function validatePassword()
     {
-        if (!ft_util.passwdCheck(oldpw))
-        {
-            response.result = "Please enter your current password.";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
-        else if (!ft_util.passwdCheck(newpw))
-        {
-            response.result = "Please enter a new valid password.";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
-        else if (oldpw === newpw)
-        {
-            response.result = "New password can't be current password";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
-        else if (confirmpw !== newpw)
-        {
-            response.result = "The passwords you provided don't match.";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
-        else if (bcrypt.compareSync(oldpw, sess.password))
-        {
-            response.result = "Incorrect password";
-            // res.end(JSON.stringify(response));
-            res.redirect("/user");
-            return;
-        }
+      if (!ft_util.passwdCheck(oldpw))
+      {
+        console.log("Please enter your current password.");
+        res.redirect("/user");
 
-        saveNewPassword();
+        return;
+      }
+      else if (!ft_util.passwdCheck(newpw))
+      {
+        console.log("Please enter a new valid password.");
+        res.redirect("/user");
+        
+        return;
+      }
+      else if (oldpw === newpw)
+      {
+        console.log("New password can't be current password");
+        res.redirect("/user");
+
+        return;
+      }
+      else if (confirmpw !== newpw)
+      {
+        console.log("The passwords you provided don't match.");
+        res.redirect("/user");
+
+        return;
+      }
+      else if (bcrypt.compareSync(oldpw, sess.password))
+      {
+        console.log("Incorrect password");
+        res.redirect("/user");
+
+        return;
+      }
+
+      saveNewPassword();
     }
 
     function saveNewPassword()
     {
-        const hash          = bcrypt.hashSync(confirmpw, ft_util.SALT);
-        const updateValue   = [hash, sess.id];
+      const hash          = bcrypt.hashSync(confirmpw, ft_util.SALT);
+      const updateValue   = [hash, sess.id];
 
-        dbc.query(sql.updatePasswd, updateValue, (err, result) =>
+      dbc.query(sql.updatePasswd, updateValue, (err, result) =>
+      {
+        if (err) {throw err}
+        
+        if (result.affectedRows !== 1)
         {
-            if (err) {throw err}
-            
-            if (result.affectedRows !== 1)
-            {
-                response.result = "Please try again";
-                // res.end(JSON.stringify(response));
-                res.redirect("/user");
-                return;
-            }
+          console.log("Please try again");
+          res.redirect("/user");
 
-            sess.password = hash;
+          return;
+        }
 
-            req.session.save(err =>
-            {
-                if (err) {throw err}
+        updateSession(hash);
+      });
+        
+      function updateSession(hash)
+      {
+        sess.password = hash;
 
-                response.result = "Success";
-                // res.end(JSON.stringify(response));
-                res.redirect("/user");
-            });
+        req.session.save(err =>
+        {
+          if (err) {throw err}
+
+          res.redirect("/user");
         });
+      }
     }
 });
 
@@ -609,11 +540,7 @@ router.post("/DOB", (req, res) =>
 {
     const sess      = req.session.user;
     const value     = req.body.value;
-    const response  = {
-        key         : "DOB"
-    };
-
-    console.log(req.body);
+    const response  = { key : "DOB" };
 
     const dob = value.trim();
 
@@ -621,43 +548,44 @@ router.post("/DOB", (req, res) =>
 
     function validateDOB(dob)
     {
-        if (!moment(dob, "YYYY-MM-DD").isValid())
-        {
-            response.result = "Invalid date";
-            res.redirect("/user");
-            return;
-        }
-        else if (!moment(dob).isBefore(moment().subtract(18, "years")))
-        {
-            response.result = "The age you specified is too young.";
-            res.redirect("/user");
-            return;
-        }
+      if (!moment(dob, "YYYY-MM-DD").isValid())
+      {
+        console.log("Invalid date");
+        res.redirect("/user");
 
-        saveNewDOB(dob);
+        return;
+      }
+      else if (!moment(dob).isBefore(moment().subtract(18, "years")))
+      {
+        console.log("The age you specified is too young.");
+        res.redirect("/user");
+
+        return;
+      }
+
+      saveNewDOB(dob);
     }
 
     function saveNewDOB(dob)
     {
-        dbc.query(sql.updateUserDOB, [dob, sess.id], (err, result) =>
-        {
-            if (err) {throw err}
+      dbc.query(sql.updateUserDOB, [dob, sess.id], (err, result) =>
+      {
+        if (err) {throw err}
 
-            response.value = dob;
-            response.result = "Success";
-            updateSession(dob);
-        });
+        updateSession(dob);
+      });
     }
 
     function updateSession(dob)
     {
-        sess.DOB = dob;
+      sess.DOB = dob;
 
-        req.session.save(err => {
-            if (err) {throw err}
+      req.session.save(err =>
+      {
+        if (err) {throw err}
 
-            res.redirect("/user");
-        });
+        res.redirect("/user");
+      });
     }
 });
 
@@ -665,24 +593,17 @@ router.post("/biography", (req, res) =>
 {
     const sess      = req.session.user;
     const value     = req.body.value;
-    const response  = {
-        key         : "biography"
-    };
+    const response  = { key : "biography" };
 
-    res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
+    // res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
     //User is logged in and bio is valid
-    if (!ft_util.isobject(sess) || !ft_util.isstring(value))
+    if (!ft_util.isstring(value))
     {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
-    }
-    else if (sess.verified !== 'T' || sess.valid !== 'T')
-    {
-        response.result = "Failed";
-        res.end(JSON.stringify(response));
-        return;
+      console.log("Please enter something about yourself.");
+      res.redirect("/user");
+
+      return;
     }
 
     validateBio(value);
@@ -691,9 +612,10 @@ router.post("/biography", (req, res) =>
     {
         if (bio.length > 3500) //Max chars is 4000
         {
-            response.result = "Your biography is too long";
-            res.end(JSON.stringify(response));
-            return;
+          console.log("Please enter something about yourself.");
+          res.redirect("/user");
+
+          return;
         }
 
         saveNewBio(bio);
@@ -701,23 +623,23 @@ router.post("/biography", (req, res) =>
 
     function saveNewBio(bio)
     {
-        dbc.query(sql.updateUserBio, [bio, sess.id], (err, result) =>
-        {
-            if (err) {throw err}
+      dbc.query(sql.updateUserBio, [bio, sess.id], (err, result) =>
+      {
+        if (err) {throw err}
 
-            updateSession(bio); 
-        });
+        updateSession(bio);
+      });
     }
 
     function updateSession(bio)
     {
         sess.biography = bio;
 
-        req.session.save(err => {
+        req.session.save(err =>
+        {
             if (err) {throw err}
 
-            response.result = "Success";
-            res.end(JSON.stringify(response));
+            res.redirect("/user");
         });     
     }
 });

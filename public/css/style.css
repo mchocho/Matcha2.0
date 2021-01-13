@@ -13,14 +13,6 @@ body {
 	margin-top: -35%;
 }
 
-a.logout {
-	font-size: 130%;
-	display: block;
-	text-align: center;
-	/*position: relative;*/
-	margin-right: -65px;
-}
-
 h2 {
 	font-size: 280%;
 }
@@ -29,38 +21,6 @@ form {
 	margin: auto;
 }
 
-header div {
-	display: inline-block;
-}
-
-header a,
-header a:hover {
-	color: unset;
-	text-decoration: unset !important;
-}
-
-header img {
-	padding: 30px 0px 0px 30px;
-	width: 60%;
-	height: 60%;
-	transform: rotateY(180deg);
-	margin-top: -8%;
-}
-
-header .heading {
-	text-align: left;
-	display: inline-block;
-	/*margin-left: -160px;*/
-	margin-left: -18%;
-}
-
-header h1 {
-	font-size: 380%;
-}
-
-header .profile_container a {
-	font-size: 180%;
-}
 
 .profile_container {
 	float: right;
@@ -83,6 +43,7 @@ header .profile_container a {
 
 .wrapper {
 	margin: auto;
+	padding-top: 5%;
 }
 
 form {
@@ -95,28 +56,6 @@ form {
 
 form#signin {
 	background: rgb(238, 238, 238, 0.6);
-}
-
-label {
-	margin-top: 1px;
-	font-size: 160%;
-}
-
-label,
-input {
-	display: block;
-}
-
-input[type='text'],
-input[type='password'],
-input[type='email'] {
-	font-size: 90%;
-	background: unset !important;
-	border: none;
-	border-bottom: 1px solid #000;
-	width: 60%;
-	padding: 2.5px;
-	text-align: center;
 }
 
 .btn-group button.option {
@@ -144,37 +83,7 @@ input[type='submit'] {
 	width: 60%;
 }
 
-input[type='submit'],
-input[type='button'],
-button,
-.custom_btn,
-.btn {
-	-webkit-transition: all 0.5s;
-	-o-transition: all 0.5s;
-	transition: all 0.5s;
-}
-
-input[type='submit']:hover,
-.custom_btn:hover {
-	background: red;
-	color: #eee;
-	border: 1px solid #eee;
-}
-
-.list-group a:hover {
-	z-index: 2;
-	color: #fff;
-	background-color: #007bff;
-	border-color: #007bff;
-}
-
-.username {
-	font-weight: 700;
-	overflow: hidden;
-	padding-right: 15px;
-	text-align: right;
-}
-
-.messageBody {
-	color: gray;
+form.inline
+{
+	display: inline-block;
 }

@@ -9,22 +9,30 @@ module.exports  = router;
 router.get("/", (req, res) =>
 {
   const sess          = req.session.user;
-  const renderOptions = { title: "404" };
+  const userSignedIn  = !!sess;
+  const renderOptions = {
+    userSignedIn,
+    title: "404 | Cupid's Arrow",
+    year: new Date().getFullYear()
+  };
 
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
-      res.redirect("/logout");
-      return;
+    res.redirect("/logout");
+
+    return;
   }
   else if (sess.verified !== 'T')
   {
-      res.redirect("/verify_email");
-      return;
+    res.redirect("/verify_email");
+
+    return;
   }
   else if (sess.valid !== 'T')
   {
-      res.redirect("/reported_account");
-      return;
+    res.redirect("/reported_account");
+
+    return;
   }
 
   Promise.all([

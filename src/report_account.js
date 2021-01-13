@@ -15,51 +15,53 @@ module.exports      = router;
 
 router.get("/:id", (req, res) =>
 {
-    const sess  = req.session.user;
-    const id    = Number(req.params.id);
-    const token = uuidv4();
-    const url   = "http://localhost:3000/api/verification/?key=" + token;
+	const sess          = req.session.user;
+	const userSignedIn  = !!sess;
+	const id            = Number(req.params.id);
 
-    if (!ft_util.isobject(sess))
-    {
-        res.redirect("/logout");
-        return;
-    }
-    else if (sess.verified !== "T")
-    {
-        res.redirect("/verify_email");
-        return;
-    }
-    else if (sess.valid !== "T")
-    {
-        res.redirect("/reported_account");
-        return;
-    }
-    else if (isNaN(id))
-    {
-        res.redirect("/matcha");
-        return;
-    }
+	const token         = uuidv4();
+	const url           = "http://localhost:3000/api/verification/?key=" + token;
 
-    dbc.query(sql.reportUser, [id], (err, result) =>
-    {
-        if (err) throw err;
+	if (!userSignedIn)
+	{
+		res.redirect("/logout");
+		return;
+	}
+	else if (sess.verified !== "T")
+	{
+		res.redirect("/verify_email");
+		return;
+	}
+	else if (sess.valid !== "T")
+	{
+		res.redirect("/reported_account");
+		return;
+	}
+	else if (isNaN(id))
+	{
+		res.redirect("/matcha");
+		return;
+	}
 
-        if (result.affectedRows === 1)
-        {
-            dbc.query(sql.selUserEmail, [sess.id], (err, result) =>
-            {
-                if (err) {throw err};
+	dbc.query(sql.reportUser, [id], (err, result) =>
+	{
+		if (err) throw err;
 
-                const emailAddress  = result[0].email;
-                const emailTitle    = "Your profile has been reported | Cupid's Arrow";
-                const msg           = msgTemplates.report_account(url);
+		if (result.affectedRows === 1)
+		{
+			dbc.query(sql.selUserEmail, [sess.id], (err, result) =>
+			{
+				if (err) {throw err};
 
-                email.main(emailAddress, emailTitle, msg).catch(console.error);
-                res.redirect("/matcha");
-            });
-        } else
-            res.redirect("/matcha");
-    });
+				const emailAddress  = result[0].email;
+				const emailTitle    = "Your profile has been reported | Cupid's Arrow";
+				const msg           = msgTemplates.report_account(url);
+
+				email.main(emailAddress, emailTitle, msg).catch(console.error);
+				res.redirect("/matcha");
+			});
+		} else
+			res.redirect("/matcha");
+	});
 
 });

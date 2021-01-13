@@ -1,166 +1,171 @@
-const express 		= require("express");
-const session	    = require("express-session");
+const express       = require("express");
+const session       = require("express-session");
 
-const dbc			= require("../model/sql_connect.js");
-const sql			= require("../model/sql_statements.js");
-const ft_util		= require("../includes/ft_util.js");
+const dbc           = require("../model/sql_connect.js");
+const sql           = require("../model/sql_statements.js");
+const ft_util       = require("../includes/ft_util.js");
 
-const router 		= express.Router();
+const router        = express.Router();
 
-module.exports 		= router;
+module.exports      = router;
 
 router.get("/", (req, res) =>
 {
-	const sess 		= req.session.user;
+  const sess          = req.session.user;
+  const userSignedIn  = !!sess;
+  const renderOptions = {
+    userSignedIn,
+    title: "Your Notifications | Cupid's Arrow",
+    year: new Date().getFullYear()
+  };
 
-	if (!ft_util.isobject(sess))
-	{
-		res.redirect("/logout");
-		return;
-	}
-	else if (sess.verified !== "T")
-	{
-		res.redirect("/verify_email");
-		return;
-	}
-	else if (sess.valid !== "T")
-	{
-		res.redirect("/reported_account");
-		return;
-	}
+  if (!userSignedIn)
+  {
+    res.redirect("/logout");
+    return;
+  }
+  else if (sess.verified !== "T")
+  {
+    res.redirect("/verify_email");
+    return;
+  }
+  else if (sess.valid !== "T")
+  {
+    res.redirect("/reported_account");
+    return;
+  }
 
-	const id 		= sess.id;
+  const id         = sess.id;
 
-	getUserNotifications(id);
+  getUserNotifications(id);
 
-	function getUserNotifications(id)
-	{
-		dbc.query(sql.selUserNotifications, [id], (err, notifications) =>
-		{
-			if (err) {throw err}
+  function getUserNotifications(id)
+  {
+    dbc.query(sql.selUserNotifications, [id], (err, notifications) =>
+    {
+      if (err) {throw err}
 
-			if (notifications.length === 0)
-			{
-				fetchUserNavElements([]);
-				return;
-			}			
-			listAllNotifications(notifications);
-		});
-	}
+      if (notifications.length === 0)
+      {
+        fetchUserNavElements([]);
 
-	function listAllNotifications(notifications)
-	{
-		result.forEach((notification, i , arr) =>
-		{
-			const selValues = [notification.service_id];
-			const type 		= notification.type;
+        return;
+      }           
+      listAllNotifications(notifications);
+    });
+  }
 
-			if (type === "views")
-				query = sql.selUserView;
-			else if (type === "block")
-				query = sql.selBlockedUserById;
-			else
-				query = sql.selUserLike;
+  function listAllNotifications(notifications)
+  {
+    notifications.forEach((notification, i , arr) =>
+    {
+      const selValues = [notification.service_id];
+      const type      = notification.type;
 
-			dbc.query(query, selValues, (err, result) =>
-			{
-				if (err) {throw err}
+      if (type === "views")
+        query = sql.selUserView;
+      else if (type === "block")
+        query = sql.selBlockedUserById;
+      else
+        query = sql.selUserLike;
 
-				handleNotificationType(notifications, i, result);
-			});
-		});
-	}
+      dbc.query(query, selValues, (err, result) =>
+      {
+        if (err) {throw err}
 
-	function handleNotificationType(notifications, i, result)
-	{
-		let user;
+        handleNotificationType(notifications, i, result, type);
+      });
+    });
+  }
 
-		if (type === "views")
-			user = result[0]["viewer"];
-		else if (type === "block")
-			user = result[0]["blocked_user"];
-		else
-			user = result[0]["liker"];
+  function handleNotificationType(notifications, i, result, type)
+  {
+    let user;
 
-		getUserDetails(notifications, i, user);
-	}
+    if (type === "views")
+      user = result[0]["viewer"];
+    else if (type === "block")
+      user = result[0]["blocked_user"];
+    else
+      user = result[0]["liker"];
 
-	function getUserDetails(notifications, i, user)
-	{
-		dbc.query(sql.selUserById, [user], (err, result) =>
-		{
-			if (err) {throw err}
+    getUserDetails(notifications, i, user);
+  }
 
-			const source = result[0];
+  function getUserDetails(notifications, i, user)
+  {
+    dbc.query(sql.selUserById, [user], (err, result) =>
+    {
+      if (err) {throw err}
 
-			notifications[i].source = source;
-			getConnectionStatus(notifications, i, source);
-		});
-	}
+      const source = result[0];
 
-	function getConnectionStatus(notifications, i, user)
-	{
-		const selValues 	= [sess.id, user.id, user.id, sess.id];
-		const status 		= {
-			userLikesYou	: false,
-			youLikeUser		: false
-		};
+      notifications[i].source = source;
+      getConnectionStatus(notifications, i, source);
+    });
+  }
 
-		dbc.query(sql.getConnectionStatus, selValues, (err, result) =>
-		{
-			if (err) {throw err}
+  function getConnectionStatus(notifications, i, user)
+  {
+    const selValues  = [sess.id, user.id, user.id, sess.id];
+    const status     = {
+        userLikesYou : false,
+        youLikeUser  : false
+    };
 
-			[...result].forEach(status =>
-			{
-				(status.liker === user.id) ? status.userLikesYou = true : status.youLikeUser = true;
-			});
+    dbc.query(sql.getConnectionStatus, selValues, (err, result) =>
+    {
+      if (err) {throw err}
 
-			Object.assign(notifications[i], status);
+      [...result].forEach(status =>
+      {
+        (status.liker === user.id) ? status.userLikesYou = true : status.youLikeUser = true;
+      });
 
+      Object.assign(notifications[i], status);
 
-			if (i === notifications.length - 1)
-				markAllNotificationsAsViewed(notifications);
-		});
-	}
+      if (i === notifications.length - 1)
+        markAllNotificationsAsViewed(notifications);
+    });
+  }
 
-	function markAllNotificationsAsViewed(notifications)
-	{
-		dbc.query(sql.updateUserNotifications, [sess.id], (err, result) =>
-		{
-			if (err) {throw err}
+  function markAllNotificationsAsViewed(notifications)
+  {
+    dbc.query(sql.updateUserNotifications, [sess.id], (err, result) =>
+    {
+      if (err) {throw err}
 
-			fetchUserNavElements(notifications);
-		});
-	}
+      fetchUserNavElements(notifications);
+    });
+  }
 
-	function fetchUserNavElements(notifications)
-	{		
-		(async () =>
-		{
-			try {
-				const notificationsAvalilable 	= await ft_util.userNotificationStatus(dbc, sess.id);
-				const images 					= await ft_util.getUserImages(dbc, sess.id);
+  function fetchUserNavElements(notifications)
+  {       
+    (async () =>
+    {
+      try
+      {
+        const notificationsAvalilable   = await ft_util.userNotificationStatus(dbc, sess.id);
+        const images                    = await ft_util.getUserImages(dbc, sess.id);
 
-				renderNotifications(notifications, notificationsAvalilable, images[0]);
-			}
-			catch(e) {
-				if (ft_util.VERBOSE)
-					console.log("Failed to fetch user images: ", e);
-				throw e;
-			}
-		})();
-	}
+        renderNotifications(notifications, notificationsAvalilable, images[0]);
+      }
+      catch(e)
+      {
+        if (ft_util.VERBOSE)
+          console.log("Failed to fetch user images: ", e);
+        throw e;
+      }
+    })();
+  }
 
-	function renderNotifications(notifications, notificationsAvalilable, images)
-	{
-		const renderOptions 	= {
-			title				: "Your Notifications | Cupid's Arrow",
-			userNotifications 	: notifications.reverse(),
-			notifications 		: notificationsAvalilable.notifications,
-			chats				: notificationsAvalilable.chats,
-			profile_pic			: images
-		};
+  function renderNotifications(notifications, notificationsAvalilable, images)
+  {
+    renderOptions.userNotifications = notifications.reverse();
+    renderOptions.notifications     = notificationsAvalilable.notifications;
+    renderOptions.chats             = notificationsAvalilable.chats;
+    renderOptions.profilePic        = images;
 
-		res.render("notifications.pug", renderOptions);
-	}
+    res.render("notifications.pug", renderOptions);
+  }
 });

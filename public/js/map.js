@@ -23,8 +23,7 @@ function script()
 
   const find_me    = document.getElementById("find_me");
   const map        = new google.maps.Map(document.getElementById("map"), mapOtions);
-  const geocoder   = new google.maps.Geocoder();
-  const marker     = new google.maps.Marker({map});
+  
   const infoWindow = new google.maps.InfoWindow;
 
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(find_me);
@@ -43,22 +42,19 @@ function script()
 
   function onGeolocationSuccess(pos)
   {
-    const latlng = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    const geocoder   = new google.maps.Geocoder();
+    const latlng     = {lat: pos.coords.latitude, lng: pos.coords.longitude};
     
     //weThinkCode_'s ISP returns inaccurate positions   
     if ((latlng["lat"] === -26.2309    && latlng["lng"] === 28.0583)
      || (latlng["lat"] === -26.2123013 && latlng["lng"] === 28.0303075)
     )
     {
-      pos["lat"] = -26.205083;
-      pos["lng"] = 28.040148;
+      latlng["lat"] = -26.205083;
+      latlng["lng"] = 28.040148;
     }
-
-    map.setZoom(19);
-    map.setCenter(pos);
-    marker.setPosition(pos);
     
-    geocoder.geocode({location: pos}, onReverseGeocoder);
+    geocoder.geocode({location: latlng}, onReverseGeocoder);
   }
 
   function onGeolocationFailed()
@@ -70,14 +66,23 @@ function script()
   {
     if (status === google.maps.GeocoderStatus.OK)
     {
+      const marker   = new google.maps.Marker({map});
       const formData = new FormData();
       const result   = results[0];
+
+      const latlng   = result.geometry.location;
 
       const user     = `<h3>Your location</h3>
                         Address: ${result.formatted_address}`;
 
+      console.log(result);
+
+      map.setZoom(19);
+      map.setCenter(latlng);
+      marker.setPosition(latlng);
+
       infoWindow.setContent(user);
-      infoWindow.setPosition(pos);
+      infoWindow.setPosition(latlng);
       infoWindow.setMap(map);
 
       //Send the data to server
@@ -86,8 +91,14 @@ function script()
       for (let key in result)
         formData.append(key, result[key]);
 
-      xhr("/user/location", "POST", formData, function(xhr) {
+      /*const json = JSON.stringify({
+        address:  result.address_components,
+        location: latlng
+      });*/
+
+      xhr("/location", "POST", formData, function(xhr) {
         //Handle request or not
+        console.log(xhr.responseText);
       });
     }
   }

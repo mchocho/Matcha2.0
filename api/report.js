@@ -1,9 +1,10 @@
 const express       = require("express");
 
 const dbc           = require("../model/sql_connect.js");
+const sql           = require("../model/sql_statements");
+const ft_util       = require("../includes/ft_util.js");
 const email         = require("../includes/mail_client.js");
 const msgTemplates  = require("../includes/email_templates.js");
-const sql           = require("../model/sql_statements");
 
 let router          = express.Router();
 
@@ -77,7 +78,7 @@ router.post("/", (req, res) =>
   {
     const token         = uuidv4();
     const url           = "http://localhost:3000/api/verification/?key=" + token;
-    const insertValues  = [profile.id, token, "verification"]
+    const insertValues  = [profile.id, token, "verification"];
 
     dbc.query(sql.insNewToken, [insertValues], (err, result) => {
       if (err) {throw err}

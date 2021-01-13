@@ -16,12 +16,12 @@ function script() {
 
     **************************************
     **************************************/
-    connection_btn
+    /*connection_btn
     .addEventListener("click", e =>
     {
         const value = parseInt(profile_id);
 
-        xhr(`/profile/connect`, "POST", { value }, xhr =>
+        xhr(`/connect`, "POST", { value }, xhr =>
         {
         	const res = JSON.parse(xhr.responseText);
 
@@ -58,7 +58,7 @@ function script() {
             else if (res.result === "No image profile")
                 alertify.alert("You can't connect with a user who doesn't have a profile picture");
         });
-    }, true);
+    }, true);*/
 
 
 
@@ -70,7 +70,7 @@ function script() {
 
     **************************************
     **************************************/
-    block_btn
+    /*block_btn
     .addEventListener("click", e =>
     {
         const confirmMsg = `You are about to block ${profile_name} from your preference list. Are you sure?`;
@@ -81,7 +81,7 @@ function script() {
 
             const value = profile_id;
 
-            xhr("/profile/block", "POST", { value }, xhr =>
+            xhr("/block", "POST", { value }, xhr =>
             {
                 const res = JSON.parse(xhr.responseText);
 
@@ -97,7 +97,7 @@ function script() {
                     alertify.error("Something went wrong. Please try again.");
           });
     	});
-    });
+    });*/
 
 
     /*************************************
@@ -108,7 +108,7 @@ function script() {
 
     **************************************
     **************************************/
-    reportuser_btn
+   /* reportuser_btn
     .addEventListener("click", e =>
     {
         const confirmMsg = `You are about to report ${profile_name}. There are other ways to settle disputes. Are you sure?`;
@@ -118,7 +118,7 @@ function script() {
         {
             const value = profile_id;
 
-        	xhr("/profile/report", "POST", { value }, function(xhr) {
+        	xhr("/report", "POST", { value }, function(xhr) {
         		const res = JSON.parse(xhr.responseText);
 
                 if (res.result === "Success")
@@ -132,8 +132,8 @@ function script() {
             alertify.success(`Maybe, you & ${profile_name} should talk more.`);
         });
 
-    });
+    });*/
 
 }
 
-document.addEventListener("DOMContentLoaded", script);
+// document.addEventListener("DOMContentLoaded", script);

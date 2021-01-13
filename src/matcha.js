@@ -15,30 +15,27 @@ module.exports  = router;
 router.get("/:filter?.:arg1?.:arg2?", (req, res) =>
 {
   const sess          = req.session.user;
+  const userSignedIn  = !!sess;
   const renderOptions = {
+    userSignedIn,
     title: "Find your match | Cupid's Arrow",
-    users: []
+    users: [],
+    year: new Date().getFullYear()
   };
 
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
     res.redirect("/logout");
     return;
   }
   else if (sess.verified !== "T")
   {
-    req.session.destroy((err) => {
-      if (err) {throw err}
-      res.redirect("/verify_email");
-    });
+    res.redirect("/verify_email");
     return;
   }
   else if (sess.valid !== "T")
   {
-    req.session.destroy((err) => {
-      if (err) {throw err}
-      res.redirect("/reported_account");
-    });
+    res.redirect("/reported_account");
     return;
   }
 
@@ -162,11 +159,11 @@ router.get("/:filter?.:arg1?.:arg2?", (req, res) =>
       ft_util.getUserImages(dbc, sess.id),
       ft_util.filterMatches(dbc, matches, filterType, arg1, arg2)
     ]).then((values) => {
-      renderOptions.filter    = (filterType === "age" || filterType === "location" || filterType === "tags" || filterType === "rating") ? filterType : "none";
+      renderOptions.filter        = (filterType === "age" || filterType === "location" || filterType === "tags" || filterType === "rating") ? filterType : "none";
       renderOptions.notifications = values[0].notifications;
-      renderOptions.chats     = values[0].chats;
-      renderOptions.profile_pic = values[1][0];
-      renderOptions.users     = values[2];
+      renderOptions.chats         = values[0].chats;
+      renderOptions.profile_pic   = values[1][0];
+      renderOptions.users         = values[2];
 
       res.render("matcha.pug", renderOptions);
     }).catch(e => {throw e});

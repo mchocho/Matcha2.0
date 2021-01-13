@@ -12,8 +12,6 @@ function script() {
 			const node 		= document.getElementById('gender');
 			const target 	= e.currenTarget;
 
-			if (node)
-				node.setAttribute('value', target.textContent);
 			arr.forEach(value =>
 			{
 				value.classList.remove('option');
@@ -29,8 +27,6 @@ function script() {
 			const node 		= document.getElementById('preference');
 			const target 	= e.currentTarget;
 
-			if (node)
-				node.setAttribute('value', target.textContent);
 			arr.forEach(value =>
 			{
 				value.classList.remove('option');

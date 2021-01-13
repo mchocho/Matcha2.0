@@ -18,13 +18,19 @@ module.exports      = router;
 
 router.get("/:id?", (req, res) => 
 {
-  const sess    = req.session.user;
-  const id      = Number(req.params.id);
+  const sess          = req.session.user;
+  const userSignedIn  = !!sess;
+  const renderOptions = {
+    userSignedIn,
+    year: new Date().getFullYear()
+  };
+
+  const id            = Number(req.params.id);
   
   let location;
   let user;
 
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
     res.redirect("/logout");
     return;
@@ -190,8 +196,10 @@ router.get("/:id?", (req, res) =>
   function sortProfileDetails(profile)
   {
     //Async method cuts out the resolve/reject nonsense
-    (async () => {
-      try {
+    (async () =>
+    {
+      try
+      {
         const tagNames      = await ft_util.getTagNames(dbc, profile.tags);
         const similarTags   = await ft_util.similarInterests(dbc, sess.id, profile.id);
 
@@ -212,7 +220,8 @@ router.get("/:id?", (req, res) =>
 
         renderProfile(profile, notifications, images);
       }
-      catch(e) {
+      catch(e)
+      {
         if (ft_util.VERBOSE)
           console.log("Failed to update profile details: ", e);
 
@@ -224,13 +233,11 @@ router.get("/:id?", (req, res) =>
 
   function renderProfile(profile, notifications, images)
   {
-    const renderOptions = {
-      profile,
-      title           : profile.username,
-      notifications   : notifications.notifications,
-      chats           : notifications.chats,
-      profile_pic     : images[0]
-    };
+    renderOptions.profile       = profile;
+    renderOptions.notifications = notifications.notifications;
+    renderOptions.title         = profile.username;
+    renderOptions.chats         = notifications.chats;
+    renderOptions.profile_pic   = images[0];
 
     res.render("profile.pug", renderOptions); 
   }
