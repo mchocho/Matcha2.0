@@ -6,7 +6,7 @@ const uuidv4 = require('uuid/v4');
 const app = express();
 const flash	= require('connect-flash');
 const PORT = 3000;
-const {addChatUser, getChatUser, removeChatUser, getRoomId} = require('./includes/chatUsers');
+const {addChatUser, getChatUser, removeChatUser} = require('./includes/chatUsers');
 
 var server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -18,10 +18,10 @@ io.on('connection', (socket) => {
 		const user = addChatUser(socket.id, username, room);
 		socket.join(user.room);
 
-		io.to(user.room).emit('fromServer', {
-			user: `hi ${user.username} welcome to chat`,
-			msg: 'you are in ' + room
-		});
+		// io.to(user.room).emit('fromServer', {
+		// 	user: `hi ${user.username} welcome to chat`,
+		// 	msg: 'you are in ' + room
+		// });
 	});
 
 	socket.on('fromClient', (msg) => {

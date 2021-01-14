@@ -19,6 +19,7 @@ window.onload=function(){
 				if (!res.roomId) {
 					roomId.setAttribute("value", "");
 					room_id = "";
+					chatButton.href = "";
 				}
 
 				if (!res.youLikeUser || !res.otherUserLikesYou) {
@@ -31,7 +32,7 @@ window.onload=function(){
 						connection_btnn.textContent = 'Disconnect';
 						if (res.otherUserLikesYou === true) {
 							connect_status.textContent = 'You and ' + profile_name + ' are both connected';
-							chatButton.setAttribute("class", "nu btn-dark ml-1 d-inline");
+							chatButton.setAttribute("class", "nu d-inline");
 							connImg.setAttribute("class", "d-inline");
 							if (res.roomId) {
 								roomId.setAttribute("value", res.roomId);

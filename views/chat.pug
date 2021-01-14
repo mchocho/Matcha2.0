@@ -6,7 +6,12 @@ block content
 			#messages { list-style-type: none; margin: 0; padding: 0; }
 			#messages li { padding: 5px 10px; }
 			#messages li:nth-child(odd) { background: #eee; }
-	h2(align="center") Matcha Chat
+	.container
+		.row.justify-content-center
+			.col-6
+				span.display-4(style="vertical-align: middle") Matcha Chat
+				a.ml-5.nu(href='/matcha')
+					button.btn.btn-dark.ml-1(type='button') Return to Matcha
 	h2(id="username" hidden='true') #{username}
 	h2(id="roomName" hidden='true') #{roomName}
 	.container.mb-6
