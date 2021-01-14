@@ -9,7 +9,7 @@ const usersArr = [
 			"James",
 			"F",
 			"M",
-			"1981-05-01",
+			"1995-05-01",
 			"123bev@mailinator.com",
 			bcrypt.hashSync('OMG42', 10),
 			"T",
@@ -34,7 +34,7 @@ const usersArr = [
 			"Soap",
 			"M",
 			"F",
-			"1984-07-03",
+			"1990-07-03",
 			"123joe@mailinator.com",
 			bcrypt.hashSync('OMG42', 10),
 			"T",
@@ -59,10 +59,10 @@ const usersArr = [
 			"Jones",
 			"F",
 			"M",
-			"1990-01-01",
+			"1996-01-01",
 			"123jen@mailinator.com",
 			bcrypt.hashSync('OMG42', 10),
-			"T",
+			"F",
 			"T",
 			"T",
 			"I like short and long walks on the beach."
@@ -76,6 +76,31 @@ const usersArr = [
 			"South Africa"
 		],
 		userImage : "women/2.jpg"
+	},
+	{
+		userInfo : [
+			"Sal",
+			"Sally",
+			"Mally",
+			"F",
+			"M",
+			"1994-01-01",
+			"123sal@mailinator.com",
+			bcrypt.hashSync('OMG42', 10),
+			"F",
+			"T",
+			"T",
+			"I like short and long walks on the beach."
+			],
+		userLocation : [
+			"-26.144359",
+			"28.034270",
+			"-",
+			"Centurion",
+			"Gauteng",
+			"South Africa"
+		],
+		userImage : "women/5.jpg"
 	}
 ];
 
