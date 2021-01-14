@@ -73,5 +73,6 @@ module.exports = {
 	selUserChatId 			: "SELECT id FROM user_chat WHERE (user_one = ? AND user_two = ?) OR (user_two = ? AND user_one = ?)",
 	selUserChatRoom 		: "SELECT room_name FROM user_chat WHERE (user_one = ? AND user_two = ?) OR (user_one = ? AND user_two = ?)",
 	delChatRoom 				: "DELETE FROM user_chat WHERE room_name = ?",
-	confirmChatRoomExists : "SELECT id FROM user_chat WHERE (((user_one = ? AND user_two = ?) OR (user_one = ? AND user_two = ?)) AND room_name = ?)"
+	confirmChatRoomExists : "SELECT id FROM user_chat WHERE (((user_one = ? AND user_two = ?) OR (user_one = ? AND user_two = ?)) AND room_name = ?)",
+	joinUserNameAndRoom : "SELECT users.username, user_chat.room_name FROM users INNER JOIN user_chat ON (users.id = user_chat.user_one) OR (users.id = user_chat.user_two) WHERE ( (((user_one = ? AND user_two = ?) OR (user_one = ? AND user_two = ?)) AND room_name = ?) AND users.id = ? ) "
 };
