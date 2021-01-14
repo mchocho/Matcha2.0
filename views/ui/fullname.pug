@@ -1,0 +1,11 @@
+form(method='post', action='/fullname')
+  h4#fullname.value #{user.first_name} #{user.last_name}
+  input#fullname_edit_btn.custom_btn.ib(type='button', value='Change fullname')
+  #fullname_edit_container.edit.hide
+    span#error_1.error
+    input.form-control(type='text', name='first', placeholder='First name')
+    input.form-control(type='text', name='last', placeholder='Last name')
+    br
+    #new-fullname-confirm.btn-group(role='group', aria-label='Confirm name change')
+      button#fullname_confirm.btn.btn-secondary(type='submit') Confirm
+      button#fullname_cancel.btn.btn-secondary(type='button') Cancel

@@ -1,0 +1,13 @@
+form(method='post', action='/email')
+  .edit
+    h4 Change Email
+      img(src='images/icons/envelope.png', alt='email address', class='input_icon')
+    p#email #{user.email}
+    input#email_edit_btn.custom_btn.ib(type='button', value='Change email address')
+    #email_edit_container.interest_edit.hide
+      span#error_5.error
+      input.form-control(type='email', name='email', placeholder='New email')
+      br
+      #new-email-confirm.btn-group(role='group', aria-label='Confirm new email')
+        button#email_confirm.btn.btn-secondary(type='submit') Confirm
+        button#email_cancel.btn.btn-secondary(type='button') Cancel

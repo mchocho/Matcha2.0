@@ -1,0 +1,13 @@
+form(method='post', action='/dob')
+  .edit
+    h4 Date of birth
+      img(src='images/icons/bithday.png', alt='date of birth address', class='input_icon')
+    p#dob #{user.dob}
+    input#dob_edit_btn.custom_btn.ib(type='button', value='Change date of birth')
+    #dob_edit_container.interest_edit.hide
+      span#error_4.error
+      input#dob_txt.form-control(type='text', name='dob', placeholder='Date of birth', required='')
+      br
+      #new-dob-confirm.btn-group(role='group', aria-label='Confirm date of birth')
+        button#dob_confirm.btn.btn-secondary(type='submit') Confirm
+        button#dob_cancel.btn.btn-secondary(type='button') Cancel

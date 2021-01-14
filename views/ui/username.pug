@@ -1,0 +1,10 @@
+form(method='post', action='/username')
+  h4#username.value #{user.username}
+  input#username_edit_btn.custom_btn.ib(type='button', value='Change username')
+  #username_edit_container.edit.hide
+    span#error_0.error
+    input.form-control(type='text', name='username', placeholder='New username')
+    br
+    #new-username-confirm.btn-group(role='group', aria-label='Confirm username change')
+      button#username_confirm.btn.btn-secondary(type='submit') Confirm
+      button#username_cancel.btn.btn-secondary(type='button') Cancel

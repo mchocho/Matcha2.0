@@ -1,0 +1,8 @@
+form(method='post')
+  .edit
+    h4 Sexual preference
+    span#error_3.error
+    #preference_group.btn-group(role='group', aria-label='Confirm preference change')
+      button#preference_female_btn.btn.btn-secondary(type='button', class=(user.preference == 'F' ? 'option' : '')) Female
+      button#preference_male_btn.btn.btn-secondary(type='button', class=(user.preference == 'M' ? 'option' : '')) Male
+      button#preference_both_btn.btn.btn-secondary(type='button', class=(user.preference != 'M' && user.preference != 'F'  ? 'option' : '')) Both

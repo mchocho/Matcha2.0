@@ -1,0 +1,7 @@
+form(method='post')
+  .edit
+    h4 Gender
+    span#error_2.error
+    #gender_group.btn-group(role='group', aria-label='Confirm gender change')
+      button#gender_female_btn.btn.btn-secondary(type='button', class=(user.sex == 'F' ? 'option' : '')) Female
+      button#gender_male_btn.btn.btn-secondary(type='button',   class=(user.sex == 'M' ? 'option' : '')) Male
