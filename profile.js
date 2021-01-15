@@ -114,7 +114,7 @@ router.get('/:id?', (req, res) => {
 														if (err) throw err;
 														dbc.query(sql.insNewNotification, [[id, result.insertId, 'views']], (err, result) => {
 															if (err) {
-																console.log("There was on err on line 101 of profile.js: " + err.message);
+																console.log("There was an err in profile.js: " + err.message);
 															}
 															if (ft_util.VERBOSE) {
 																console.log('Notification status: ', values[0]);

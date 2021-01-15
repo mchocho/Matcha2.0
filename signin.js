@@ -3,7 +3,8 @@ const express 			= require('express'),
 	  bcrypt		= require('bcryptjs'),
 	  ft_util		= require('./includes/ft_util.js'),
 	  dbc			= require('./model/sql_connect.js'),
-	  redirect		= '/matcha'
+		redirect		= '/matcha',
+		moment = require('moment');
 	//   sql			= require('./model/sql_statements.js');
 
 let router = express.Router();
@@ -11,6 +12,7 @@ module.exports = router;
 
 router.get('/', (req, res) => {
 	const sess = req.session.user;
+	
 	if (ft_util.isobject(sess)) {
 		res.redirect('/matcha');
 		return;
@@ -63,8 +65,12 @@ router.get('/', (req, res) => {
 							ft_util.updateUserLocation(dbc, geo, result.length > 0, profile.id, ft_util.VERBOSE).then((result) => {
 								req.session.save((err) => {
 									if (err) {throw err}
-									res.redirect(redirect);
-									return;
+									let updateOnline = "UPDATE users SET online = 'T' WHERE id = ?"
+									dbc.query(updateOnline, [profile.id], (err, uDresult) => {
+										if (err) {throw err}
+										res.redirect(redirect);
+										return;
+									});
 								});
 							}).catch((err) => {
 									if (ft_util.VERBOSE) {
