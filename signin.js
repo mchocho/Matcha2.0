@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
 }).post('/', (req, res) => {
 	const user = req.body;
 	let errors = ft_util.init_errors(),
-		result = true
+		result = true;
 	if (user.cupid === 'Submit') {
 		if (user.username.length === 0) {
 			result = false;

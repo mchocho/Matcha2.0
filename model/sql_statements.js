@@ -1,4 +1,3 @@
-
 module.exports = {
 	selAllUsers 				: "SELECT * FROM `users`",
 	selAllUserIds				: "SELECT id FROM `users`",

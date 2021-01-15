@@ -340,6 +340,19 @@ router.get('/:id?', (req, res) => {
 	});
 	return;
 }).post('/cconnect', (req, res) => {
+
+	// This is the logic used for connecting 2 users
+	// inorder to create a verified chat room for them
+	// we need to also correcting adjust the users popularity in the 
+	// process.
+	// Various checks are carried out in order to see if the other
+	// has or hasn't already liked the current user
+	// or if the current user has changed their mind
+	// and decided to unlike the other user.
+	// Once again during this process ratings 
+	// and chat room access needs to be accessed 
+	// accordingly
+
 	const user = req.session.user;
 	const otherUserId = Number(req.body.otherUser);
 	let userHasImage = false;
@@ -481,7 +494,8 @@ router.get('/:id?', (req, res) => {
 		});
 	}
 
-	// Delete a chat room if it exists
+	// Delete a chat room if it exists and 
+	// one of the users has unliked the other
 	function deleteRoom() {
 		dbc.query(sql.selUserChatRoom, [user.id, otherUserId, otherUserId, user.id], (err, result) => {
 			if (err) {throw err}
@@ -522,6 +536,7 @@ router.get('/:id?', (req, res) => {
 		});
 	}
 
+	// Update fame rating
 	function updateFameRating(increaseRating) {
 		dbc.query(sql.selUserRating, [otherUserId], (err, result) => {
 			if (err) {throw err}
@@ -537,6 +552,7 @@ router.get('/:id?', (req, res) => {
 		});
 	}
 
+	// Find a chat room if one exits
 	function findChatRoom() {
 		if (youLikeUser && otherUserLikesYou) {
 			dbc.query(sql.selUserChatRoom, [user.id, otherUserId, otherUserId, user.id], (err, result) => {
@@ -571,6 +587,7 @@ router.get('/:id?', (req, res) => {
 		}
 	}
 
+	// Create chat room if it doesn't exsist
 	function createRoom() {
 		roomName = uuidv4();
 		dbc.query(sql.insNewChatRoom, [[user.id, otherUserId, roomName]], (err, result) => {
