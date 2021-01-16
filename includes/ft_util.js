@@ -1,10 +1,10 @@
-const http    = require('https');
-const moment  = require('moment');
-const util    = require('util');
+const http    = require("https");
+const moment  = require("moment");
+const util    = require("util");
 
 const dbc     = require("../model/sql_connect.js");
-const sql     = require('../model/sql_statements.js');
-const errs    = require('../model/error_messages.js');
+const sql     = require("../model/sql_statements.js");
+const errs    = require("../model/error_messages.js");
 
 const format  = /[ £!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 const tagsToReplace = {
@@ -17,13 +17,13 @@ const tagsToReplace = {
 module.exports = {
   VERBOSE: true,
   SALT: 10,
-  isstring()
+  isString()
   {
-    return [...arguments].every(arg => Object.prototype.toString.call(arg) === '[object String]');
+    return [...arguments].every(arg => Object.prototype.toString.call(arg) === "[object String]");
   },
-  isobject()
+  isObject()
   {
-    return [...arguments].every(arg => Object.prototype.toString.call(arg) === '[object Object]');
+    return [...arguments].every(arg => Object.prototype.toString.call(arg) === "[object Object]");
   },
   isEmail(value)
   {
@@ -227,11 +227,11 @@ module.exports = {
       });
     });
   },
-  totalUsersLikes(id)
+  totalInterestedUsers(id)
   {
     return new Promise((resolve, reject) =>
     {
-      dbc.query(sql.getUserLikes, [id], (err, result) =>
+      dbc.query(sql.getAllInterestedUsers, [id], (err, result) =>
       {
         if (err) {throw err}
 
@@ -239,17 +239,46 @@ module.exports = {
       });
     });
   },
+  totalConnections(id)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      dbc.query(sql.getAllUserLikes, [id, id], (err, result) =>
+      {
+        if (err) {throw err}
+
+        if (result.length == 0)
+        {
+          resolve(0);
+          return;
+        }
+
+        const likes = [...result];
+
+        resolve(likes.filter(like => likes.some(tmp => like.liker === tmp.liked)).length / 2);
+      });
+    });
+  },
+  totalProfileBlocks(id)
+  {
+
+  },
   updateFameRating(id)
   {
     return new Promise((resolve, reject) =>
     {
       Promise.all([
         this.totalUsers(),
-        this.totalUsersLikes(id)
-        // this.totalProfileBlocks(dbc, id)
+        this.totalInterestedUsers(id),
+        this.totalConnections(id)
+        // this.totalProfileBlocks(id)
       ])
       .then(values =>
       {
+        const totalUsers       = values[0];
+        const totalLikes       = values[1];
+        const totalConnections = values[2];
+
         const rating = parseInt(Math.ceil((values[1] / values[0]) * 10));
 
         dbc.query(sql.updateFameRating, [rating, id], (err, result) =>
@@ -274,7 +303,7 @@ module.exports = {
           if (err) {throw err}
 
           const notifications = notificationRes.length > 0;
-          const chats     = chatRes.length > 0;
+          const chats         = chatRes.length > 0;
 
           resolve({notifications, chats});
         });
@@ -328,14 +357,14 @@ module.exports = {
         {
           let result = list;
 
-          if (type === 'age')
+          if (type === "age")
             result = await this.filterMatchesByAge(list, arg1, arg2)
-          else if (type === 'location')
-            result = await this.filterMatchesByGeo(list);
-          else if (type === 'tags')
-            result = await this.filterMatchesByTags(list, arg1)
-          else if (type === 'rating')
-            result = await this.filterMatchesByRating(list)
+          else if (type === "rating")
+            result = await this.filterMatchesByRating(list, arg1, arg2)
+          else if (type === "location")
+            result = await this.filterMatchesByGeo(list, arg1);
+          else if (type === "tags")
+            result = await this.filterMatchesByTag(list, arg1);
 
           resolve(result);
         }
@@ -356,13 +385,107 @@ module.exports = {
         return;
       }
 
-      const min = moment().subtract(minAge, 'years');
       const max = moment().subtract(maxAge, 'years');
+      const min = moment().subtract(minAge, 'years');
 
       resolve(list.filter(item => moment(item.DOB).isBetween(max, min)));
     });
   },
-  filterMatchesByGeo(list)
+  filterMatchesByRating(list, minRating, maxRating)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      if (list.length === 0 || isNaN(minRating) || isNaN(maxRating))
+      {
+        resolve(list);
+        return;
+      }
+
+      resolve(list.filter(item => item.rating > minRating && item.rating < maxRating));
+    });
+  },
+  filterMatchesByGeo(list, state, coutry=false)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      let results = list;
+
+      if (list.length === 0)
+      {
+        resolve(list);
+        return;
+      }
+
+      if (country)
+      {
+        results = list.filter(item => item.country === country)
+      }
+
+      resolve(results.filter(item => item.state === state));
+    });
+  },
+  filterMatchesByTag(list, tag)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      if (list.length === 0)
+      {
+        resolve(list);
+        return;
+      }
+
+      resolve(results.filter(item => item.interests.some(interest => interest.name === tag)));
+    });
+  },
+  sortMatches(list, type, arg)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      if (list.length === 0)
+      {
+        resolve(list);
+        return;
+      }
+
+      (async () => {
+        try
+        {
+          let result = list;
+
+          if (type === "age")
+            result = await this.sortMatchesByAge(list)
+          else if (type === "location")
+            result = await this.sortMatchesByDistance(list);
+          else if (type === "rating")
+            result = await this.sortMatchesByRating(list)
+          else if (type === "tags")
+            result = await this.sortMatchesByTags(list, arg)
+
+          resolve(result);
+        }
+        catch(e)
+        {
+          reject(e);
+        }
+      })();
+    });
+  },
+  sortMatchesByAge(list)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      const length = list.length;
+
+      if (length === 0)
+      {
+        resolve(list);
+        return;
+      }
+
+      resolve(list.sort((current, next) => parseInt(moment(current.DOB).fromNow()) - parseInt(moment(next.DOB).fromNow())));
+    });
+  },
+  sortMatchesByDistance(list)
   {
     //Sort by distance
     return new Promise((resolve, reject) =>
@@ -378,7 +501,7 @@ module.exports = {
       resolve(list.sort((current, next) => parseInt(Math.round(current.distance)) - parseInt(Math.round(next.distance))));
     });
   },
-  filterMatchesByRating(list)
+  sortMatchesByRating(list)
   {
     //Sort by rating
     return new Promise((resolve, reject) =>
@@ -391,10 +514,10 @@ module.exports = {
         return;
       }
 
-      resolve(list.sort((current, next) => parseInt(current.rating) - parseInt(next.rating)));
+      resolve(list.sort((current, next) => current.rating - next.rating));
     });
   },
-  filterMatchesByTags(list, user)
+  sortMatchesByTags(list, user)
   {
     return new Promise((resolve, reject) =>
     {
@@ -433,6 +556,8 @@ module.exports = {
 
       function getSimilarInterests(list, user)
       {
+        const size = list.length - 1;
+
         list.forEach((value, i, arr) =>
         {
           this.similarInterests(user, value.id)
@@ -443,7 +568,7 @@ module.exports = {
               length : tags.length
             };
 
-            if (i === arr.length - 1)
+            if (i === size)
               sortInterests(list);
           });
         });
