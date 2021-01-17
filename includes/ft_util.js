@@ -202,12 +202,12 @@ module.exports = {
       });
     });
   },
-  getUser(profile)
+  getUser(id)
   {
     return new Promise((resolve, reject) =>
     {
 
-      dbc.query(sql.selUserById, [profile], (err, result) =>
+      dbc.query(sql.selUserById, [id], (err, result) =>
       {
         if (err) {throw err}
 
@@ -243,43 +243,80 @@ module.exports = {
   {
     return new Promise((resolve, reject) =>
     {
-      dbc.query(sql.getAllUserLikes, [id, id], (err, result) =>
+      dbc.query(sql.getAllUserLikes, [id, id], (err, likes) =>
       {
         if (err) {throw err}
 
-        if (result.length == 0)
+        if (likes.length == 0)
         {
           resolve(0);
           return;
         }
 
-        const likes = [...result];
-
-        resolve(likes.filter(like => likes.some(tmp => like.liker === tmp.liked)).length / 2);
+        resolve((likes.filter(like => likes.some(tmp => like.liker === tmp.liked)).length) / 2);
       });
     });
   },
   totalProfileBlocks(id)
   {
+    return new Promise((resolve, reject) =>
+    {
+      dbc.query(sql.selAllIdsOfBlockedUser, [id], (err, results) =>
+      {
+        if (err) {throw err}
 
+        if (results.length == 0)
+        {
+          resolve(0);
+          return;
+        }
+
+        resolve(results.length);
+      });
+    });
   },
-  updateFameRating(id)
+  updateFameRating(user, likeAction=true)
   {
     return new Promise((resolve, reject) =>
     {
+      const id = user.id;
+
       Promise.all([
         this.totalUsers(),
+        this.totalConnections(id),
         this.totalInterestedUsers(id),
-        this.totalConnections(id)
-        // this.totalProfileBlocks(id)
+        this.totalProfileBlocks(id)
       ])
       .then(values =>
       {
-        const totalUsers       = values[0];
-        const totalLikes       = values[1];
-        const totalConnections = values[2];
+        const totalUsers           = values[0];
+        const totalConnections     = values[1];
+        const totalInterestedUsers = values[2];
+        const totalProfileBlocks   = values[3];
+        const currentRating        = user.rating;
 
-        const rating = parseInt(Math.ceil((values[1] / values[0]) * 10));
+        const update               = parseInt(Math.ceil((values[1] / values[0]) * 10));
+        let   rating;
+
+        if (likeAction && currentRating <= 10)
+        {
+          //Increase the rating
+          rating = currentRating + update;
+
+          if (totalProfileBlocks >= totalConnections || totalProfileBlocks >= totalInterestedUsers)
+          {
+            resolve(currentRating);
+            return;
+          }
+          else if (rating > 10)
+          {
+            rating = 10;
+          }
+        }
+        else
+        {
+          rating = currentRating - update;
+        }
 
         dbc.query(sql.updateFameRating, [rating, id], (err, result) =>
         {
@@ -434,7 +471,7 @@ module.exports = {
         return;
       }
 
-      resolve(results.filter(item => item.interests.some(interest => interest.name === tag)));
+      resolve(results.filter(item => item.interests.some(interest => interest === tag)));
     });
   },
   sortMatches(list, type, arg)

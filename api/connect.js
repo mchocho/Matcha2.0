@@ -12,10 +12,9 @@ module.exports      = router;
 
 router.post("/", (req, res) =>
 {
-  const sess      = req.session.user;
-  const id        = req.body.value;
-  const response  = {
-    profile       : id,
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = {
     service       : "connect",
     youLikeUser   : false,
     userLikesYou  : false
@@ -23,8 +22,7 @@ router.post("/", (req, res) =>
 
   res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
-  
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
       response.result = "Please sign in.";
       res.end(JSON.stringify(response));
@@ -37,28 +35,40 @@ router.post("/", (req, res) =>
       return;
   }
 
-  if (isNaN(id))
-  {
-    response.result = "Please specify a user to connect with.";
-    res.end(JSON.stringify(response));
-    return;
-  }
+  validateId();
 
-  dbc.query(sql.selUserById, [id], (err, result) =>
+  function validateId()
   {
-    if (err) {throw err}
+    const id        = req.body.id;
     
-    //User does not exist
-    if (result.length === 0)
+    if (isNaN(id))
     {
       response.result = "Please specify a user to connect with.";
       res.end(JSON.stringify(response));
       return;
     }
+    
+    response.profile = id;
+    getUser(id);
+  }
 
-    checkIfProfileBlocked(result[0]);
-  });
+  function getUser(id)
+  {
+    dbc.query(sql.selUserById, [id], (err, result) =>
+    {
+      if (err) {throw err}
+      
+      //User does not exist
+      if (result.length === 0)
+      {
+        response.result = "Please specify a user to connect with.";
+        res.end(JSON.stringify(response));
+        return;
+      }
 
+      checkIfProfileBlocked(result[0]);
+    });
+  }
 
   function checkIfProfileBlocked(profile)
   {
@@ -80,8 +90,8 @@ router.post("/", (req, res) =>
   function checkAllUsersHaveImages(profile)
   {
     Promise.all([
-      ft_util.getUserImages(dbc, sess.id),
-      ft_util.getUserImages(dbc, profile.id)
+      ft_util.getUserImages(sess.id),
+      ft_util.getUserImages(profile.id)
     ])
     .then((images) =>
     {
@@ -176,6 +186,7 @@ router.post("/", (req, res) =>
   {
     const serviceId     = ((!response.youLikeUser) && notificationId) ? notificationId : queryResult.insertId;
     const type          = (!response.youLikeUser) ? "unlike" : "like";
+    const likeAction    = type === "like";
 
     const insertValues  = [ profile.id, serviceId, type ];
 
@@ -183,11 +194,11 @@ router.post("/", (req, res) =>
     {
       if (err) {throw err}
 
-      emailUserProfile(profile);
+      emailUserProfile(profile, likeAction);
     });
   }
 
-  function emailUserProfile(profile)
+  function emailUserProfile(profile, likeAction)
   {
     const username      = sess.username;
     const emailAddress  = profile.email;
@@ -214,12 +225,12 @@ router.post("/", (req, res) =>
     
     email.main(emailAddress, title, msg).catch(console.error);
     
-    updateFameRating(profile);
+    updateFameRating(profile, likeAction);
   }
 
-  function updateFameRating(profile)
+  function updateFameRating(profile, likeAction)
   {
-    ft_util.updateFameRating(dbc, profile.id)
+    ft_util.updateFameRating(profile, likeAction)
     .then(rating =>
     {
       response.rating = rating;
