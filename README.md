@@ -119,3 +119,19 @@ Test outline:
 11. Like / Unlike a user
 12. Block a user
 13. Message
+
+Expected Outcome:
+
+1. Backend server should start
+2. You should be able to create an account
+3. You should be able to login
+4. You should be able to edit your profile
+5. You should be able to view suggested profiles
+6. People should have popularity rating
+7. You should be able to search and filter profiles
+8. Geo-location should be a feature
+9. You should receive notifications
+10. You should be able to view a profile
+11. You should be able to like and unlike a user
+12. You should be able to block a user
+13. You should be able to chat with a user you liked and if they liked you back
