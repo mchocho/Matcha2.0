@@ -58,7 +58,7 @@ html
                 .time
                   time(datetime=val.date_created)
                 if (val.viewed === 'F')
-                  span.badge.badge-secondary New
+                  span.d-none.badge.badge-secondary New
       if (userNotifications.length === 0)
         .all_clear
           img(href='images/icons/bell_0.png')
