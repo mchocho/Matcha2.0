@@ -11,7 +11,7 @@ const {addChatUser, getChatUser, removeChatUser} = require('./includes/chatUsers
 var server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-// CHAT
+// Chat logic for connecting rooms
 io.on('connection', (socket) => {
 	socket.on('joinRoom', ({username, room}) => {
 		const user = addChatUser(socket.id, username, room);
@@ -31,11 +31,13 @@ io.on('connection', (socket) => {
 	});
 });
 
+// Setup fronend static content
 require('dotenv').config();
 app.use(flash());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Setup for session storage and static content location
 app.use(body_p.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 app.use(session({secret: uuidv4(), cookie: {maxAge: 600000000, sameSite: 'lax'}, saveUninitialized: true, resave: true}));
