@@ -111,9 +111,9 @@ Test outline:
 3. Login
 4. Edit profile
 5. View profile suggestions
-6. Search / Filter
-7. Geo-location
-8. Popularity rating
+6. Popularity rating
+7. Search / Filter
+8. Geo-location
 9. Notifications
 10. View a profile
 11. Like / Unlike a user
@@ -126,9 +126,9 @@ Expected Outcome:
 3. You should be able to login
 4. You should be able to edit your profile
 5. You should be able to view suggested profiles
-6. You should be able to search and filter profiles
-7. Geo-location should be a feature
-8. People should have popularity rating
+6. People should have popularity rating
+7. You should be able to search and filter profiles
+8. Geo-location should be a feature
 9. You should receive notifications
 10. You should be able to view a profile
 11. You should be able to like and unlike a user
