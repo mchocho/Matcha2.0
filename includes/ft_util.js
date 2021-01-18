@@ -390,35 +390,52 @@ module.exports = {
   {
     return [...new Set(arr)];
   },
-  getAllUserLocations(users)
+  getAllUserLocations(matches)
   {
     return new Promise((resolve, reject) =>
     {
-      if (users.length === 0)
+      const index   = matches.length - 1;
+      
+      if (matches.length === 0)
       {
-        resolve(user);
+        resolve(results);
         return;
       }
 
-      const index = users.length - 1;
-
-      users.forEach((user, i) =>
+      matches.forEach((match, i) =>
       {
-        const userId = user.id;
+        getUserLocationRow.call(this, matches, i);
+      });
 
-        //getUserLocationRow()
-        dbc.query(sql.selUserLocation, [userId], (err, location) =>
+      function getUserLocationRow(matches, i)
+      {
+        const id      = matches.id;
+        const results = [];
+        let   location;
+        let   str;
+        
+        dbc.query(sql.selUserLocation, [id], (err, locations) =>
         {
           if (err) {throw err}
 
-          if (user2Tags.length === 0)
+          if (locations.length === 0)
           {
-            resolve([])
+            if (i === index)
+              resolve(this.uniqueArr(results));
             return;
           }
 
+          location = locations[0];
+
+          str = location["state"]; 
+
+          results.push(str);
+
+          if (i === index)
+              resolve(this.uniqueArr(results))
+
         });
-      });
+      }
     });
   },
   filterMatches(matches, filter, arg1, arg2)

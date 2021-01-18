@@ -45,7 +45,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getUserLocation(id)
   {
-    console.log("Hello");
     dbc.query(sql.selUserLocation, [sess.id], (err, result) =>
     {
       if (err) {throw err};
@@ -63,7 +62,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getBlockedUsers(location)
   {
-    console.log("1");
     sess.location = location;
 
     dbc.query(sql.selBlockedUsers, [sess.id], (err, result) =>
@@ -76,7 +74,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
     
   function getUserPreferences(blacklist)
   {
-    console.log("2");
     let prefSql;
     
     if (sess.preferences === "M")
@@ -96,7 +93,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getMatches(matches)
   {
-    console.log("3");
     if (matches.length > 0)
       createProfileUrls(matches);
     else
@@ -105,7 +101,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
       
   function createProfileUrls(matches)
   {
-    console.log("4");
     const size = matches.length - 1;
 
     matches.forEach(match =>
@@ -117,7 +112,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getMatchesImages(matches, size)
   {
-    console.log("5");
     matches.forEach((match, i, arr) =>
     {
       dbc.query(sql.selImagePath, [match.id], (err, result) =>
@@ -134,7 +128,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getMatchesTags(matches, size)
   {
-    console.log("6");
     matches.forEach((match, i, arr) =>
     {
       match["tags"] = [];
@@ -150,7 +143,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getUserTagNames(userTags, matches, size, match, i)
   {
-    console.log("7");
     const size2 = userTags.length - 1;
 
     if (userTags.length === 0)
@@ -176,7 +168,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function getMatchesLocations(matches, size)
   {
-    console.log("8");
     const location        = sess.location;
     const userLocation    = {
       lat: location.lat, 
@@ -211,7 +202,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function filterMatches(matches)
   {
-    console.log("9");
     const filter = req.body.filter;
     const arg1   = (filter === "tags") ? sess.id : req.body.arg1;
     const arg2   = req.body.arg2;
@@ -231,7 +221,6 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
 
   function sortMatches(matches)
   {
-    console.log("10");
     const sort = req.body.sort;
     const id   = sess.id;
 
@@ -255,7 +244,7 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
     Promise.all([
       ft_util.userNotificationStatus(id),
       ft_util.getUserImages(id),
-     // ft_util.getAllUserLocations(matches)
+     ft_util.getAllUserLocations(matches)
     ])
     .then(values =>
     {
@@ -264,7 +253,7 @@ router.get("/:filter?.:arg1?.:arg2?.:sort?", (req, res) =>
       renderOptions.chats         = values[0].chats;
       renderOptions.profile_pic   = values[1][0];
       renderOptions.areas         = values[2];
-      //renderOptions.tags          = ft_util.getAllTags(matches);
+      renderOptions.tags          = ft_util.getAllTags(matches);
 
       console.log(renderOptions);
 
