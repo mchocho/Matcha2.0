@@ -379,29 +379,71 @@ module.exports = {
       });
     });
   },
-  filterMatches(list, type, arg1, arg2)
+  getAllTags(matches)
+  {
+    const tagsArray2D = matches.map(match => match.tags);
+    const tagsArray1D = tagsArray2D.reduce((prev, next) => prev.concat(next))
+
+    return (this.uniqueArr(tagsArray1D));
+  },
+  uniqueArr(arr)
+  {
+    return [...new Set(arr)];
+  },
+  getAllUserLocations(users)
   {
     return new Promise((resolve, reject) =>
     {
-      if (list.length === 0)
+      if (users.length === 0)
       {
-        resolve(list);
+        resolve(user);
+        return;
+      }
+
+      const index = users.length - 1;
+
+      users.forEach((user, i) =>
+      {
+        const userId = user.id;
+
+        //getUserLocationRow()
+        dbc.query(sql.selUserLocation, [userId], (err, location) =>
+        {
+          if (err) {throw err}
+
+          if (user2Tags.length === 0)
+          {
+            resolve([])
+            return;
+          }
+
+        });
+      });
+    });
+  },
+  filterMatches(matches, filter, arg1, arg2)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      if (matches.length === 0)
+      {
+        resolve(matches);
         return;
       }
 
       (async () => {
         try
         {
-          let result = list;
+          let result = matches;
 
-          if (type === "age")
-            result = await this.filterMatchesByAge(list, arg1, arg2)
-          else if (type === "rating")
-            result = await this.filterMatchesByRating(list, arg1, arg2)
-          else if (type === "location")
-            result = await this.filterMatchesByGeo(list, arg1);
-          else if (type === "tags")
-            result = await this.filterMatchesByTag(list, arg1);
+          if (filter === "age")
+            result = await this.filterMatchesByAge(matches, arg1, arg2)
+          else if (filter === "rating")
+            result = await this.filterMatchesByRating(matches, arg1, arg2)
+          else if (filter === "location")
+            result = await this.filterMatchesByGeo(matches, arg1);
+          else if (filter === "tags")
+            result = await this.filterMatchesByTag(matches, arg1);
 
           resolve(result);
         }
@@ -412,91 +454,79 @@ module.exports = {
       })();
     });
   },
-  filterMatchesByAge(list, minAge, maxAge)
+  filterMatchesByAge(matches, minAge, maxAge)
   {
     return new Promise((resolve, reject) =>
     {
-      if (list.length === 0 || isNaN(minAge) || isNaN(maxAge))
+      if (isNaN(minAge) || isNaN(maxAge))
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
       const max = moment().subtract(maxAge, 'years');
       const min = moment().subtract(minAge, 'years');
 
-      resolve(list.filter(item => moment(item.DOB).isBetween(max, min)));
+      resolve(matches.filter(item => moment(item.DOB).isBetween(max, min)));
     });
   },
-  filterMatchesByRating(list, minRating, maxRating)
+  filterMatchesByRating(matches, minRating, maxRating)
   {
     return new Promise((resolve, reject) =>
     {
-      if (list.length === 0 || isNaN(minRating) || isNaN(maxRating))
+      if (isNaN(minRating) || isNaN(maxRating))
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
-      resolve(list.filter(item => item.rating > minRating && item.rating < maxRating));
+      resolve(matches.filter(item => item.rating > minRating && item.rating < maxRating));
     });
   },
-  filterMatchesByGeo(list, state, coutry=false)
+  filterMatchesByGeo(matches, state, coutry=false)
   {
     return new Promise((resolve, reject) =>
     {
-      let results = list;
-
-      if (list.length === 0)
-      {
-        resolve(list);
-        return;
-      }
+      let results = matches;
 
       if (country)
       {
-        results = list.filter(item => item.country === country)
+        results = matches.filter(item => item.country === country)
       }
 
       resolve(results.filter(item => item.state === state));
     });
   },
-  filterMatchesByTag(list, tag)
+  filterMatchesByTag(matches, tag)
   {
     return new Promise((resolve, reject) =>
     {
-      if (list.length === 0)
-      {
-        resolve(list);
-        return;
-      }
-
-      resolve(results.filter(item => item.interests.some(interest => interest === tag)));
+      resolve(matches.filter(item => item.interests.some(interest => interest === tag)));
     });
   },
-  sortMatches(list, type, arg)
+  sortMatches(matches, sort, arg)
   {
     return new Promise((resolve, reject) =>
     {
-      if (list.length === 0)
+      if (matches.length === 0)
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
       (async () => {
         try
         {
-          let result = list;
+          let result = matches;
 
-          if (type === "age")
-            result = await this.sortMatchesByAge(list)
-          else if (type === "location")
-            result = await this.sortMatchesByDistance(list);
-          else if (type === "rating")
-            result = await this.sortMatchesByRating(list)
-          else if (type === "tags")
-            result = await this.sortMatchesByTags(list, arg)
+          if (sort === "age")
+            result = await this.sortMatchesByAge(matches)
+          else if (sort === "location")
+            result = await this.sortMatchesByDistance(matches);
+          else if (sort === "rating")
+            result = await this.sortMatchesByRating(matches);
+          else if (sort === "tags")
+            result = await this.sortMatchesByTags(matches, arg);
 
           resolve(result);
         }
@@ -507,43 +537,43 @@ module.exports = {
       })();
     });
   },
-  sortMatchesByAge(list)
+  sortMatchesByAge(matches)
   {
     return new Promise((resolve, reject) =>
     {
-      const length = list.length;
+      const length = matches.length;
 
       if (length === 0)
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
-      resolve(list.sort((current, next) => parseInt(moment(current.DOB).fromNow()) - parseInt(moment(next.DOB).fromNow())));
+      resolve(matches.sort((current, next) => parseInt(moment(current.DOB).fromNow()) - parseInt(moment(next.DOB).fromNow())));
     });
   },
-  sortMatchesByDistance(list)
+  sortMatchesByDistance(matches)
   {
     //Sort by distance
     return new Promise((resolve, reject) =>
     {
-      const length = list.length;
+      const length = matches.length;
 
       if (length === 0)
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
-      resolve(list.sort((current, next) => parseInt(Math.round(current.distance)) - parseInt(Math.round(next.distance))));
+      resolve(matches.sort((current, next) => parseInt(Math.round(current.distance)) - parseInt(Math.round(next.distance))));
     });
   },
-  sortMatchesByRating(list)
+  sortMatchesByRating(matches)
   {
     //Sort by rating
     return new Promise((resolve, reject) =>
     {
-      const length = list.length;
+      const length = matches.length;
 
       if (length === 0)
       {
@@ -551,31 +581,31 @@ module.exports = {
         return;
       }
 
-      resolve(list.sort((current, next) => current.rating - next.rating));
+      resolve(matches.sort((current, next) => current.rating - next.rating));
     });
   },
-  sortMatchesByTags(list, user)
+  sortMatchesByTags(matches, user)
   {
     return new Promise((resolve, reject) =>
     {
       //Sort by similar tags
-      const length = list.length;
+      const length = matches.length;
 
       if (length === 0)
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
       if (isNaN(user))
       {
-        resolve(list);
+        resolve(matches);
         return;
       }
 
-      getUserTags.call(this, list, user);
+      getUserTags.call(this, matches, user);
 
-      function getUserTags(list, user)
+      function getUserTags(matches, user)
       {
         dbc.query(sql.selUserTags, [user], (err, tags) =>
         {
@@ -583,19 +613,19 @@ module.exports = {
           
           if (tags.length === 0)
           {
-            resolve(list);
+            resolve(matches);
             return;
           }
 
-          getSimilarInterests.call(this, list, user);
+          getSimilarInterests.call(this, matches, user);
         });
       }
 
-      function getSimilarInterests(list, user)
+      function getSimilarInterests(matches, user)
       {
-        const size = list.length - 1;
+        const size = matches.length - 1;
 
-        list.forEach((value, i, arr) =>
+        matches.forEach((value, i, arr) =>
         {
           this.similarInterests(user, value.id)
           .then(tags =>
@@ -606,14 +636,14 @@ module.exports = {
             };
 
             if (i === size)
-              sortInterests(list);
+              sortInterests(matches);
           });
         });
       }
 
-      function sortInterests(list)
+      function sortInterests(matches)
       {
-        resolve(list.sort((current, next) => current.similar_tags.length - next.similar_tags.length));
+        resolve(matches.sort((current, next) => current.similar_tags.length - next.similar_tags.length));
       }
     });
   }
