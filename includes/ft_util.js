@@ -367,7 +367,7 @@ module.exports = {
         profiles = connections.map(connection => connection.liker).concat(connections.map(connection => connection.liked));
         profiles = profiles.filter(profile => profile !== user.id);
 
-        profiles = matches.map(match => profiles.some(profile => profile === match.id));
+        profiles = matches.filter(match => profiles.some(profile => profile === match.id));
 
         resolve(profiles);
       });
