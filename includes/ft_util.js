@@ -347,6 +347,32 @@ module.exports = {
       });
     });
   },
+  getAllConnectedUsers(user, matches)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      const id = user.id;
+      let   profiles;
+
+      dbc.query(sql.getAllUserLikes, [id, id], (err, connections) =>
+      {
+        if (err) {throw err}
+
+        if (connections.length === 0)
+        {
+          resolve([]);
+          return;
+        }
+
+        profiles = connections.map(connection => connection.liker).concat(connections.map(connection => connection.liked));
+        profiles = profiles.filter(profile => profile !== user.id);
+
+        profiles = matches.map(match => profiles.some(profile => profile === match.id));
+
+        resolve(profiles);
+      });
+    });
+  },
   similarInterests(user1, user2)
   {
     //Resolves a list of interest ids which user1 and user2 share
