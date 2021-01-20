@@ -31,9 +31,15 @@ footer {
   text-align: center;
 }
 
-#matcha .profile, #matcha .profile:hover {
-  text-decoration: none;
-  color: #111111;
+/*
+
+
+*/
+#matcha {
+  /* .profile, .profile:hover  {
+  	text-decoration: none;
+  	color: #111111;
+  }*/
 }
 #matcha .profile {
   margin-bottom: 3%;
@@ -43,16 +49,18 @@ footer {
   height: 300px;
 }
 #matcha .filter_container {
-  margin-left: 55%;
+  /* margin-left: 55%;
   margin-bottom: 1%;
-}
-#matcha .filter_container .sort_container {
-  padding-bottom: 1.5%;
-  margin-right: -10%;
-}
-#matcha .filter_container .sort_container img {
-  width: 40px;
-  height: 40px;
+
+  .sort_container {
+  	padding-bottom: 1.5%;
+  	margin-right: -10%;
+
+  	img {
+  		width: 40px;
+  		height: 40px;
+  	}
+  } */
 }
 #matcha .filter_container img {
   width: 70px;
@@ -231,11 +239,14 @@ footer {
   height: 40px;
 }
 
-/*
-	#user
-	The user settings view
+/******************************
+ ******************************
 
-*/
+	#user
+	CSS for the "user" page
+
+ ******************************
+ ******************************/
 #user #profile_picture_form {
   background: unset;
 }
@@ -264,13 +275,17 @@ footer {
   margin: 15px 0px;
   border-radius: 0.25rem;
 }
-#user input[type=text] {
-  margin-bottom: 15px;
-}
 #user h4 {
   margin: 4% 0% 1% 0%;
 }
 
+/******************************
+ ******************************
+
+	CSS for the "notifications" page
+
+ ******************************
+ ******************************/
 #notifications h2 {
   text-align: center;
 }

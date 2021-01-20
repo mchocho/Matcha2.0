@@ -8,17 +8,8 @@
 	height: 55%;
 }
 
-#password_edit_btn, #email_edit_btn, #dob_edit_btn, .custom_btn {
-	width: unset;
-}
-
 #new-tags-confirm {
 	margin-top: 1.5%;
-}
-
-form.inline
-{
-	display: inline-block;
 }
 
 .input_icon {

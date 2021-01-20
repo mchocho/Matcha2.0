@@ -1,6 +1,8 @@
+document.addEventListener("DOMContentLoaded", script);
+
 function script() {
 	// $(".slider").bxSlider();
-	const DEVMODE 	= false;
+	const DEVMODE 	= true;
 	const interests = document.getElementById("interests_list").childNodes;
 	const imgInput 	= document.getElementById("image");
 
@@ -73,6 +75,14 @@ function script() {
 
 	//Image field controls
 	imgInput.value = null;
+
+	imgInput.addEventListener("change", function(e)
+	{
+		const form = document.getElementById("profile_picture_form");
+
+		if (imgInput.files)
+			form.submit();
+	});
 
 	//Link img to input
 	document.getElementById("image_input_container")
@@ -173,5 +183,3 @@ function script() {
 		});
 	}
 }
-
-document.addEventListener("DOMContentLoaded", script);

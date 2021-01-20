@@ -53,10 +53,10 @@ footer {
 */
 
 #matcha {
-	.profile, .profile:hover  {
+	/* .profile, .profile:hover  {
 		text-decoration: none;
 		color: #111111;
-	}
+	}*/
 
 	.profile {
 		margin-bottom: 3%;
@@ -68,7 +68,7 @@ footer {
 	}
 
 	.filter_container {
-		margin-left: 55%;
+		/* margin-left: 55%;
 		margin-bottom: 1%;
 
 		.sort_container {
@@ -79,7 +79,7 @@ footer {
 				width: 40px;
 				height: 40px;
 			}
-		}
+		} */
 
 		img {
 			width: 70px;
@@ -351,10 +351,6 @@ footer {
 		border-radius: .25rem;
 	}
 
-	input[type="text"] {
-		margin-bottom: 15px;
-	}
-
 	h4 {
 		margin: 4% 0% 1% 0%;
 	}
@@ -371,7 +367,6 @@ footer {
 #notifications {
 	h2 {
 		text-align: center;
-		font
 	}
 
 	.list-group {

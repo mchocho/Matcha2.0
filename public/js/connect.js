@@ -1,32 +1,17 @@
 document.addEventListener("DOMContentLoaded", script);
 
-function script() {
-  const profile_id        = document.getElementById("profile_id").value;
-  const profile_name      = document.getElementById("username").textContent;
-  const connect_status    = document.getElementById("connection_status");
-  const connection_btn    = document.getElementById("connection_btn");
-  const fameRating        = document.getElementById("rating");
-            
+function script()
+{
+  const connectionBtn = document.getElementById("connection_btn");
 
-  /*************************************
-   *************************************
-      
-      Event runs request to connect to 
-      with profile
-
-  **************************************
-  **************************************/
-  connection_btn
-  .addEventListener("click", e =>
-  {
-    const value = parseInt(profile_id);
-
-    xhr('/connect', "POST", { value }, onConnectRequest);
-  }, true);
+  if (!connectionBtn)
+    return;
 
   function onConnectRequest(xhr)
   {
-    const res = JSON.parse(xhr.responseText);
+    const res        = JSON.parse(xhr.responseText);
+    const name       = document.getElementById("username").textContent;
+    const fameRating = document.getElementById("rating");
 
     console.log(res);
 
@@ -43,22 +28,31 @@ function script() {
 
       if (res.youLikeUser)
       {
-        connection_btn.textContent = "Disconnect";
+        connectionBtn.textContent = "Disconnect";
 
         if (res.userLikesYou) //Connected
-          connection_status.textContent = `You and ${profile_name} are both connected`;
+          connection_status.textContent = `You and ${name} are connected and can now start a conversation.`;
         else
-          connection_status.textContent = `It seems like ${profile_name} hasn"t liked you back, hang in there.`;
+          connection_status.textContent = `It seems like ${name} hasn't liked you back, hang in there.`;
       }
       else
       {
-        connection_btn.textContent = "Connect";
+        connectionBtn.textContent = "Connect";
 
         if (res.userLikesYou)
-          connection_status.textContent = `${profile_name} now likes you, like them back to get to know more about them.`;
+          connection_status.textContent = `${name} now likes you, like them back to get to know more about them.`;
         else
-          connection_status.textContent = `You and ${profile_name} are not connected`;
+          connection_status.textContent = `You and ${name} are not connected`;
       }
     }
   }
+
+  connectionBtn
+  .addEventListener("click", e =>
+  {
+    const node  = document.getElementById("profile_id");
+    const id    = parseInt(node.value);
+
+    xhr('/connect', "POST", { id }, onConnectRequest);
+  }, true);
 }

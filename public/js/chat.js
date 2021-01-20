@@ -1,32 +1,66 @@
-var socket = io();
-console.log('front side socket connected');
+document.addEventListener("DOMContentLoaded", script);
 
-var messages = document.getElementById('messages');
-var form = document.getElementById('form');
-var input = document.getElementById('m');
-var username = document.getElementById('username');
+function script()
+{
+  const socket   = io();
 
-socket.emit('add user', username.innerText);
+  console.log('frontend socket connected');
 
-form.addEventListener('submit', function(e) {
-	e.preventDefault();
-	if (input.value) {
-		socket.emit('chat message', input.value, username.innerText);
-		input.value = '';
-	}
-});
+  const messages = document.getElementById('messages');
+  const form     = document.getElementById('form');
+  const input    = document.getElementById('m');
+  const username = document.getElementById('username');
+  const roomName = document.getElementById('roomName');
+  const chatBtn  = document.getElementById("chat");
 
-socket.on('chat message', (data) => {
-	var userDiv = document.createElement('span');
-	userDiv.setAttribute("class", "username");
-	userDiv.textContent = data.user;
 
-	var msgDiv = document.createElement('span');
-	msgDiv.setAttribute("class", "msgBody");
-	msgDiv.textContent = data.msg;
+  socket.emit("joinRoom", {
+     username: username.innerText,
+     room: roomName.innerText
+  });
 
-	var item = document.createElement('li');
-	item.append(userDiv, msgDiv);
-	messages.appendChild(item);
-	window.scrollTo(0, document.body.scrollHeight);
-});
+  form.addEventListener("submit", e =>
+  {
+    e.preventDefault();
+    
+    if (input.value)
+    {
+      socket.emit("fromClient", input.value);
+      input.value = ''; // may need to delete this
+    }
+  });
+
+  socket.on("fromServer", data =>
+  {
+    let userDiv = document.createElement("span");
+    let msgDiv  = document.createElement("span");
+    let item    = document.createElement("li");
+    
+    userDiv.setAttribute("class", "username");
+    userDiv.textContent = data.user;
+
+    
+    msgDiv.setAttribute("class", "msgBody");
+    msgDiv.textContent = data.msg;
+
+    item.append(userDiv, msgDiv);
+    messages.appendChild(item);
+
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+
+  function onChatRoomRequest(xhr)
+  {
+    const res = JSON.parse(xhr.responseText);
+
+    if (res.result !== "Success")
+    {
+      alertify.alert(res.result);
+      return;
+    }
+    else
+    {
+      console.log(JSON.stringify(res));
+    }
+  }
+}
