@@ -1,0 +1,48 @@
+.filter_content_container
+  .row
+    .col
+      img(src='/images/icons/filter.png')
+    .col
+      .btn-group#filter_group(role='group' aria-label='Filter content')
+        button.btn.btn-secondary(class=((filter === 'none') ? 'option' : ''), type='button', value='none')
+          | None
+          if (filter === 'none')
+            input.hide(type='radio', name='filter', value='none', checked='true')
+          else
+            input.hide(type='radio', name='filter', value='none')
+        button.btn.btn-secondary(class=((filter === 'age') ? 'option' : ''), type='button', value='age')
+          | Age
+          if (filter === 'age')
+            input.hide(type='radio', name='filter', value='age', checked='true')
+          else
+            input.hide(type='radio', name='filter', value='age')
+        button.btn.btn-secondary(class=((filter === 'location') ? 'option' : ''), type='button', value='location')
+          | Location
+          if (filter === 'location')
+            input.hide(type='radio', name='filter', value='location', checked='true')
+          else
+            input.hide(type='radio', name='filter', value='location')
+        button.btn.btn-secondary(class=((filter === 'tags') ? 'option' : ''), type='button', value='tags')
+          | Tags
+          if (filter === 'tags')
+            input.hide(type='radio', name='filter', value='tags', checked='true')
+          else
+            input.hide(type='radio', name='filter', value='tags')
+        button.btn.btn-secondary(class=((filter === 'rating') ? 'option' : ''), type='button', value='rating')
+          | Rating
+          if (filter === 'rating')
+            input.hide(type='radio', name='filter', value='rating', checked='true')
+          else
+            input.hide(type='radio', name='filter', value='rating')
+  .row
+    .col
+      include ./filter.age.pug
+  .row
+    .col
+      include ./filter.location.pug
+  .row
+    .col
+      //- include ./filter.tags.pug
+  .row
+    .col
+      include ./filter.rating.pug

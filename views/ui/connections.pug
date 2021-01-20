@@ -1,0 +1,25 @@
+if (connections.length > 0)
+  .container
+    .row.fixed-bottom
+      .col
+        ui.contacts.float-right
+          each profile, index in connections
+            li.active
+              a(href="/profile/" + profile.id)
+                .d-flex.bd-highlight
+                  .img_cont
+                    if (profile.images.length === 0)
+                      img.rounded-circle.user_img(src='images/placeholder.png')
+                    else
+                      if (profile.images[0].name.startsWith('http://'))
+                        img.rounded-circle.user_img(src=profile.images[0].name)
+                      else
+                        img.rounded-circle.user_img(src='/images/uploads/' + profile.images[0].name)
+                    span(class=((profile.online == 'F') ? 'offline' : '')).online_icon
+                  .user_info
+                    span #{profile.username}
+                    p 
+                      if (profile.online == 'F')
+                        | Last seen: #{profile.last_seen}
+                      else
+                        | Online

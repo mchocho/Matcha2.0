@@ -1,0 +1,4 @@
+.tag-picker(class=(filter === 'tags') ? '' : 'hide')
+  select.form-control(name='')
+    each tag, index in tags
+      option(value=tag) | tag

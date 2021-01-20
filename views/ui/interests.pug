@@ -2,14 +2,14 @@ form(method='post', action='/interests/add')
   .edit
     h4 Interests
       img(src='images/icons/heart.png', alt='interests', class='input_icon')
-    input#interests_add_btn.custom_btn.ib(type='button', value='Add')
+    input#interests_add_btn.custom_btn.ib(type='button', value='Add interest')
     #interest_edit_container.interest_edit.hide
       span#error_7.error
-      input#interest_txt.form-control(type='text', placeholder='Add interest')
+      input#interest_txt.form-control(type='text', name='interest', placeholder='Add interest')
       br
       #new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
         button#interests_confirm.btn.btn-secondary(type='submit') Confirm
         button#interests_cancel.btn.btn-secondary(type='button') Cancel
     ul#interests_list.list.multi-column
-      each val, index in user.tags
-        li(id=val.tag_id) #{val.name}
+      each tag, index in user.tags
+        li(id=tag.tag_id) #{tag.name}

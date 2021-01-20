@@ -1,0 +1,15 @@
+.sort
+  .row
+    .col
+      img.sort_icon(src='/images/icons/sort.png')
+    .col
+      .btn-group#sort_group(role='group' aria-label='Filter content')
+        button.btn.btn-secondary.option(type='button', value='asc') Asending
+        button.btn.btn-secondary(type='button', value='desc') Descending
+    .col
+      select.form-control(name='sort')
+        option(value='none') None
+        option(value='age') Age 
+        option(value='rating') Rating 
+        option(value='location') Location 
+        option(value='tags') Tags 

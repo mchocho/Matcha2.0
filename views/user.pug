@@ -3,32 +3,9 @@ extends layout
 block content   
   #user.container
     .profile_content(align='center')
-      .profile_pic_content.slider
-        if (user.images.length === 0)
-          div
-            img#profile_pic(src='/images/placeholder.png')
-        else
-          each image, index in user.images
-            if (image.profile_pic === 'T')
-              div
-                if (image.name.startsWith('http://') || image.name.startsWith('https://'))
-                  img#profile_pic(src=image.name, alt='User\'s profile pic')
-                else
-                  img#profile_pic(src='/images/uploads/' + image.name, alt='User\'s profile pic') 
-        span.user_rating
-          | #{user.rating} 
-          img(src='/images/icons/star.png')
       .row
         .col
-          form#profile_picture_form(enctype='multipart/form-data', method='post', action='/upload')
-            button#image_input_container.custom_btn.ib(type='button')
-              input#image.image.hide(type='file', name='image', accept='image/*')
-              | Change picture
-            #new-image-confirm.btn-group(role='group', aria-label='Change profile picture')
-              button#image_confirm.btn.btn-secondary(type='submit') Confirm
-              button#image_cancel.btn.btn-secondary(type='button') Cancel
-          .views_container
-            | #{user.viewcount} views
+          include ui/user.pug
       .row
         .col
           include ui/username.pug
@@ -45,20 +22,23 @@ block content
         .col
           include ui/interests.pug
       .row
-        .col
+        .col  
           include ui/biography.pug
+      .row
+        .col
+          include ui/email.pug
+        .col
+          include ui/password.pug
 
-      include ui/email.pug
-      include ui/password.pug
-
-      #map
-        input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
-
-      include footer.pug
-    script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
-    script(type='text/javascript', src='/flatpickr/flatpickr.min.js')
-    script(type='text/javascript', src='/js/alertify.min.js')
-    script(type='text/javascript', src='/js/button_groups.js')
-    script(type='text/javascript', src='/js/xhr.js')
-    script(type='text/javascript', src='/js/map.js')
-    script(type='text/javascript', src='/js/user.js')
+    .row
+      .col
+        #map
+          input#find_me.custom_btn.geo.hide(type='button', value='Find Me')
+  include footer.pug
+  script(type='text/javascript', src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAZBn1NrjeC0gbFW4Fua4XEHudaTwvpy2Q')
+  script(type='text/javascript', src='/flatpickr/flatpickr.min.js')
+  script(type='text/javascript', src='/js/alertify.min.js')
+  script(type='text/javascript', src='/js/button_groups.js')
+  script(type='text/javascript', src='/js/xhr.js')
+  script(type='text/javascript', src='/js/map.js')
+  script(type='text/javascript', src='/js/user.js')

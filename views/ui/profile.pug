@@ -1,0 +1,62 @@
+#profile
+  .card.card-inverse.card-info
+    each image, index in profile.images
+        if (image.profile_pic === 'T')
+            img.card-img-top(src='/images/uploads/' + image.name, alt='')
+    .card-block
+      .row
+        .col(align='center')
+          h3#username.card-title.mt-3 #{profile.username}
+      .card-text
+        .row
+          .col
+            blockquote
+              | #{profile.biography}
+      .meta.card-text.details_container
+        .row
+          .col
+            img(src='/images/icons/distance.png')
+          .col
+            | #{profile.location.state}, #{profile.location.country}
+        .row
+          .col.float-right
+            //- div.float-right
+            span#rating #{profile.rating}
+            img(src='/images/icons/star.png')
+    .card-footer
+      small.last_seen
+        if (connected)
+          if (profile.tags.length > 0)
+            .interests(align='center')
+              h4 Interests
+              ul#interests_list.list.multi-column
+                each tag, index in profile.tags
+                  li #{tag.name}
+                    if (tag.similar)
+                      img(src='/images/icons/cupid.png')
+          p #{profile.location.area}
+          p#connection_status
+            if (profile.online == 'F')
+              | Last seen: #{profile.last_seen}
+            else
+              | Online
+          p #{profile.age}
+        else if (profile.youLikesUser)
+          p#connection_status
+            | It seems like #{profile.username} hasn&apos;t liked you back, hang in there.
+        else if (profile.profileLikesUser)
+          p#connection_status
+            | #{profile.username} now likes you, like them back to get to know more about #{userPreposition}.
+        else
+          p#connection_status
+            | You need to be connected with #{profile.username} to learn more about #{userPreposition}.
+      input#profile_id(type='hidden', value=profile.id)
+      if (connected)
+        button#chat.btn.btn-info.float-right.btn-sm(type='button', data-toggle='modal', data-target='#chatbox') Chat
+      else if (!profile.youLikesUser)
+        button#connection_btn.btn.btn-info.float-right.btn-sm(type='button') Connect
+      else
+        button#connection_btn.btn.btn-info.float-right.btn-sm(type='button') Disconnect
+    .card-footer
+      button#reportuser_btn.btn.float-right.btn-sm.btn-warning(type='button') Report account
+      button#blockuser_btn.btn.float-left.btn-sm.btn-danger(type='button') Block user

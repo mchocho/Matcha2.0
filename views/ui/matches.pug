@@ -1,0 +1,17 @@
+#matches
+  .row
+    each user, index in users
+      .col-4.profile
+        a(href=user.url)
+          if (user.images.length === 0)
+            img(src='images/placeholder.png')
+          else
+            if (user.images[0].name.startsWith('http://'))
+              img(src=user.images[0].name)
+            else
+              img(src='/images/uploads/' + user.images[0].name)
+          .info_container
+            img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
+            span.name #{user.username}
+            br
+            span.distance #{user.distance} km

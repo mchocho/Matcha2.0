@@ -1,0 +1,28 @@
+.profile_pic
+  .col-sm-6.col-md-4.col-lg-3.mt-4
+    .card.card-inverse.card-info
+      if (user.images.length === 0)
+        div
+          label(for='image')
+            img#profile_pic.card-img-top(src='/images/placeholder.png')
+      else
+        each image, index in user.images
+          if (image.profile_pic === 'T')
+            div
+              label(for='image')
+                if (image.name.startsWith('http://') || image.name.startsWith('https://'))
+                  img#profile_pic.card-img-top(src=image.name, alt='User\'s profile pic')
+                else
+                  img#profile_pic.card-img-top(src='/images/uploads/' + image.name, alt='User\'s profile pic') 
+      .card-block
+        h4.card-title.mt-3 #{user.username}
+        .meta.card-text
+          p.user_rating
+            | #{user.rating} 
+            img(src='/images/icons/star.png', alt='star rating')
+          p Connections: #{totalConnections}
+          p #{user.viewcount} #{user.viewcount == 1 ? 'view' : 'views'}
+      .card-footer
+        form#profile_picture_form(enctype='multipart/form-data', method='post', action='/upload')
+          input#image.hide(type='file', name='image', accept='image/*')
+          input#image_input_container.btn.btn-info.float-right.btn-sm(type='button', value='New Image')

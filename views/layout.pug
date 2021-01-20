@@ -11,7 +11,8 @@ html
     link(rel='stylesheet' href='/css/alertify.min.css', media='all')
     link(rel='stylesheet', href='/css/style.css', media='all')  
     link(rel='stylesheet', href='/css/matcha.css', media='all')
-    link(rel='stylesheet' href='/css/main.css' media='all')       
+    link(rel='stylesheet', href='/css/connections.css', media='all')
+    link(rel='stylesheet' href='/css/main.css' media='all')
   body
     nav.navbar.navbar-expand-lg.navbar-light.bg-light
       .container
@@ -20,9 +21,6 @@ html
           span.navbar-toggler-icon
         #navbarResponsive.collapse.navbar-collapse
           ul.navbar-nav.ml-auto
-            li.nav-item.active
-              a.nav-link(href='#')
-                | Home
             if (userSignedIn)
               li.nav-item
                 a.nav-link(href='/user') Profile

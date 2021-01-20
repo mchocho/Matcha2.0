@@ -1,11 +1,13 @@
 form(method='post', action='/biography')
   .edit
     h4 Biography
+      img(src='images/icons/history.png', alt='date of birth address', class='input_icon')
     span#error_8.error
     p#biography.value.bio #{user.biography}
     input#biography_edit_btn.custom_btn.ib(type='button', value='Edit')
     #biography_edit_container.biography.hide
-      textarea#biography_txt.form-control(placeholder='Say something about yourself')
+      textarea#biography_txt.form-control(name='bio', placeholder='Say something about yourself')
+      br
       #new-tags-confirm.btn-group(role='group', aria-label='Confirm new interest')
         button#biography_confirm.btn.btn-secondary(type='submit') Confirm
         button#biography_cancel.btn.btn-secondary(type='button') Cancel

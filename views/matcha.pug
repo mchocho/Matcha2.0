@@ -3,56 +3,24 @@ extends layout
 block content 
   #matcha
     h2(align='center') Your matches
-    .filter_container(align='center')
-      .content
-        .sort_container
-          img.sort_icon(src='/images/icons/sort.png')
-          .btn-group#sort_group(role='group' aria-label='Filter content')
-            button.btn.btn-secondary.option(type='button', value='asc') Asending
-            button.btn.btn-secondary(type='button', value='desc') Descending
-        .filter_content_container
-          img(src='/images/icons/filter.png')
-          .btn-group#filter_group(role='group' aria-label='Filter content')
-            button.btn.btn-secondary(class=((filter === 'none')     ? 'option' : ''), type='button', value='none')
-              a#none(href='/matcha') None
-            button.btn.btn-secondary(class=((filter === 'age')      ? 'option' : ''), type='button', value='age') Age
-            button.btn.btn-secondary(class=((filter === 'location') ? 'option' : ''), type='button', value='location')
-              a#location(href='/matcha/location') Location
-            button.btn.btn-secondary(class=((filter === 'tags')     ? 'option' : ''), type='button', value='tags')
-              a#tags(href='/matcha/tags') Tags
-            button.btn.btn-secondary(class=((filter === 'rating')   ? 'option' : ''), type='button', value='rating')
-              a#tags(href='/matcha/rating') Rating
-      #slider_container.age-slider(class=(filter === 'age') ? '' : 'hide')
-        label Min Age:
-          span#age_1
-          input#slider_1(value='0' min='18' max='110' step='1' type='range')
-        label Max Age:
-          span#age_2
-          input#slider_2(value='80' min='18' max='110' step='1' type='range')
-        input#age.custom_btn.ib(type='button', value='Search ages')
-    br
+    .filter_container
+      form(method='GET')
+        .container
+          .row
+            .col-7
+            .col
+              .row
+                .col
+                  include ui/sort.pug
+              br
+              .row
+                .col
+                  include ui/filter.pug
     .match_container.container
-      if (users.length === 0)
-        .no_results_container(align='center')
-          img(src='/images/icons/broken_heart.png', class='icon')
-          h3.no_results It seems there are no results. Don't give up
+      if (users.length == 0)
+        include ui/no.matches.pug
       else
-        #matches.row
-          each user, index in users
-            a.col-sm.profile(class='', href=user.url)
-              if (user.images.length === 0)
-                img(src='images/placeholder.png')
-              else
-                if (user.images[0].name.startsWith('http://'))
-                  img(src=user.images[0].name)
-                else
-                  img(src='/images/uploads/' + user.images[0].name)
-              .info_container
-                img(src='/images/icons/' + ((user.gender === 'F') ? 'female' : 'male') + '.png' )
-                span.name #{user.username}
-                br
-                span.distance #{user.distance} km
-    include footer.pug
+        include ui/matches.pug
+  include ui/connections.pug
+  include footer.pug
   script(src='/js/matcha.js')
-  script(src='/js/reloadCSS.js')
-

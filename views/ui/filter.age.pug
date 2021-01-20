@@ -1,0 +1,8 @@
+.slider_container.age-slider(class=(filter === 'age') ? '' : 'hide')
+  label Min Age:
+    span#age_1
+    input#slider_1.form-control(type='range', min='18', max='110', step='1', value='0')
+  label Max Age:
+    span#age_2
+    input#slider_2.form-control(type='range', min='18', max='110', step='1', value='80')
+  input#age.custom_btn.ib(type='button', value='Search ages')

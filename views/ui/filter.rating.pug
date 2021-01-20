@@ -1,0 +1,9 @@
+.slider_container
+  slider_container.rating-slider(class=(filter === 'rating') ? '' : 'hide')
+  label Min Rating:
+    span.value-1
+    input.slider_1.form-control(type='range', min='0', max='10', step='1', value='0')
+  label Max Rating:
+    span.value-1
+    input.slider_2.form-control(type='range', min='8', max='10', step='1', value='80')
+  //- input#age.custom_btn.ib(type='button', value='Search ages')

@@ -1,0 +1,23 @@
+#chatbox.modal(tabindex='-1' role='dialog')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#chat-title.modal-title 
+        button.close(type='button' data-dismiss='modal' aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        .container.mb-6
+          .row
+            .col
+              h2(id="username" hidden='true') #{username}
+              h2(id="roomName" hidden='true') #{roomName}
+          .row.justify-content-center
+            .col-6
+              ul#messages
+      .modal-footer
+        form.input-group.mb-3(id="form" action='')
+          button.btn.btn-outline-secondary.text-light.btn-primary(type='button')
+            | Save changes
+          input#m.form-control.border.border-secondary(autocomplete='off')
+script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js")
+script(src='/js/chat.js')
