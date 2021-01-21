@@ -351,8 +351,9 @@ module.exports = {
   {
     return new Promise((resolve, reject) =>
     {
-      const id = user.id;
-      let   profiles;
+      const id       = user.id;
+      let   profiles = [];
+      let   results  = [];
 
       dbc.query(sql.getAllUserLikes, [id, id], (err, connections) =>
       {
@@ -360,16 +361,25 @@ module.exports = {
 
         if (connections.length === 0)
         {
-          resolve([]);
+          resolve(profiles);
           return;
         }
 
+        //Create a list of all user ids
         profiles = connections.map(connection => connection.liker).concat(connections.map(connection => connection.liked));
-        profiles = profiles.filter(profile => profile !== user.id);
+        
+        profiles = profiles.filter(profile => profile !== user.id); //Remove the current user from this list
 
-        profiles = matches.filter(match => profiles.some(profile => profile === match.id));
+        //Create a list of ids that the user is connected with
+        profiles.reduce((prev, next, i) =>
+        {
+          if (profiles.indexOf(next, i + 1) > -1)
+            results.push(next)
+        }, results);
 
-        resolve(profiles);
+        results = matches.filter(match => results.some(profile => profile === match.id));
+
+        resolve(results);
       });
     });
   },
