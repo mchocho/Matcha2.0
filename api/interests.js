@@ -10,44 +10,51 @@ module.exports      = router;
 
 router.post("/add", (req, res) =>
 {
-  const sess        = req.session.user;
-  const value       = req.body.value;   //Lowercase all tags
-  const response    = { key : "interest" };
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = { key : "interest" };
 
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
     res.redirect("/");
     return;
   }
   else if (sess.verified !== "T")
   {
-      res.redirect("/verify_email");
-      return;
+    res.redirect("/verify_email");
+    return;
   }
   else if (sess.valid !== "T")
   {
-      res.redirect("/reported_account");
+    res.redirect("/reported_account");
+    return;
+  }
+
+  validateInterest();
+
+  function validateInterest()
+  {
+    const value       = req.body.interest;
+    
+    if (!ft_util.isString(value))
+    {
+      res.redirect("/user");
       return;
-  }
+    }
 
-  if (!ft_util.isstring(value))
-  {
-    res.redirect("/user");
-    return;
-  }
+    const interest = value.trim().toLowerCase();
+    
+    if (interest.length === 0)
+    {
+      console.log("Please enter an interest.");
+      res.redirect("/user");
+      return;
+    }
 
-  const interest = value.trim().toLowerCase();
+    checkIfTagExists(interest);
+  }
   
-  if (interest.length === 0)
-  {
-    console.log("Please enter an interest.");
-    res.redirect("/user");
-    return;
-  }
-
-  checkIfTagExists();
-  
-  function checkIfTagExists()
+  function checkIfTagExists(interest)
   {
       //Check if tag already exists
       dbc.query(sql.selCheckTagExists, [interest], (err, result) =>
@@ -55,13 +62,13 @@ router.post("/add", (req, res) =>
           if (err) {throw err}
 
           if (result.length === 0)
-              saveNewTag();
+              saveNewTag(interest);
           else
               saveUserTag(result[0].id);
       });
   }
 
-  function saveNewTag()
+  function saveNewTag(interest)
   {
       const insValues = [interest];
 
@@ -86,14 +93,16 @@ router.post("/add", (req, res) =>
 
 router.post("/delete", (req, res) =>
 {
-  const sess      = req.session.user;
-  const id        = req.body.value;
-  const response  = {
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = {
       key         : "rm_interest",
       value       : id
   };
 
-  if (!ft_util.isobject(sess))
+  res.writeHead(200, {"Content-Type": "text/plain"});
+
+  if (!userSignedIn)
   {
     response.result = "Please sign in.";
     res.end(JSON.stringify(response));
@@ -106,24 +115,34 @@ router.post("/delete", (req, res) =>
     return;
   }
 
-  res.writeHead(200, {"Content-Type": "text/plain"});
+  const id        = req.body.value;
 
-  //User is logged in, verified, valid, and id is valid
-  if (isNaN(id))
+  validateId(id);
+
+  function validateId(id)
   {
+    //User is logged in, verified, valid, and id is valid
+    if (isNaN(id))
+    {
       response.result = "Failed";
       res.end(JSON.stringify(response));
       return;
+    }
+
+    deleteInterest(id);
   }
 
-  const delValues = [sess.id, id];
-
-  //Remove user tag link
-  dbc.query(sql.delUserTag, delValues, (err, result) =>
+  function deleteInterest(id)
   {
+    const delValues = [sess.id, id];
+
+    //Remove user tag link
+    dbc.query(sql.delUserTag, delValues, (err, result) =>
+    {
       if (err) {throw err}
 
       response.result = "Success";
       res.end(JSON.stringify(response));
-  });
+    });
+  }
 });

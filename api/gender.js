@@ -12,13 +12,13 @@ module.exports      = router;
 
 router.post("/", (req, res) =>
 {
-  const sess        = req.session.user;
-  const gender      = req.body.value;
-  const response    = { key : "gender" };
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = { key : "gender" };
 
   res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
 
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
       response.result = "Please sign in.";
       res.end(JSON.stringify(response));
@@ -30,14 +30,22 @@ router.post("/", (req, res) =>
       res.end(JSON.stringify(response));
       return;
   }
-  else if (gender !== 'M' && gender !== 'F')
+
+  validateGender();
+
+  function validateGender()
   {
-      response.result = "Please specify your gender.";
+    const gender       = req.body.value;
+
+    if (gender !== 'M' && gender !== 'F')
+    {
+      response.result  = "Please specify your gender.";
       res.end(JSON.stringify(response));
       return;
-  }
+    }
 
-  updateNewGender(gender);
+    updateNewGender(gender);
+  }
 
   function updateNewGender(gender)
   {

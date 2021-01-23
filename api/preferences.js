@@ -10,50 +10,62 @@ module.exports      = router;
 
 router.post("/", (req, res) =>
 {
-  const sess        = req.session.user;
-  const pref        = req.body.value;
-  const response    = { key : "preferences" };
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = { key : "preferences" };
 
-  if (!ft_util.isobject(sess))
+  res.writeHead(200, {"Content-Type": "text/plain"});
+
+  if (!userSignedIn)
   {
-      response.result = "Please sign in.";
-      res.end(JSON.stringify(response));
-      return;
+    response.result = "Please sign in.";
+    res.end(JSON.stringify(response));
+    return;
   }
   else if (sess.verified !== 'T' || sess.valid !== 'T')
   {
-      response.result = "Please verify your account.";
-      res.end(JSON.stringify(response));
-      return;
+    response.result = "Please verify your account.";
+    res.end(JSON.stringify(response));
+    return;
   }
-  else if (pref !== 'M' && pref !== 'F' && pref !== 'B')
+  
+  validatePreference();
+
+  function validatePreference()
   {
+    const pref        = req.body.value;
+
+    if (pref !== 'M' && pref !== 'F' && pref !== 'B')
+    {
       response.result = "Please specify your preferences.";
       res.end(JSON.stringify(response));
       return;
-  }
+    }
 
-  saveNewPreference(pref);
+    saveNewPreference(pref);
+  }
 
   function saveNewPreference(pref)
   {
-      dbc.query(sql.updateUserPreferences, [pref, sess.id], (err, result) =>
-      {
-          if (err) {throw err}
+    dbc.query(sql.updateUserPreferences, [pref, sess.id], (err, result) =>
+    {
+      if (err) {throw err}
 
-          updateSession(pref);
-      });
+      updateSession(pref);
+    });
   }
 
   function updateSession(pref)
   {
-      sess.preferences = pref;
+    sess.preferences = pref;
 
-      req.session.save(err => {
-          if (err) {throw err}
+    req.session.save(err => {
+      if (err) {throw err}
 
-          response.result = "Success";
-          res.end(JSON.stringify(response));
-      });
+      response.result = "Success";
+      console.log(response);
+
+      res.end(JSON.stringify(response));
+    });
   }
 });

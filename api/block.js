@@ -10,16 +10,16 @@ module.exports      = router;
 
 router.post("/", (req, res) =>
 {
-  const sess      = req.session.user;
-  const id        = req.body.value;
-  const response  = {
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = {
     profile   : id,
     service   : "block"
   };
   
   res.writeHead(200, {"Content-Type": "text/plain"}); //Allows us to respond to the client
   
-  if (!ft_util.isobject(sess))
+  if (!userSignedIn)
   {
       response.result = "Please sign in.";
       res.end(JSON.stringify(response));
@@ -32,27 +32,38 @@ router.post("/", (req, res) =>
       return;
   }
 
-  if (isNaN(id))
-  {
-    response.result = "Please specify a user to block.";
-    res.end(JSON.stringify(response));
-    return;
-  }
+  const id = req.body.value;
 
-  dbc.query(sql.selUserById, [id], (err, result) => {
-    if (err) {throw err}
-    
-    //User does not exist
-    if (result.length === 0)
+  validateId(id);
+
+  function validateId(id)
+  {
+    if (isNaN(id))
     {
       response.result = "Please specify a user to block.";
       res.end(JSON.stringify(response));
       return;
     }
 
-    checkIfProfileBlocked(result[0]);
-  });
+    getUser(id);
+  }
 
+  function getUser(id)
+  {
+    dbc.query(sql.selUserById, [id], (err, result) => {
+      if (err) {throw err}
+      
+      //User does not exist
+      if (result.length === 0)
+      {
+        response.result = "Please specify a user to block.";
+        res.end(JSON.stringify(response));
+        return;
+      }
+
+      checkIfProfileBlocked(result[0]);
+    });
+  }
 
   function checkIfProfileBlocked(profile)
   {

@@ -19,7 +19,7 @@ router.post("/", (req, res) =>
     console.log(value);
 
     //User is logged in and bio is valid
-    if (!ft_util.isobject(sess) )
+    if (!ft_util.isObject(sess) )
     {
         response.result = "Failed";
         res.end(JSON.stringify(response));

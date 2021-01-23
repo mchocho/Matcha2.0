@@ -12,16 +12,13 @@ module.exports      = router;
 
 router.post("/", (req, res) =>
 {
-  const sess      = req.session.user;
-  const id        = req.body.value;
-  const response  = {
-    profile       : id,
-    service       : "report_profile"
-  };
-  
-  res.writeHead(200, {"Content-Type": "text/plain"});
+  const sess         = req.session.user;
+  const userSignedIn = !!sess;
+  const response     = { service : "report_profile" };
 
-  if (!ft_util.isobject(sess))
+  res.writeHead(200, {"Content-Type": "text/plain"});
+  
+  if (!userSignedIn)
   {
       response.result = "Please sign in.";
       res.end(JSON.stringify(response));
@@ -34,28 +31,40 @@ router.post("/", (req, res) =>
       return;
   }
 
-  if (isNaN(id))
-  {
-    response.result = "Please specify a user to report.";
-    res.end(JSON.stringify(response));
-    return;
-  }
+  const id = req.body.id;
 
-  dbc.query(sql.selUserById, [id], (err, result) =>
+  validateId(id);
+
+  function validateId(id)
   {
-    if (err) {throw err}
-    
-    //User does not exist
-    if (result.length === 0)
+    if (isNaN(id))
     {
       response.result = "Please specify a user to report.";
       res.end(JSON.stringify(response));
       return;
     }
 
-    checkIfProfileBlocked(result[0]);
-  });
+    response.profile = id;
+    getUser(id);
+  }
 
+  function getUser(id)
+  {
+    dbc.query(sql.selUserById, [id], (err, result) =>
+    {
+      if (err) {throw err}
+      
+      //User does not exist
+      if (result.length === 0)
+      {
+        response.result = "Please specify a user to report.";
+        res.end(JSON.stringify(response));
+        return;
+      }
+
+      checkIfProfileBlocked(result[0]);
+    });
+  }
 
   function checkIfProfileBlocked(profile)
   {
